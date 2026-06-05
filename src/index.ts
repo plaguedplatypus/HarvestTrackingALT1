@@ -29,6 +29,10 @@ function getTimeStamp() {
 	});
 }
 
+function setStatus(message: string) {
+	status.innerText = `${message} @ ${getTimeStamp()}`;
+}
+
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
 const status = document.querySelector(".status") as HTMLElement;
@@ -166,7 +170,7 @@ function processHarvestLine(chatLine: string) {
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);
-		status.innerText = `Tracked: ${amount} x ${item} @ ${getTimeStamp()}`;
+		setStatus(`Tracked: ${amount} x ${item}`);
 		return;
 	}
 
@@ -180,7 +184,7 @@ function processHarvestLine(chatLine: string) {
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);
-		status.innerText = `Tracked: ${item} @ ${getTimeStamp()}`;
+		setStatus(`Tracked: ${amount} x ${item}`);
 		return;
 	}
 
@@ -203,7 +207,7 @@ function processHarvestLine(chatLine: string) {
 		if (!item) return;
 
 		incrementItem(item);
-		status.innerText = `Tracked: ${item}`;
+		setStatus(`Tracked: ${item}`);
 		return;
 	}
 }
