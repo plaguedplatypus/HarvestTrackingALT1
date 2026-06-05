@@ -5,6 +5,10 @@ import "./index.html";
 import "./appconfig.json";
 import "./css/style.css";
 import "./icon.png";
+import "./icons/mn.png";
+import "./icons/wc.png";
+import "./icons/fh.png";
+import "./icons/ar.png";
 
 type SkillType = "all" | "mining" | "woodcutting" | "fishing" | "archaeology" | "other";
 

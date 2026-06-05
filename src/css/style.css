@@ -51,6 +51,22 @@ body {
     min-width: 24px;
 }
 
+.skill-tab {
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill-tab img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
 .skill-tab.active {
     background: #3a3a3a;
     border-color: #9a9a9a;

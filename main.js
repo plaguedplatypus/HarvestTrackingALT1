@@ -84,6 +84,22 @@ body {
     min-width: 24px;
 }
 
+.skill-tab {
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill-tab img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
 .skill-tab.active {
     background: #3a3a3a;
     border-color: #9a9a9a;
@@ -708,14 +724,47 @@ module.exports = __webpack_require__.p + "appconfig.json";
 
 /***/ },
 
-/***/ "./icon.png"
-/*!******************!*\
-  !*** ./icon.png ***!
-  \******************/
+/***/ "./icons/ar.png"
+/*!**********************!*\
+  !*** ./icons/ar.png ***!
+  \**********************/
 (module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
-module.exports = __webpack_require__.p + "icon.png";
+module.exports = __webpack_require__.p + "ar.png";
+
+/***/ },
+
+/***/ "./icons/fh.png"
+/*!**********************!*\
+  !*** ./icons/fh.png ***!
+  \**********************/
+(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+module.exports = __webpack_require__.p + "fh.png";
+
+/***/ },
+
+/***/ "./icons/mn.png"
+/*!**********************!*\
+  !*** ./icons/mn.png ***!
+  \**********************/
+(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+module.exports = __webpack_require__.p + "mn.png";
+
+/***/ },
+
+/***/ "./icons/wc.png"
+/*!**********************!*\
+  !*** ./icons/wc.png ***!
+  \**********************/
+(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+module.exports = __webpack_require__.p + "wc.png";
 
 /***/ },
 
@@ -5020,7 +5069,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.html */ "./index.html");
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
-/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
+Object(function webpackMissingModule() { var e = new Error("Cannot find module './icon.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* harmony import */ var _icons_mn_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icons/mn.png */ "./icons/mn.png");
+/* harmony import */ var _icons_wc_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./icons/wc.png */ "./icons/wc.png");
+/* harmony import */ var _icons_fh_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./icons/fh.png */ "./icons/fh.png");
+/* harmony import */ var _icons_ar_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./icons/ar.png */ "./icons/ar.png");
+
+
+
+
 
 
 
