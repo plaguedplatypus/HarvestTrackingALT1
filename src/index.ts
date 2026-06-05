@@ -299,24 +299,28 @@ function render(highlightItem?: string) {
 			const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
 
 			goalHtml = `
-				<span class="goal-text">
-					${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
-				</span>
+				<div class="goal-row">
+					<span class="goal-text">
+						${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
+					</span>
 
-				<div class="progress-bar">
-					<div class="progress-fill" style="width:${progress}%"></div>
+					<div class="progress-bar">
+						<div class="progress-fill" style="width:${progress}%"></div>
+					</div>
 				</div>
 			`;
 		}
 
 		row.innerHTML = `
-			<div class="item-text">
-				<strong>${escapeHtml(item)}</strong>: ${itemData.count}
+			<div class="item-main-row">
+				<div class="item-text">
+					<strong>${escapeHtml(item)}</strong>: ${itemData.count}
+				</div>
+
+				<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
 			</div>
 
 			${goalHtml}
-
-			<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
 
 			<div class="settings-panel ${itemData.settingsOpen ? "open" : ""}">
 				<input type="number"
