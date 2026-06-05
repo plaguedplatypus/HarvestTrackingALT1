@@ -13,6 +13,7 @@ type TrackedItem = {
 	goal: number | null;
 	settingsOpen: boolean;
 	skill?: SkillType;
+	colorClass?: string;
 };
 
 type SaveData = {
@@ -106,6 +107,11 @@ window.setTimeout(function () {
 	}, 1000);
 }, 50);
 
+const redBlessingItems = [
+	"precious components",
+	"fortunate components"
+];
+
 function populateChatSelector() {
 	chatSelector.innerHTML = `<option value="">Select Chat</option>`;
 
@@ -181,6 +187,45 @@ function processChat(opts: any[]) {
 
 function processHarvestLine(chatLine: string) {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
+
+	const serenMatch = cleanLine.match(
+		/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i
+	);
+
+	if (serenMatch) {
+		const amount = parseInt(serenMatch[1], 10);
+		const item = normalizeItemName(serenMatch[2]);
+
+		if (!item || isNaN(amount)) return;
+
+		incrementItem(item, amount, "other", "seren-item");
+		setStatus(`Seren Spirit: ${amount} x ${item}`);
+		return;
+	}
+
+	const blessingMatch = cleanLine.match(
+		/Materials gained:\s*(\d+)\s*x\s*(.+?)\.?$/i
+	);
+
+	if (blessingMatch) {
+		const amount = parseInt(blessingMatch[1], 10);
+		const item = normalizeItemName(blessingMatch[2]);
+
+		if (!item || isNaN(amount)) return;
+
+		const redBlessingItems = [
+			"precious components",
+			"fortunate components"
+		];
+
+		const colorClass = redBlessingItems.includes(item)
+			? "blessing-item-red"
+			: "blessing-item-orange";
+
+		incrementItem(item, amount, "other", colorClass);
+		setStatus(`Blessing: ${amount} x ${item}`);
+		return;
+	}
 
 	const transportMatch = cleanLine.match(
 		/You transport to your (.*?):\s*(\d+)\s*x\s*(.+?)\./i
@@ -309,11 +354,21 @@ function ensureItem(data: SaveData, item: string) {
 	}
 }
 
-function incrementItem(item: string, amount: number = 1, skill: SkillType = "other") {
+function incrementItem(
+	item: string,
+	amount: number = 1,
+	skill: SkillType = "other",
+	colorClass?: string
+) {
 	const data = getSaveData();
 	ensureItem(data, item);
 	data.items[item].count += amount;
 	data.items[item].skill = skill;
+
+	if (colorClass) {
+		data.items[item].colorClass = colorClass;
+	}
+
 	saveData(data);
 	render(item);
 }
@@ -374,7 +429,9 @@ function render(highlightItem?: string) {
 		row.innerHTML = `
 			<div class="item-main-row">
 				<div class="item-text">
-					<strong>${escapeHtml(titleCase(item))}</strong>: ${itemData.count}
+					<strong class="${itemData.colorClass || ""}">
+						${escapeHtml(titleCase(item))}
+					</strong>: ${itemData.count}
 				</div>
 
 				<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>

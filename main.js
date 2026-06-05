@@ -143,6 +143,18 @@ body {
     word-break: break-word;
 }
 
+.blessing-item-orange {
+    color: #ff9900;
+}
+
+.blessing-item-red {
+    color: #ff3333;
+}
+
+.seren-item {
+    color: #66ffff;
+}
+
 .goal-row {
     display: flex;
     align-items: center;
@@ -5107,6 +5119,10 @@ window.setTimeout(function () {
         }, 600);
     }, 1000);
 }, 50);
+var redBlessingItems = [
+    "precious components",
+    "fortunate components"
+];
 function populateChatSelector() {
     chatSelector.innerHTML = "<option value=\"\">Select Chat</option>";
     reader.pos.boxes.forEach(function (_box, i) {
@@ -5170,6 +5186,33 @@ function processChat(opts) {
 }
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
+    var serenMatch = cleanLine.match(/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i);
+    if (serenMatch) {
+        var amount = parseInt(serenMatch[1], 10);
+        var item = normalizeItemName(serenMatch[2]);
+        if (!item || isNaN(amount))
+            return;
+        incrementItem(item, amount, "other", "seren-item");
+        setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
+        return;
+    }
+    var blessingMatch = cleanLine.match(/Materials gained:\s*(\d+)\s*x\s*(.+?)\.?$/i);
+    if (blessingMatch) {
+        var amount = parseInt(blessingMatch[1], 10);
+        var item = normalizeItemName(blessingMatch[2]);
+        if (!item || isNaN(amount))
+            return;
+        var redBlessingItems_1 = [
+            "precious components",
+            "fortunate components"
+        ];
+        var colorClass = redBlessingItems_1.includes(item)
+            ? "blessing-item-red"
+            : "blessing-item-orange";
+        incrementItem(item, amount, "other", colorClass);
+        setStatus("Blessing: ".concat(amount, " x ").concat(item));
+        return;
+    }
     var transportMatch = cleanLine.match(/You transport to your (.*?):\s*(\d+)\s*x\s*(.+?)\./i);
     if (transportMatch) {
         var destination = transportMatch[1].toLowerCase();
@@ -5276,13 +5319,16 @@ function ensureItem(data, item) {
         };
     }
 }
-function incrementItem(item, amount, skill) {
+function incrementItem(item, amount, skill, colorClass) {
     if (amount === void 0) { amount = 1; }
     if (skill === void 0) { skill = "other"; }
     var data = getSaveData();
     ensureItem(data, item);
     data.items[item].count += amount;
     data.items[item].skill = skill;
+    if (colorClass) {
+        data.items[item].colorClass = colorClass;
+    }
     saveData(data);
     render(item);
 }
@@ -5320,7 +5366,7 @@ function render(highlightItem) {
             var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
             goalHtml = "\n\t\t\t\t<div class=\"goal-row\">\n\t\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t\t</span>\n\n\t\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t");
         }
-        row.innerHTML = "\n\t\t\t<div class=\"item-main-row\">\n\t\t\t\t<div class=\"item-text\">\n\t\t\t\t\t<strong>".concat(escapeHtml(titleCase(item)), "</strong>: ").concat(itemData.count, "\n\t\t\t\t</div>\n\n\t\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
+        row.innerHTML = "\n\t\t\t<div class=\"item-main-row\">\n\t\t\t\t<div class=\"item-text\">\n\t\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t\t</strong>: ").concat(itemData.count, "\n\t\t\t\t</div>\n\n\t\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
         if (highlightItem === item) {
             row.classList.add("highlight");
         }
