@@ -130,18 +130,31 @@ button,
 .item-row {
     background: #2c2c2c;
     border-radius: 5px;
-    padding: 5px 7px;
+    padding: 6px 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    line-height: 1.25;
+}
+
+.item-main-row {
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
-    line-height: 1.25;
+    width: 100%;
 }
 
 .item-text {
     flex: 1;
-    min-width: 95px;
+    min-width: 0;
     word-break: break-word;
+}
+
+.goal-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
 }
 
 .goal-text {
@@ -151,12 +164,12 @@ button,
 }
 
 .progress-bar {
-    width: 70px;
+    flex: 1;
     height: 8px;
     background: #444;
     border-radius: 4px;
     overflow: hidden;
-    flex-shrink: 0;
+    min-width: 50px;
 }
 
 .progress-fill {
@@ -171,6 +184,7 @@ button,
     cursor: pointer;
     padding: 0 2px;
     font-size: 14px;
+    flex-shrink: 0;
 }
 
 .settings-panel {
@@ -5210,9 +5224,9 @@ function render(highlightItem) {
         var goalHtml = "";
         if (itemData.goal) {
             var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-            goalHtml = "\n\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t");
+            goalHtml = "\n\t\t\t\t<div class=\"goal-row\">\n\t\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t\t</span>\n\n\t\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t");
         }
-        row.innerHTML = "\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong>".concat(escapeHtml(item), "</strong>: ").concat(itemData.count, "\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
+        row.innerHTML = "\n\t\t\t<div class=\"item-main-row\">\n\t\t\t\t<div class=\"item-text\">\n\t\t\t\t\t<strong>".concat(escapeHtml(item), "</strong>: ").concat(itemData.count, "\n\t\t\t\t</div>\n\n\t\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
         if (highlightItem === item) {
             row.classList.add("highlight");
         }
