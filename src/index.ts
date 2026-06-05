@@ -256,19 +256,14 @@ function incrementItem(item: string, amount: number = 1) {
 	render(item);
 }
 
-function isInHistory(_chatLine: string) {
-	return false;
+let lastProcessedLine = "";
+
+function isInHistory(chatLine: string) {
+	return chatLine === lastProcessedLine;
 }
 
 function updateChatHistory(chatLine: string) {
-	const data = getSaveData();
-	data.history.push(chatLine);
-
-	if (data.history.length > 120) {
-		data.history = data.history.slice(data.history.length - 120);
-	}
-
-	saveData(data);
+	lastProcessedLine = chatLine;
 }
 
 function render(highlightItem?: string) {
