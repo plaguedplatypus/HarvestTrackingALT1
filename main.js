@@ -72,8 +72,8 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 }
 
 .app-cog {
-    width: 26px;
-    height: 26px;
+    width: 12px;
+    height: 12px;
     padding: 0;
     border-radius: 50%;
     font-size: 15px;
@@ -130,10 +130,10 @@ button,
 .item-row {
     background: #2c2c2c;
     border-radius: 5px;
-    padding: 6px 7px;
+    padding: 5px 7px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 2px;
     line-height: 1.25;
 }
 
@@ -158,8 +158,8 @@ button,
 }
 
 .goal-text {
-    color: #d0d0d0;
-    font-size: 12px;
+    color: #b0b0b0;
+    font-size: 11px;
     white-space: nowrap;
 }
 
@@ -169,7 +169,7 @@ button,
     background: #444;
     border-radius: 4px;
     overflow: hidden;
-    min-width: 50px;
+    min-width: 25px;
 }
 
 .progress-fill {
@@ -5226,7 +5226,7 @@ function render(highlightItem) {
             var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
             goalHtml = "\n\t\t\t\t<div class=\"goal-row\">\n\t\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t\t</span>\n\n\t\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t");
         }
-        row.innerHTML = "\n\t\t\t<div class=\"item-main-row\">\n\t\t\t\t<div class=\"item-text\">\n\t\t\t\t\t<strong>".concat(escapeHtml(item), "</strong>: ").concat(itemData.count, "\n\t\t\t\t</div>\n\n\t\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
+        row.innerHTML = "\n\t\t\t<div class=\"item-main-row\">\n\t\t\t\t<div class=\"item-text\">\n\t\t\t\t\t<strong>".concat(escapeHtml(titleCase(item)), "</strong>: ").concat(itemData.count, "\n\t\t\t\t</div>\n\n\t\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
         if (highlightItem === item) {
             row.classList.add("highlight");
         }
@@ -5356,6 +5356,9 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+function titleCase(text) {
+    return text.replace(/\b\w/g, function (char) { return char.toUpperCase(); });
 }
 function escapeAttr(value) {
     return escapeHtml(value);
