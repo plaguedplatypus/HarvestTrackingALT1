@@ -5197,7 +5197,7 @@ function processHarvestLine(chatLine) {
         var item = normalizeItemName(serenMatch[2]);
         if (!item || isNaN(amount))
             return;
-        incrementItem(item, amount, "other", "seren-item");
+        incrementItem(item, amount, "special", "seren-item");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return;
     }
@@ -5214,7 +5214,7 @@ function processHarvestLine(chatLine) {
         var colorClass = redBlessingItems_1.includes(item)
             ? "blessing-item-red"
             : "blessing-item-orange";
-        incrementItem(item, amount, "other", colorClass);
+        incrementItem(item, amount, "special", colorClass);
         setStatus("Blessing: ".concat(amount, " x ").concat(item));
         return;
     }

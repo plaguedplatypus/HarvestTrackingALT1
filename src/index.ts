@@ -6,7 +6,14 @@ import "./appconfig.json";
 import "./css/style.css";
 import "./icon.png";
 
-type SkillType = "all" | "mining" | "woodcutting" | "fishing" | "archaeology" | "other";
+type SkillType =
+	| "all"
+	| "mining"
+	| "woodcutting"
+	| "fishing"
+	| "archaeology"
+	| "special"
+	| "other";
 
 type TrackedItem = {
     count: number;
@@ -205,7 +212,7 @@ function processHarvestLine(chatLine: string) {
 
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount, "other", "seren-item");
+		incrementItem(item, amount, "special", "seren-item");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
 		return;
 	}
@@ -229,7 +236,7 @@ function processHarvestLine(chatLine: string) {
 			? "blessing-item-red"
 			: "blessing-item-orange";
 
-		incrementItem(item, amount, "other", colorClass);
+		incrementItem(item, amount, "special", colorClass);
 		setStatus(`Blessing: ${amount} x ${item}`);
 		return;
 	}
