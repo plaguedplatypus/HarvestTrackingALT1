@@ -32,7 +32,8 @@ function getTimeStamp() {
 function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
-
+const appCog = document.querySelector(".app-cog") as HTMLElement;
+const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
 const status = document.querySelector(".status") as HTMLElement;
@@ -490,6 +491,10 @@ function escapeHtml(value: string) {
 function escapeAttr(value: string) {
 	return escapeHtml(value);
 }
+
+appCog.addEventListener("click", function () {
+	appSettingsPanel.classList.toggle("open");
+});
 
 clearButton.addEventListener("click", clearAll);
 exportButton.addEventListener("click", exportData);

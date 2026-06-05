@@ -31,6 +31,47 @@ body {
     align-items: center;
 }
 
+.app-settings {
+    position: fixed;
+    right: 6px;
+    bottom: 6px;
+    z-index: 10;
+}
+
+.app-cog {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 15px;
+}
+
+.app-settings-panel {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 32px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 6px;
+    min-width: 150px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.app-settings-panel.open {
+    display: flex;
+}
+
+.app-settings-panel select,
+.app-settings-panel button,
+.app-settings-panel .import-label {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
 select,
 button,
 .import-label {
