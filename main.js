@@ -735,50 +735,6 @@ module.exports = __webpack_require__.p + "icon.png";
 
 /***/ },
 
-/***/ "./icons/archaeology.png"
-/*!*******************************!*\
-  !*** ./icons/archaeology.png ***!
-  \*******************************/
-(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-module.exports = __webpack_require__.p + "archaeology.png";
-
-/***/ },
-
-/***/ "./icons/fishing.png"
-/*!***************************!*\
-  !*** ./icons/fishing.png ***!
-  \***************************/
-(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-module.exports = __webpack_require__.p + "fishing.png";
-
-/***/ },
-
-/***/ "./icons/mining.png"
-/*!**************************!*\
-  !*** ./icons/mining.png ***!
-  \**************************/
-(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-module.exports = __webpack_require__.p + "mining.png";
-
-/***/ },
-
-/***/ "./icons/woodcutting.png"
-/*!*******************************!*\
-  !*** ./icons/woodcutting.png ***!
-  \*******************************/
-(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-module.exports = __webpack_require__.p + "woodcutting.png";
-
-/***/ },
-
 /***/ "./index.html"
 /*!********************!*\
   !*** ./index.html ***!
@@ -5081,10 +5037,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
-/* harmony import */ var _icons_mining_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icons/mining.png */ "./icons/mining.png");
-/* harmony import */ var _icons_woodcutting_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./icons/woodcutting.png */ "./icons/woodcutting.png");
-/* harmony import */ var _icons_fishing_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./icons/fishing.png */ "./icons/fishing.png");
-/* harmony import */ var _icons_archaeology_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./icons/archaeology.png */ "./icons/archaeology.png");
+Object(function webpackMissingModule() { var e = new Error("Cannot find module './mining.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+Object(function webpackMissingModule() { var e = new Error("Cannot find module './woodcutting.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+Object(function webpackMissingModule() { var e = new Error("Cannot find module './fishing.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+Object(function webpackMissingModule() { var e = new Error("Cannot find module './archaeology.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 
 
 
