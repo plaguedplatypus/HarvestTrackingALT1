@@ -5252,12 +5252,12 @@ function processHarvestLine(chatLine) {
     var skillPatterns = [
         { pattern: /You manage to mine some (.+?)\./i, skill: "mining" },
         { pattern: /You mine (?:some |an? )?(.+?)\./i, skill: "mining" },
-        { pattern: /You get some (.+? logs)\./i, skill: "woodcutting" },
+        { pattern: /You get some (bamboo |logs|.+? logs)\./i, skill: "woodcutting" },
         { pattern: /You cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
         { pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
         { pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
-        { pattern: /You catch some (.+?)\./i, skill: "fishing" },
+        //{ pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
+        //{ pattern: /You catch some (.+?)\./i, skill: "fishing" },
         { pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
     ];
     for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
