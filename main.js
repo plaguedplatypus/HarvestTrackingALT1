@@ -5105,6 +5105,32 @@ function processChat(opts) {
 }
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
+    /*
+        Exact quantity metal-bank messages.
+        Examples:
+        You transport to your metal bank: 2 x Zephyrium ore.
+        Your Boon of Crondis has doubled the following item and sent it to your metal bank: 1 x Zephyrium ore.
+    */
+    var metalBankMatch = cleanLine.match(/You transport to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i);
+    if (metalBankMatch) {
+        var amount = parseInt(metalBankMatch[1], 10);
+        var item = normalizeItemName(metalBankMatch[2]);
+        if (!item || isNaN(amount))
+            return;
+        incrementItem(item, amount);
+        status.innerText = "Tracked: ".concat(amount, " x ").concat(item);
+        return;
+    }
+    var boonMetalBankMatch = cleanLine.match(/sent it to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i);
+    if (boonMetalBankMatch) {
+        var amount = parseInt(boonMetalBankMatch[1], 10);
+        var item = normalizeItemName(boonMetalBankMatch[2]);
+        if (!item || isNaN(amount))
+            return;
+        incrementItem(item, amount);
+        status.innerText = "Tracked: ".concat(amount, " x ").concat(item);
+        return;
+    }
     var patterns = [
         /You get some (.+?)\./i,
         /You manage to mine some (.+?)\./i,
@@ -5136,10 +5162,11 @@ function normalizeItemName(name) {
         .replace(/^an?\s+/, "")
         .trim();
 }
-function incrementItem(item) {
+function incrementItem(item, amount) {
+    if (amount === void 0) { amount = 1; }
     var data = getSaveData();
     ensureItem(data, item);
-    data.items[item].count += 1;
+    data.items[item].count += amount;
     saveData(data);
     render(item);
 }
