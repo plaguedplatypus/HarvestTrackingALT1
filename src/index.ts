@@ -115,8 +115,11 @@ function readChatbox() {
 		if (!chatLine) continue;
 		if (isInHistory(chatLine)) continue;
 
-		updateChatHistory(chatLine);
-		processHarvestLine(chatLine);
+		const wasTracked = processHarvestLine(chatLine);
+
+		if (wasTracked) {
+			updateChatHistory(chatLine);
+		}
 	}
 }
 
@@ -147,7 +150,7 @@ function processChat(opts: any[]) {
 		.map((line) => line.trim());
 }
 
-function processHarvestLine(chatLine: string) {
+function processHarvestLine(chatLine: string): boolean {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 
 	const metalBankMatch = cleanLine.match(
@@ -289,7 +292,7 @@ function render(highlightItem?: string) {
 
 			goalHtml = `
 				<span class="goal-text">
-					Goal: ${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
+					${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
 				</span>
 
 				<div class="progress-bar">
