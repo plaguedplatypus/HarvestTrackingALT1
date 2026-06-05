@@ -41,6 +41,10 @@ body {
     margin: 0;
     padding: 6px;
     box-sizing: border-box;
+    background: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
 }
 
 .app {
@@ -58,6 +62,33 @@ body {
     padding-right: 22px;
 }
 
+.title {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.skill-tabs {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 4px;
+    flex: 0 0 auto;
+}
+
+.skill-tab {
+    background: #2c2c2c;
+    border: 1px solid #444;
+    color: white;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 12px;
+    min-width: 24px;
+}
+
+.skill-tab.active {
+    background: #3a3a3a;
+    border-color: #9a9a9a;
+}
+
 .tracker {
     flex: 1 1 auto;
     min-height: 0;
@@ -66,88 +97,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
-}
-
-.title {
-    font-size: 15px;
-    font-weight: bold;
-}
-
-.controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
-}
-
-.app-settings {
-    position: absolute;
-    right: 4px;
-    bottom: 0;
-    transform: translateY(2px);
-}
-
-.app-cog {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 0 2px;
-    font-size: 14px;
-}
-
-.app-settings-panel {
-    display: none;
-    position: absolute;
-    right: 0;
-    bottom: 12px;
-    background: #2c2c2c;
-    border: 1px solid #555;
-    border-radius: 6px;
-    padding: 6px;
-    min-width: 150px;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.app-settings-panel.open {
-    display: flex;
-}
-
-.app-settings-panel select,
-.app-settings-panel button,
-.app-settings-panel .import-label {
-    width: 100%;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-select,
-button,
-.import-label {
-    font-size: 11px;
-    padding: 3px 6px;
-}
-
-button,
-.import-label {
-    cursor: pointer;
-}
-
-.import {
-    display: none;
-}
-
-.tracker {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    min-height: 0;
 }
 
 .tracker::-webkit-scrollbar {
@@ -209,13 +158,17 @@ button,
     background: #4caf50;
 }
 
-.cog-btn {
+.cog-btn,
+.app-cog {
     background: transparent;
     border: none;
     color: white;
     cursor: pointer;
     padding: 0 2px;
     font-size: 14px;
+}
+
+.cog-btn {
     flex-shrink: 0;
 }
 
@@ -236,6 +189,56 @@ button,
     width: 72px;
     font-size: 11px;
     padding: 3px;
+}
+
+.app-settings {
+    position: absolute;
+    right: 4px;
+    bottom: 0;
+    transform: translateY(2px);
+    z-index: 50;
+}
+
+.app-settings-panel {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 12px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 6px;
+    min-width: 150px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.app-settings-panel.open {
+    display: flex;
+}
+
+.app-settings-panel select,
+.app-settings-panel button,
+.app-settings-panel .import-label {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+select,
+button,
+.import-label {
+    font-size: 11px;
+    padding: 3px 6px;
+}
+
+button,
+.import-label {
+    cursor: pointer;
+}
+
+.import {
+    display: none;
 }
 
 .footer {
@@ -5036,6 +5039,7 @@ function getTimeStamp() {
 function setStatus(message) {
     status.innerText = "".concat(message, " @ ").concat(getTimeStamp());
 }
+var activeSkillTab = "all";
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
@@ -5044,6 +5048,15 @@ var status = document.querySelector(".status");
 var clearButton = document.querySelector(".clear");
 var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
+var savedData = getSaveData();
+activeSkillTab = savedData.activeTab || "all";
+document.querySelectorAll(".skill-tab").forEach(function (btn) {
+    btn.classList.remove("active");
+});
+var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(activeSkillTab, "\"]"));
+if (savedTabButton) {
+    savedTabButton.classList.add("active");
+}
 reader.readargs = {
     colors: [
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
@@ -5145,13 +5158,24 @@ function processChat(opts) {
 }
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
-    var transportMatch = cleanLine.match(/You transport to your .*?:\s*(\d+)\s*x\s*(.+?)\./i);
+    var transportMatch = cleanLine.match(/You transport to your (.*?):\s*(\d+)\s*x\s*(.+?)\./i);
     if (transportMatch) {
-        var amount = parseInt(transportMatch[1], 10);
-        var item = normalizeItemName(transportMatch[2]);
+        var destination = transportMatch[1].toLowerCase();
+        var amount = parseInt(transportMatch[2], 10);
+        var item = normalizeItemName(transportMatch[3]);
         if (!item || isNaN(amount))
             return;
-        incrementItem(item, amount);
+        var skill = "other";
+        if (destination.includes("metal bank")) {
+            skill = "mining";
+        }
+        else if (destination.includes("material storage")) {
+            skill = "archaeology";
+        }
+        else if (destination.includes("bank")) {
+            skill = getSkillForItem(item);
+        }
+        incrementItem(item, amount, skill);
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
@@ -5161,32 +5185,42 @@ function processHarvestLine(chatLine) {
         var item = normalizeItemName(boonMetalBankMatch[2]);
         if (!item || isNaN(amount))
             return;
-        incrementItem(item, amount);
+        incrementItem(item, amount, "mining");
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
-    var patterns = [
-        /You get some (.+?)\./i,
-        /You manage to mine some (.+?)\./i,
-        /You mine (?:some |an? )?(.+?)\./i,
-        /You cut (?:some |an? )?(.+?)\./i,
-        /You successfully cut (?:some |an? )?(.+?)\./i,
-        /You chop (?:some |an? )?(.+?)\./i,
-        /You catch a[n]? (.+?)\./i,
-        /You catch some (.+?)\./i,
+    var skillPatterns = [
+        { pattern: /You manage to mine some (.+?)\./i, skill: "mining" },
+        { pattern: /You mine (?:some |an? )?(.+?)\./i, skill: "mining" },
+        { pattern: /You get some (.+? logs)\./i, skill: "woodcutting" },
+        { pattern: /You cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+        { pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+        { pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+        { pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
+        { pattern: /You catch some (.+?)\./i, skill: "fishing" },
+        { pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
     ];
-    for (var _i = 0, patterns_1 = patterns; _i < patterns_1.length; _i++) {
-        var pattern = patterns_1[_i];
-        var match = cleanLine.match(pattern);
+    for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
+        var entry = skillPatterns_1[_i];
+        var match = cleanLine.match(entry.pattern);
         if (!match)
             continue;
         var item = normalizeItemName(match[1]);
         if (!item)
             return;
-        incrementItem(item);
+        incrementItem(item, 1, entry.skill);
         setStatus("Tracked: ".concat(item));
         return;
     }
+}
+function getSkillForItem(item) {
+    if (item.includes("ore"))
+        return "mining";
+    if (item.includes("logs"))
+        return "woodcutting";
+    if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish"))
+        return "fishing";
+    return "other";
 }
 function normalizeItemName(item) {
     return item
@@ -5206,6 +5240,7 @@ function getSaveData() {
         var data = JSON.parse(raw);
         return {
             chat: data.chat,
+            activeTab: data.activeTab || "all",
             items: data.items || {},
             history: data.history || [],
         };
@@ -5229,11 +5264,13 @@ function ensureItem(data, item) {
         };
     }
 }
-function incrementItem(item, amount) {
+function incrementItem(item, amount, skill) {
     if (amount === void 0) { amount = 1; }
+    if (skill === void 0) { skill = "other"; }
     var data = getSaveData();
     ensureItem(data, item);
     data.items[item].count += amount;
+    data.items[item].skill = skill;
     saveData(data);
     render(item);
 }
@@ -5249,7 +5286,13 @@ function updateChatHistory(chatLine) {
 }
 function render(highlightItem) {
     var data = getSaveData();
-    var items = Object.keys(data.items).sort();
+    var items = Object.keys(data.items)
+        .filter(function (item) {
+        if (activeSkillTab === "all")
+            return true;
+        return (data.items[item].skill || "other") === activeSkillTab;
+    })
+        .sort();
     tracker.innerHTML = "";
     if (items.length === 0) {
         tracker.innerHTML = "<div class=\"empty\">No tracked items yet.</div>";
@@ -5299,6 +5342,20 @@ function bindRowEvents() {
         });
     });
 }
+document.querySelectorAll(".skill-tab").forEach(function (tab) {
+    tab.addEventListener("click", function (e) {
+        var target = e.currentTarget;
+        activeSkillTab = target.dataset.skill || "all";
+        var data = getSaveData();
+        data.activeTab = activeSkillTab;
+        saveData(data);
+        document.querySelectorAll(".skill-tab").forEach(function (btn) {
+            btn.classList.remove("active");
+        });
+        target.classList.add("active");
+        render();
+    });
+});
 function toggleSettings(item) {
     var data = getSaveData();
     if (!data.items[item])
@@ -5370,6 +5427,7 @@ function importData(file) {
             var imported = JSON.parse(reader.result);
             var data = {
                 chat: imported.chat,
+                activeTab: imported.activeTab || "all",
                 items: imported.items || {},
                 history: imported.history || [],
             };

@@ -6,16 +6,20 @@ import "./appconfig.json";
 import "./css/style.css";
 import "./icon.png";
 
+type SkillType = "all" | "mining" | "woodcutting" | "fishing" | "archaeology" | "other";
+
 type TrackedItem = {
 	count: number;
 	goal: number | null;
 	settingsOpen: boolean;
+	skill?: SkillType;
 };
 
 type SaveData = {
-	chat?: string;
-	items: Record<string, TrackedItem>;
-	history: string[];
+    chat?: string;
+    activeTab?: SkillType;
+    items: Record<string, TrackedItem>;
+    history: string[];
 };
 
 const appName = "GatheringTracker";
@@ -32,6 +36,8 @@ function getTimeStamp() {
 function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
+let activeSkillTab: SkillType = "all";
+
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
@@ -40,6 +46,22 @@ const status = document.querySelector(".status") as HTMLElement;
 const clearButton = document.querySelector(".clear") as HTMLElement;
 const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
+
+const savedData = getSaveData();
+activeSkillTab = savedData.activeTab || "all";
+
+document.querySelectorAll(".skill-tab").forEach((btn) => {
+	btn.classList.remove("active");
+});
+
+const savedTabButton = document.querySelector(
+	`.skill-tab[data-skill="${activeSkillTab}"]`
+);
+
+if (savedTabButton) {
+	savedTabButton.classList.add("active");
+}
+
 
 reader.readargs = {
 	colors: [
@@ -162,15 +184,27 @@ function processHarvestLine(chatLine: string) {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 
 	const transportMatch = cleanLine.match(
-	/You transport to your .*?:\s*(\d+)\s*x\s*(.+?)\./i
-);
+		/You transport to your (.*?):\s*(\d+)\s*x\s*(.+?)\./i
+	);
 
 	if (transportMatch) {
-	const amount = parseInt(transportMatch[1], 10);
-	const item = normalizeItemName(transportMatch[2]);
+		const destination = transportMatch[1].toLowerCase();
+		const amount = parseInt(transportMatch[2], 10);
+		const item = normalizeItemName(transportMatch[3]);
+
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount);
+		let skill: SkillType = "other";
+
+		if (destination.includes("metal bank")) {
+			skill = "mining";
+		} else if (destination.includes("material storage")) {
+			skill = "archaeology";
+		} else if (destination.includes("bank")) {
+			skill = getSkillForItem(item);
+		}
+
+		incrementItem(item, amount, skill);
 		setStatus(`Tracked: ${amount} x ${item}`);
 		return;
 	}
@@ -182,35 +216,51 @@ function processHarvestLine(chatLine: string) {
 	if (boonMetalBankMatch) {
 		const amount = parseInt(boonMetalBankMatch[1], 10);
 		const item = normalizeItemName(boonMetalBankMatch[2]);
+
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount);
+		incrementItem(item, amount, "mining");
 		setStatus(`Tracked: ${amount} x ${item}`);
 		return;
 	}
 
-	const patterns = [
-		/You get some (.+?)\./i,
-		/You manage to mine some (.+?)\./i,
-		/You mine (?:some |an? )?(.+?)\./i,
-		/You cut (?:some |an? )?(.+?)\./i,
-		/You successfully cut (?:some |an? )?(.+?)\./i,
-		/You chop (?:some |an? )?(.+?)\./i,
-		/You catch a[n]? (.+?)\./i,
-		/You catch some (.+?)\./i,
+	const skillPatterns: Array<{
+		pattern: RegExp;
+		skill: SkillType;
+	}> = [
+		{ pattern: /You manage to mine some (.+?)\./i, skill: "mining" },
+		{ pattern: /You mine (?:some |an? )?(.+?)\./i, skill: "mining" },
+
+		{ pattern: /You get some (.+? logs)\./i, skill: "woodcutting" },
+		{ pattern: /You cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+		{ pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+		{ pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+
+		{ pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
+		{ pattern: /You catch some (.+?)\./i, skill: "fishing" },
+
+		{ pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
 	];
 
-	for (const pattern of patterns) {
-		const match = cleanLine.match(pattern);
+	for (const entry of skillPatterns) {
+		const match = cleanLine.match(entry.pattern);
 		if (!match) continue;
 
 		const item = normalizeItemName(match[1]);
 		if (!item) return;
 
-		incrementItem(item);
+		incrementItem(item, 1, entry.skill);
 		setStatus(`Tracked: ${item}`);
 		return;
 	}
+}
+
+function getSkillForItem(item: string): SkillType {
+	if (item.includes("ore")) return "mining";
+	if (item.includes("logs")) return "woodcutting";
+	if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish")) return "fishing";
+
+	return "other";
 }
 
 function normalizeItemName(item: string) {
@@ -234,6 +284,7 @@ function getSaveData(): SaveData {
 		const data = JSON.parse(raw);
 		return {
 			chat: data.chat,
+			activeTab: data.activeTab || "all",
 			items: data.items || {},
 			history: data.history || [],
 		};
@@ -259,10 +310,11 @@ function ensureItem(data: SaveData, item: string) {
 	}
 }
 
-function incrementItem(item: string, amount: number = 1) {
+function incrementItem(item: string, amount: number = 1, skill: SkillType = "other") {
 	const data = getSaveData();
 	ensureItem(data, item);
 	data.items[item].count += amount;
+	data.items[item].skill = skill;
 	saveData(data);
 	render(item);
 }
@@ -283,7 +335,12 @@ function updateChatHistory(chatLine: string) {
 
 function render(highlightItem?: string) {
 	const data = getSaveData();
-	const items = Object.keys(data.items).sort();
+	const items = Object.keys(data.items)
+	.filter((item) => {
+		if (activeSkillTab === "all") return true;
+		return (data.items[item].skill || "other") === activeSkillTab;
+	})
+	.sort();
 
 	tracker.innerHTML = "";
 
@@ -378,6 +435,25 @@ function bindRowEvents() {
 	});
 }
 
+document.querySelectorAll(".skill-tab").forEach((tab) => {
+	tab.addEventListener("click", (e: Event) => {
+		const target = e.currentTarget as HTMLElement;
+
+		activeSkillTab = (target.dataset.skill as SkillType) || "all";
+
+		const data = getSaveData();
+		data.activeTab = activeSkillTab;
+		saveData(data);
+
+		document.querySelectorAll(".skill-tab").forEach((btn) => {
+			btn.classList.remove("active");
+		});
+
+		target.classList.add("active");
+		render();
+	});
+});
+
 function toggleSettings(item: string) {
 	const data = getSaveData();
 	if (!data.items[item]) return;
@@ -458,6 +534,7 @@ function importData(file: File) {
 			const imported = JSON.parse(reader.result as string);
 			const data: SaveData = {
 				chat: imported.chat,
+				activeTab: imported.activeTab || "all",
 				items: imported.items || {},
 				history: imported.history || [],
 			};

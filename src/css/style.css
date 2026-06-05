@@ -8,6 +8,10 @@ body {
     margin: 0;
     padding: 6px;
     box-sizing: border-box;
+    background: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
 }
 
 .app {
@@ -25,6 +29,33 @@ body {
     padding-right: 22px;
 }
 
+.title {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.skill-tabs {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 4px;
+    flex: 0 0 auto;
+}
+
+.skill-tab {
+    background: #2c2c2c;
+    border: 1px solid #444;
+    color: white;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 12px;
+    min-width: 24px;
+}
+
+.skill-tab.active {
+    background: #3a3a3a;
+    border-color: #9a9a9a;
+}
+
 .tracker {
     flex: 1 1 auto;
     min-height: 0;
@@ -33,88 +64,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
-}
-
-.title {
-    font-size: 15px;
-    font-weight: bold;
-}
-
-.controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
-}
-
-.app-settings {
-    position: absolute;
-    right: 4px;
-    bottom: 0;
-    transform: translateY(2px);
-}
-
-.app-cog {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 0 2px;
-    font-size: 14px;
-}
-
-.app-settings-panel {
-    display: none;
-    position: absolute;
-    right: 0;
-    bottom: 12px;
-    background: #2c2c2c;
-    border: 1px solid #555;
-    border-radius: 6px;
-    padding: 6px;
-    min-width: 150px;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.app-settings-panel.open {
-    display: flex;
-}
-
-.app-settings-panel select,
-.app-settings-panel button,
-.app-settings-panel .import-label {
-    width: 100%;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-select,
-button,
-.import-label {
-    font-size: 11px;
-    padding: 3px 6px;
-}
-
-button,
-.import-label {
-    cursor: pointer;
-}
-
-.import {
-    display: none;
-}
-
-.tracker {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    min-height: 0;
 }
 
 .tracker::-webkit-scrollbar {
@@ -176,13 +125,17 @@ button,
     background: #4caf50;
 }
 
-.cog-btn {
+.cog-btn,
+.app-cog {
     background: transparent;
     border: none;
     color: white;
     cursor: pointer;
     padding: 0 2px;
     font-size: 14px;
+}
+
+.cog-btn {
     flex-shrink: 0;
 }
 
@@ -203,6 +156,56 @@ button,
     width: 72px;
     font-size: 11px;
     padding: 3px;
+}
+
+.app-settings {
+    position: absolute;
+    right: 4px;
+    bottom: 0;
+    transform: translateY(2px);
+    z-index: 50;
+}
+
+.app-settings-panel {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 12px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 6px;
+    min-width: 150px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.app-settings-panel.open {
+    display: flex;
+}
+
+.app-settings-panel select,
+.app-settings-panel button,
+.app-settings-panel .import-label {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+select,
+button,
+.import-label {
+    font-size: 11px;
+    padding: 3px 6px;
+}
+
+button,
+.import-label {
+    cursor: pointer;
+}
+
+.import {
+    display: none;
 }
 
 .footer {
