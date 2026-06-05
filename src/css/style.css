@@ -1,188 +1,129 @@
-html, body {
-	margin: 0;
-	padding: 0;
-	background: #1e1e1e;
-	color: #f0f0f0;
-	font-family: Arial, sans-serif;
-	font-size: 12px;
-	overflow: hidden;
+body {
+    margin: 0;
+    padding: 6px;
+    background: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
 }
 
-.app-shell {
-	box-sizing: border-box;
-	height: 100vh;
-	padding: 5px;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+.app {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.topbar, .footer {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	min-height: 22px;
+.topbar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .title {
-	font-weight: bold;
-	font-size: 14px;
-	flex: 1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+select,
+button,
+.import-label {
+    font-size: 11px;
+    padding: 3px 6px;
+}
+
+button,
+.import-label {
+    cursor: pointer;
+}
+
+.import {
+    display: none;
 }
 
 .tracker {
-	flex: 1;
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column;
-	gap: 3px;
-	padding-right: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .item-row {
-	background: rgba(44, 44, 44, 0.96);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 4px;
-	padding: 3px 5px;
-	display: flex;
-	align-items: center;
-	gap: 5px;
-	flex-wrap: wrap;
-	line-height: 1.2;
-	min-height: 20px;
+    background: #2c2c2c;
+    border-radius: 5px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    line-height: 1.25;
 }
 
-.item-row.new {
-	animation: flash 550ms ease-out;
-}
-
-@keyframes flash {
-	0% { background: rgba(55, 95, 55, 1); }
-	100% { background: rgba(44, 44, 44, 0.96); }
-}
-
-.item-line {
-	flex: 1 1 auto;
-	min-width: 95px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.item-name {
-	font-weight: bold;
-}
-
-.item-count {
-	font-variant-numeric: tabular-nums;
+.item-text {
+    flex: 1;
+    min-width: 95px;
+    word-break: break-word;
 }
 
 .goal-text {
-	color: #cfcfcf;
-	white-space: nowrap;
-	font-variant-numeric: tabular-nums;
+    color: #d0d0d0;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
 .progress-bar {
-	width: 66px;
-	height: 7px;
-	background: #444;
-	border-radius: 3px;
-	overflow: hidden;
-	flex: 0 0 auto;
+    width: 70px;
+    height: 8px;
+    background: #444;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .progress-fill {
-	height: 100%;
-	background: #4caf50;
+    height: 100%;
+    background: #4caf50;
 }
 
 .cog-btn {
-	background: transparent;
-	border: none;
-	color: #f0f0f0;
-	cursor: pointer;
-	font-size: 13px;
-	line-height: 1;
-	padding: 0 2px;
-	flex: 0 0 auto;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 14px;
 }
 
 .settings-panel {
-	display: none;
-	width: 100%;
-	gap: 4px;
-	align-items: center;
-	flex-wrap: wrap;
-	padding-top: 2px;
-	border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: none;
+    width: 100%;
+    gap: 4px;
+    margin-top: 3px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .settings-panel.open {
-	display: flex;
+    display: flex;
 }
 
-.settings-panel label {
-	display: flex;
-	align-items: center;
-	gap: 3px;
-}
-
-.goal-input {
-	width: 75px;
-	font-size: 12px;
-	padding: 1px 3px;
-}
-
-.nisbutton {
-	font-size: 11px !important;
-	padding: 2px 6px !important;
-	min-height: unset !important;
+.settings-panel input {
+    width: 72px;
+    font-size: 11px;
+    padding: 3px;
 }
 
 .footer {
-	color: #aaa;
-	font-size: 11px;
-}
-
-.status {
-	flex: 1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    margin-top: 3px;
+    color: #aaaaaa;
+    font-size: 11px;
 }
 
 .empty {
-	color: #aaa;
-	padding: 6px;
-}
-
-.setting-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 10px;
-	margin-bottom: 8px;
-}
-
-.import-label input {
-	display: none;
-}
-
-.help-text {
-	font-size: 12px;
-	color: #ccc;
-}
-
-.danger-zone {
-	justify-content: flex-start;
-}
-
-@media (max-width: 330px) {
-	.title { display: none; }
-	.progress-bar { width: 45px; }
-	.item-line { min-width: 75px; }
+    color: #aaaaaa;
 }

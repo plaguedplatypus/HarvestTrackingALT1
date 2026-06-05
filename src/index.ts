@@ -3,8 +3,8 @@ import ChatboxReader from "alt1/chatbox";
 
 import "./index.html";
 import "./appconfig.json";
-import "./icon.png";
 import "./css/style.css";
+import "./icon.png";
 
 type TrackedItem = {
 	count: number;
@@ -15,6 +15,7 @@ type TrackedItem = {
 type SaveData = {
 	chat?: string;
 	items: Record<string, TrackedItem>;
+	history: string[];
 };
 
 const appName = "HarvestTracker";
@@ -28,14 +29,13 @@ const status = document.querySelector(".status") as HTMLElement;
 const clearButton = document.querySelector(".clear") as HTMLElement;
 const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
-const testButton = document.querySelector(".test") as HTMLElement;
 
 reader.readargs = {
 	colors: [
-		a1lib.mixColor(255, 255, 255), // most normal chat text
-		a1lib.mixColor(255, 255, 0),   // some game/info messages
-		a1lib.mixColor(0, 255, 255),   // alternate notification text
-		a1lib.mixColor(127, 169, 255), // common RS3 chat blue-ish text
+		a1lib.mixColor(255, 255, 255),
+		a1lib.mixColor(255, 255, 0),
+		a1lib.mixColor(0, 255, 255),
+		a1lib.mixColor(127, 169, 255),
 	],
 };
 
@@ -70,23 +70,27 @@ window.setTimeout(function () {
 
 		setInterval(function () {
 			readChatbox();
-		}, 700);
+		}, 600);
 	}, 1000);
 }, 50);
 
 function populateChatSelector() {
 	chatSelector.innerHTML = `<option value="">Select Chat</option>`;
+
 	reader.pos.boxes.forEach((_box, i) => {
 		chatSelector.insertAdjacentHTML("beforeend", `<option value="${i}">Chat ${i}</option>`);
 	});
 
 	chatSelector.addEventListener("change", function () {
 		if (this.value === "") return;
+
 		reader.pos.mainbox = reader.pos.boxes[Number(this.value)];
 		showSelectedChat(reader.pos);
+
 		const data = getSaveData();
 		data.chat = this.value;
 		saveData(data);
+
 		status.innerText = `Using Chat ${this.value}.`;
 	});
 }
@@ -94,15 +98,17 @@ function populateChatSelector() {
 function selectSavedChat() {
 	const data = getSaveData();
 	const savedChat = data.chat || "0";
+
 	reader.pos.mainbox = reader.pos.boxes[Number(savedChat)] || reader.pos.boxes[0];
 	chatSelector.value = savedChat;
+
 	data.chat = savedChat;
 	saveData(data);
 }
 
 function readChatbox() {
 	const opts = reader.read() || [];
-	const chatArr = processChat(opts) || [];
+	const chatArr = processChat(opts);
 
 	for (const line of chatArr) {
 		const chatLine = line.trim();
@@ -136,7 +142,6 @@ function processChat(opts: any[]) {
 	if (chatStr.trim() === "") return [];
 
 	return chatStr
-		.replace(timestampRegex, "")
 		.trim()
 		.split("\n")
 		.map((line) => line.trim());
@@ -144,13 +149,6 @@ function processChat(opts: any[]) {
 
 function processHarvestLine(chatLine: string) {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
-
-	/*
-		Exact quantity metal-bank messages.
-		Examples:
-		You transport to your metal bank: 2 x Zephyrium ore.
-		Your Boon of Crondis has doubled the following item and sent it to your metal bank: 1 x Zephyrium ore.
-	*/
 
 	const metalBankMatch = cleanLine.match(
 		/You transport to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i
@@ -204,21 +202,40 @@ function processHarvestLine(chatLine: string) {
 	}
 }
 
-function normalizeItemName(name: string) {
-	return name
+function normalizeItemName(item: string) {
+	return item
 		.toLowerCase()
 		.replace(/\.$/, "")
-		.replace(/^some\s+/, "")
-		.replace(/^an?\s+/, "")
 		.trim();
 }
 
-function incrementItem(item: string, amount: number = 1) {
-	const data = getSaveData();
-	ensureItem(data, item);
-	data.items[item].count += amount;
-	saveData(data);
-	render(item);
+function getSaveData(): SaveData {
+	const raw = localStorage.getItem(appName);
+
+	if (!raw) {
+		return {
+			items: {},
+			history: [],
+		};
+	}
+
+	try {
+		const data = JSON.parse(raw);
+		return {
+			chat: data.chat,
+			items: data.items || {},
+			history: data.history || [],
+		};
+	} catch {
+		return {
+			items: {},
+			history: [],
+		};
+	}
+}
+
+function saveData(data: SaveData) {
+	localStorage.setItem(appName, JSON.stringify(data));
 }
 
 function ensureItem(data: SaveData, item: string) {
@@ -231,79 +248,139 @@ function ensureItem(data: SaveData, item: string) {
 	}
 }
 
+function incrementItem(item: string, amount: number = 1) {
+	const data = getSaveData();
+	ensureItem(data, item);
+	data.items[item].count += amount;
+	saveData(data);
+	render(item);
+}
+
+function isInHistory(chatLine: string) {
+	const data = getSaveData();
+	return data.history.includes(chatLine);
+}
+
+function updateChatHistory(chatLine: string) {
+	const data = getSaveData();
+	data.history.push(chatLine);
+
+	if (data.history.length > 120) {
+		data.history = data.history.slice(data.history.length - 120);
+	}
+
+	saveData(data);
+}
+
 function render(highlightItem?: string) {
 	const data = getSaveData();
 	const items = Object.keys(data.items).sort();
+
 	tracker.innerHTML = "";
 
 	if (items.length === 0) {
-		tracker.innerHTML = `<div class="empty">No tracked items yet. Start mining or woodcutting with chat visible.</div>`;
+		tracker.innerHTML = `<div class="empty">No tracked items yet.</div>`;
 		return;
 	}
 
 	for (const item of items) {
-		const row = buildItemRow(item, data.items[item], item === highlightItem);
-		tracker.appendChild(row);
-	}
-}
+		const itemData = data.items[item];
+		const row = document.createElement("div");
+		row.className = "item-row";
 
-function buildItemRow(item: string, itemData: TrackedItem, highlight: boolean) {
-	const row = document.createElement("div");
-	row.className = `item-row${highlight ? " new" : ""}`;
+		let goalHtml = "";
 
-	let goalHtml = "";
-	if (itemData.goal) {
-		const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-		goalHtml = `
-			<span class="goal-text">Goal: ${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)</span>
-			<div class="progress-bar" title="${progress.toFixed(1)}%">
-				<div class="progress-fill" style="width:${progress}%"></div>
+		if (itemData.goal) {
+			const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
+
+			goalHtml = `
+				<span class="goal-text">
+					Goal: ${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
+				</span>
+
+				<div class="progress-bar">
+					<div class="progress-fill" style="width:${progress}%"></div>
+				</div>
+			`;
+		}
+
+		row.innerHTML = `
+			<div class="item-text">
+				<strong>${escapeHtml(item)}</strong>: ${itemData.count}
+			</div>
+
+			${goalHtml}
+
+			<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
+
+			<div class="settings-panel ${itemData.settingsOpen ? "open" : ""}">
+				<input type="number"
+					   id="goal-${escapeAttr(item)}"
+					   placeholder="Goal"
+					   value="${itemData.goal || ""}">
+
+				<button class="save-goal" data-item="${escapeAttr(item)}">Save</button>
+				<button class="reset-item" data-item="${escapeAttr(item)}">Reset</button>
+				<button class="delete-item" data-item="${escapeAttr(item)}">Delete</button>
 			</div>
 		`;
+
+		if (highlightItem === item) {
+			row.classList.add("highlight");
+		}
+
+		tracker.appendChild(row);
 	}
 
-	row.innerHTML = `
-		<div class="item-line">
-			<span class="item-name">${escapeHtml(item)}</span>: <span class="item-count">${itemData.count}</span>
-		</div>
-		${goalHtml}
-		<button class="cog-btn" data-item="${escapeHtml(item)}" title="Edit">⚙</button>
-		<div class="settings-panel ${itemData.settingsOpen ? "open" : ""}">
-			<label>Goal <input type="number" class="goal-input" data-item="${escapeHtml(item)}" value="${itemData.goal || ""}" placeholder="optional" /></label>
-			<button class="save-goal nisbutton" data-item="${escapeHtml(item)}">Save</button>
-			<button class="reset-item nisbutton" data-item="${escapeHtml(item)}">Reset</button>
-			<button class="delete-item nisbutton" data-item="${escapeHtml(item)}">Delete</button>
-		</div>
-	`;
-
-	return row;
+	bindRowEvents();
 }
 
-tracker.addEventListener("click", (event: Event) => {
-	const target = event.target as HTMLElement;
-	const item = target.dataset.item;
-	if (!item) return;
+function bindRowEvents() {
+	document.querySelectorAll(".cog-btn").forEach((btn) => {
+		btn.addEventListener("click", (e: Event) => {
+			const target = e.currentTarget as HTMLElement;
+			toggleSettings(target.dataset.item || "");
+		});
+	});
 
-	if (target.classList.contains("cog-btn")) toggleSettings(item);
-	if (target.classList.contains("save-goal")) saveGoal(item);
-	if (target.classList.contains("reset-item")) resetItem(item);
-	if (target.classList.contains("delete-item")) deleteItem(item);
-});
+	document.querySelectorAll(".save-goal").forEach((btn) => {
+		btn.addEventListener("click", (e: Event) => {
+			const target = e.currentTarget as HTMLElement;
+			setGoal(target.dataset.item || "");
+		});
+	});
+
+	document.querySelectorAll(".reset-item").forEach((btn) => {
+		btn.addEventListener("click", (e: Event) => {
+			const target = e.currentTarget as HTMLElement;
+			resetItem(target.dataset.item || "");
+		});
+	});
+
+	document.querySelectorAll(".delete-item").forEach((btn) => {
+		btn.addEventListener("click", (e: Event) => {
+			const target = e.currentTarget as HTMLElement;
+			deleteItem(target.dataset.item || "");
+		});
+	});
+}
 
 function toggleSettings(item: string) {
 	const data = getSaveData();
-	ensureItem(data, item);
+	if (!data.items[item]) return;
+
 	data.items[item].settingsOpen = !data.items[item].settingsOpen;
 	saveData(data);
 	render();
 }
 
-function saveGoal(item: string) {
-	const input = document.querySelector(`.goal-input[data-item="${cssEscape(item)}"]`) as HTMLInputElement;
+function setGoal(item: string) {
+	const data = getSaveData();
+	if (!data.items[item]) return;
+
+	const input = document.getElementById(`goal-${item}`) as HTMLInputElement;
 	if (!input) return;
 
-	const data = getSaveData();
-	ensureItem(data, item);
 	const value = input.value.trim();
 
 	if (value === "") {
@@ -324,6 +401,7 @@ function saveGoal(item: string) {
 function resetItem(item: string) {
 	const data = getSaveData();
 	if (!data.items[item]) return;
+
 	data.items[item].count = 0;
 	saveData(data);
 	render();
@@ -336,99 +414,87 @@ function deleteItem(item: string) {
 	render();
 }
 
-function getSaveData(): SaveData {
-	const existing = localStorage.getItem(appName);
-	if (!existing) return { items: {} };
-
-	try {
-		const parsed = JSON.parse(existing);
-		if (!parsed.items) parsed.items = {};
-		return parsed;
-	} catch {
-		return { items: {} };
-	}
-}
-
-function saveData(data: SaveData) {
-	localStorage.setItem(appName, JSON.stringify(data));
-}
-
-function updateChatHistory(chatLine: string) {
-	const key = `${appName}chatHistory`;
-	if (!sessionStorage.getItem(key)) {
-		sessionStorage.setItem(key, `${chatLine}\n`);
-		return;
-	}
-
-	const history = sessionStorage.getItem(key).split("\n");
-	while (history.length > 100) history.splice(0, 1);
-	history.push(chatLine.trim());
-	sessionStorage.setItem(key, history.join("\n"));
-}
-
-function isInHistory(chatLine: string) {
-	const key = `${appName}chatHistory`;
-	if (!sessionStorage.getItem(key)) return false;
-	return sessionStorage.getItem(key).split("\n").some((historyLine) => historyLine.trim() === chatLine);
-}
-
-function showSelectedChat(chat: any) {
-	try {
-		alt1.overLayRect(appColor, chat.mainbox.rect.x, chat.mainbox.rect.y, chat.mainbox.rect.width, chat.mainbox.rect.height, 2000, 5);
-	} catch {}
-}
-
-function escapeHtml(text: string) {
-	return text.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;" }[char]));
-}
-
-function cssEscape(text: string) {
-	return text.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-}
-
-exportButton.addEventListener("click", function () {
+function clearAll() {
 	const data = getSaveData();
-	let str = "Item,Count,Goal\n";
-	for (const item of Object.keys(data.items).sort()) {
-		str += `${item},${data.items[item].count},${data.items[item].goal || ""}\n`;
-	}
-	const blob = new Blob([str], { type: "text/csv;charset=utf-8;" });
-	const link = document.createElement("a");
-	const url = URL.createObjectURL(blob);
-	link.setAttribute("href", url);
-	link.setAttribute("download", "harvest-tracker-export.csv");
-	link.style.visibility = "hidden";
-	document.body.appendChild(link);
-	link.click();
-	document.body.removeChild(link);
-});
+	data.items = {};
+	data.history = [];
+	saveData(data);
+	render();
+	status.innerText = "Tracker cleared.";
+}
 
-importInput.addEventListener("change", function () {
-	const file = importInput.files?.[0];
-	if (!file) return;
+function exportData() {
+	const data = getSaveData();
+	const blob = new Blob([JSON.stringify(data, null, 2)], {
+		type: "application/json",
+	});
+
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = "harvest-tracker-save.json";
+	a.click();
+	URL.revokeObjectURL(url);
+}
+
+function importData(file: File) {
 	const reader = new FileReader();
-	reader.onload = () => {
+
+	reader.onload = function () {
 		try {
-			const imported = JSON.parse(String(reader.result));
-			if (!imported.items) throw new Error("Bad import");
-			saveData(imported);
+			const imported = JSON.parse(reader.result as string);
+			const data: SaveData = {
+				chat: imported.chat,
+				items: imported.items || {},
+				history: imported.history || [],
+			};
+
+			saveData(data);
 			render();
-			status.innerText = "Import complete.";
+			status.innerText = "Save imported.";
 		} catch {
 			status.innerText = "Import failed.";
 		}
 	};
+
 	reader.readAsText(file);
-});
+}
 
-clearButton.addEventListener("click", function () {
-	localStorage.removeItem(appName);
-	sessionStorage.removeItem(`${appName}chatHistory`);
-	location.reload();
-});
+function showSelectedChat(pos) {
+	if (!pos || !pos.mainbox) return;
 
-testButton.addEventListener("click", function () {
-	processHarvestLine("You manage to mine some copper ore.");
+	alt1.overLayRect(
+		appColor,
+		pos.mainbox.rect.x,
+		pos.mainbox.rect.y,
+		pos.mainbox.rect.width,
+		pos.mainbox.rect.height,
+		2000,
+		3
+	);
+}
+
+function escapeHtml(value: string) {
+	return value
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+}
+
+function escapeAttr(value: string) {
+	return escapeHtml(value);
+}
+
+clearButton.addEventListener("click", clearAll);
+exportButton.addEventListener("click", exportData);
+
+importInput.addEventListener("change", function () {
+	if (this.files && this.files[0]) {
+		importData(this.files[0]);
+		this.value = "";
+	}
 });
 
 render();

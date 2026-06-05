@@ -1,42 +1,29 @@
-# HarvestTracker Alt1 App
+# HarvestTracker ALT1
 
-A compact Alt1 Toolkit app forked from ComponentCounter's chatbox-reader structure and repurposed to track harvested items from RuneScape chat.
+A compact Alt1 Toolkit app for RuneScape that tracks harvested resources from the chatbox.
 
-## What it tracks
+## Features
 
-The prototype watches visible RuneScape chat and increments items from messages like:
+- Compact one-line item rows
+- Optional per-item goals
+- Cog-based item settings
+- Persistent local save data
+- Export/import save data
+- Chatbox selector
+- Alt1 permissions included: `pixel,gamestate,overlay`
+- Metal bank quantity tracking
 
-- `You get some maple logs.`
-- `You manage to mine some copper ore.`
-- `You mine some copper ore.`
-- `You cut some logs.`
-- `You catch a raw lobster.`
-
-## UI
-
-Rows stay compact:
-
-```text
-copper ore: 28  Goal: 28/41 (68.3%) [bar] ⚙
-```
-
-If no goal is set, it only shows:
+## Tracked examples
 
 ```text
-copper ore: 28 ⚙
+You transport to your metal bank: 2 x *** ore.
+Your Boon of Crondis has doubled the following item and sent it to your metal bank: 1 x *** ore.
+You get some maple logs.
+You manage to mine some copper ore.
+You catch a raw lobster.
 ```
+Metal-bank lines are counted by quantity.
 
-Click the cog to set/remove a goal, reset that item, or delete that item.
+## Credit
 
-## Notes
-
-This is still a prototype. If OCR misses chat lines, try:
-
-- keeping the RuneScape chatbox fully visible
-- selecting the correct chatbox from Settings
-- using normal interface scaling while testing
-- disabling chat transparency if OCR is inconsistent
-
-## Original base
-
-Built from the structure of ZeroGwafa's ComponentCounter Alt1 app and modified into a generalized harvest tracker.
+Based on the Alt1 app structure of SerenTracker by ZeroGwafa, reworked as a general harvest tracker.

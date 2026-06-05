@@ -1,13 +1,14 @@
 {
   "appName": "HarvestTracker",
-  "description": "Compact RuneScape mining and woodcutting harvest tracker with optional per-item goals.",
+  "description": "Compact RuneScape harvest tracker based on SerenTracker chatbox handling.",
   "appUrl": "./index.html",
-  "configUrl": "./index.html",
+  "configUrl": "./appconfig.json",
   "iconUrl": "./icon.png",
   "defaultWidth": 430,
   "defaultHeight": 350,
   "minWidth": 240,
   "minHeight": 140,
   "requestHandlers": [],
-  "activators": []
+  "activators": [],
+  "permissions": "pixel,gamestate,overlay"
 }
