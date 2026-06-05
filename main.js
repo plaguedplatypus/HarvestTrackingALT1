@@ -64,6 +64,47 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
     align-items: center;
 }
 
+.app-settings {
+    position: fixed;
+    right: 6px;
+    bottom: 6px;
+    z-index: 10;
+}
+
+.app-cog {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 15px;
+}
+
+.app-settings-panel {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 32px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 6px;
+    min-width: 150px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.app-settings-panel.open {
+    display: flex;
+}
+
+.app-settings-panel select,
+.app-settings-panel button,
+.app-settings-panel .import-label {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
 select,
 button,
 .import-label {
@@ -4937,6 +4978,16 @@ var appName = "HarvestTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
+function getTimeStamp() {
+    return new Date().toLocaleTimeString("en-US", {
+        hour12: false,
+    });
+}
+function setStatus(message) {
+    status.innerText = "".concat(message, " @ ").concat(getTimeStamp());
+}
+var appCog = document.querySelector(".app-cog");
+var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
 var tracker = document.querySelector(".tracker");
 var status = document.querySelector(".status");
@@ -5051,7 +5102,7 @@ function processHarvestLine(chatLine) {
         if (!item || isNaN(amount))
             return;
         incrementItem(item, amount);
-        status.innerText = "Tracked: ".concat(amount, " x ").concat(item);
+        setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
     var boonMetalBankMatch = cleanLine.match(/sent it to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i);
@@ -5061,7 +5112,7 @@ function processHarvestLine(chatLine) {
         if (!item || isNaN(amount))
             return;
         incrementItem(item, amount);
-        status.innerText = "Tracked: ".concat(amount, " x ").concat(item);
+        setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
     var patterns = [
@@ -5083,7 +5134,7 @@ function processHarvestLine(chatLine) {
         if (!item)
             return;
         incrementItem(item);
-        status.innerText = "Tracked: ".concat(item);
+        setStatus("Tracked: ".concat(item));
         return;
     }
 }
@@ -5136,17 +5187,12 @@ function incrementItem(item, amount) {
     saveData(data);
     render(item);
 }
+var lastProcessedLine = "";
 function isInHistory(chatLine) {
-    var data = getSaveData();
-    return data.history.includes(chatLine);
+    return chatLine === lastProcessedLine;
 }
 function updateChatHistory(chatLine) {
-    var data = getSaveData();
-    data.history.push(chatLine);
-    if (data.history.length > 120) {
-        data.history = data.history.slice(data.history.length - 120);
-    }
-    saveData(data);
+    lastProcessedLine = chatLine;
 }
 function render(highlightItem) {
     var data = getSaveData();
@@ -5164,7 +5210,7 @@ function render(highlightItem) {
         var goalHtml = "";
         if (itemData.goal) {
             var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-            goalHtml = "\n\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\tGoal: ".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t");
+            goalHtml = "\n\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t");
         }
         row.innerHTML = "\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong>".concat(escapeHtml(item), "</strong>: ").concat(itemData.count, "\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
         if (highlightItem === item) {
@@ -5300,6 +5346,9 @@ function escapeHtml(value) {
 function escapeAttr(value) {
     return escapeHtml(value);
 }
+appCog.addEventListener("click", function () {
+    appSettingsPanel.classList.toggle("open");
+});
 clearButton.addEventListener("click", clearAll);
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {

@@ -14,25 +14,30 @@
     <div class="app">
         <div class="topbar">
             <div class="title">Harvest Tracker</div>
-
-            <div class="controls">
-                <select class="chat">
-                    <option value="">Select Chat</option>
-                </select>
-
-                <button class="export">Export</button>
-                <label class="import-label">
-                    Import
-                    <input class="import" type="file" accept=".json">
-                </label>
-                <button class="clear">Clear</button>
-            </div>
         </div>
 
         <div class="tracker"></div>
 
         <div class="footer">
             <span class="status">Initializing...</span>
+        </div>
+        <div class="app-settings">
+          <button class="app-cog">⚙</button>
+
+        <div class="app-settings-panel">
+            <select class="chat">
+            <option value="">Select Chat</option>
+            </select>
+
+            <button class="export">Export</button>
+
+            <label class="import-label">
+            Import
+            <input class="import" type="file" accept=".json">
+            </label>
+
+            <button class="clear">Clear</button>
+        </div>
         </div>
     </div>
 
