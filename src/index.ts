@@ -69,6 +69,11 @@ reader.readargs = {
 		a1lib.mixColor(255, 255, 0),
 		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
+
+		// Blessing / component orange text
+		a1lib.mixColor(255, 153, 0),
+		a1lib.mixColor(255, 128, 0),
+		a1lib.mixColor(255, 102, 0),
 	],
 };
 
@@ -203,9 +208,9 @@ function processHarvestLine(chatLine: string) {
 		return;
 	}
 
-	const blessingMatch = cleanLine.match(
-		/Materials gained:\s*(\d+)\s*x\s*(.+?)\.?$/i
-	);
+		const blessingMatch = cleanLine.match(
+			/Materials gained:\s*(\d+)\s*x\s*([A-Za-z\s-]+components)\.?/i
+		);
 
 	if (blessingMatch) {
 		const amount = parseInt(blessingMatch[1], 10);

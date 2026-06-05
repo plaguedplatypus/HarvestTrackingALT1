@@ -5087,6 +5087,10 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // Blessing / component orange text
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
     ],
 };
 if (window.alt1) {
@@ -5196,7 +5200,7 @@ function processHarvestLine(chatLine) {
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return;
     }
-    var blessingMatch = cleanLine.match(/Materials gained:\s*(\d+)\s*x\s*(.+?)\.?$/i);
+    var blessingMatch = cleanLine.match(/Materials gained:\s*(\d+)\s*x\s*([A-Za-z\s-]+components)\.?/i);
     if (blessingMatch) {
         var amount = parseInt(blessingMatch[1], 10);
         var item = normalizeItemName(blessingMatch[2]);
