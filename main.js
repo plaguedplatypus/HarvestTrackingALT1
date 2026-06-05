@@ -238,6 +238,16 @@ button,
     padding: 3px;
 }
 
+.footer {
+    color: #888888;
+    font-size: 10px;
+}
+
+.status {
+    color: #7a7a7a;
+    font-size: 10px;
+}
+
 .empty {
     color: #aaaaaa;
 }
