@@ -41,6 +41,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 }
 
 .app {
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -126,6 +127,21 @@ button,
     display: flex;
     flex-direction: column;
     gap: 4px;
+
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    min-height: 0;
+}
+
+.tracker::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tracker::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
 }
 
 .item-row {
@@ -208,9 +224,7 @@ button,
 }
 
 .footer {
-    margin-top: 3px;
-    color: #aaaaaa;
-    font-size: 11px;
+    flex-shrink: 0;
 }
 
 .empty {
