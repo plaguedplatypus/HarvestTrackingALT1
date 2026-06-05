@@ -1,17 +1,16 @@
-# HarvestTracker ALT1
+# Gathering Tracker ALT1
 
-A compact Alt1 Toolkit app for RuneScape that tracks harvested resources from the chatbox.
+A compact Alt1 Toolkit app for RuneScape that tracks gathered resources from the chatbox.
 
 ## Features
 
-- Compact one-line item rows
+- Compact item rows
 - Optional per-item goals
 - Cog-based item settings
 - Persistent local save data
 - Export/import save data
 - Chatbox selector
 - Alt1 permissions included: `pixel,gamestate,overlay`
-- Metal bank quantity tracking
 
 ## Tracked examples
 
@@ -26,4 +25,4 @@ Metal-bank lines are counted by quantity.
 
 ## Credit
 
-Based on the Alt1 app structure of SerenTracker by ZeroGwafa, reworked as a general harvest tracker.
+Based on the Alt1 app structure of SerenTracker by ZeroGwafa, reworked as a general item tracker.

@@ -126,8 +126,8 @@ function readChatbox() {
 		if (!chatLine) continue;
 		if (isInHistory(chatLine)) continue;
 
-		updateChatHistory(chatLine);
-		processHarvestLine(chatLine);
+			updateChatHistory(chatLine);
+			processHarvestLine(chatLine);
 	}
 }
 
@@ -267,14 +267,18 @@ function incrementItem(item: string, amount: number = 1) {
 	render(item);
 }
 
-let lastProcessedLine = "";
+let recentLines: string[] = [];
 
 function isInHistory(chatLine: string) {
-	return chatLine === lastProcessedLine;
+	return recentLines.includes(chatLine);
 }
 
 function updateChatHistory(chatLine: string) {
-	lastProcessedLine = chatLine;
+	recentLines.push(chatLine);
+
+	if (recentLines.length > 300) {
+		recentLines = recentLines.slice(-300);
+	}
 }
 
 function render(highlightItem?: string) {

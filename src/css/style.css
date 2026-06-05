@@ -1,10 +1,13 @@
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     margin: 0;
     padding: 6px;
-    background: #1e1e1e;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 13px;
+    box-sizing: border-box;
 }
 
 .app {
@@ -12,9 +15,20 @@ body {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    overflow: hidden;
 }
 
-.topbar {
+.topbar,
+.footer {
+    flex: 0 0 auto;
+}
+
+.tracker {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -33,10 +47,7 @@ body {
 }
 
 .app-settings {
-    position: fixed;
-    right: 8px;
-    bottom: 8px;
-    z-index: 10;
+    position: absolute;
 }
 
 .app-cog {
@@ -188,10 +199,6 @@ button,
     width: 72px;
     font-size: 11px;
     padding: 3px;
-}
-
-.footer {
-    flex-shrink: 0;
 }
 
 .empty {

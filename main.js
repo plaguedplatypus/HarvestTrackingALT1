@@ -31,13 +31,16 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `body {
+___CSS_LOADER_EXPORT___.push([module.id, `html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
     margin: 0;
     padding: 6px;
-    background: #1e1e1e;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 13px;
+    box-sizing: border-box;
 }
 
 .app {
@@ -45,9 +48,20 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    overflow: hidden;
 }
 
-.topbar {
+.topbar,
+.footer {
+    flex: 0 0 auto;
+}
+
+.tracker {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -66,10 +80,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 }
 
 .app-settings {
-    position: fixed;
-    right: 8px;
-    bottom: 8px;
-    z-index: 10;
+    position: absolute;
 }
 
 .app-cog {
@@ -221,10 +232,6 @@ button,
     width: 72px;
     font-size: 11px;
     padding: 3px;
-}
-
-.footer {
-    flex-shrink: 0;
 }
 
 .empty {
@@ -5216,12 +5223,15 @@ function incrementItem(item, amount) {
     saveData(data);
     render(item);
 }
-var lastProcessedLine = "";
+var recentLines = [];
 function isInHistory(chatLine) {
-    return chatLine === lastProcessedLine;
+    return recentLines.includes(chatLine);
 }
 function updateChatHistory(chatLine) {
-    lastProcessedLine = chatLine;
+    recentLines.push(chatLine);
+    if (recentLines.length > 300) {
+        recentLines = recentLines.slice(-300);
+    }
 }
 function render(highlightItem) {
     var data = getSaveData();
