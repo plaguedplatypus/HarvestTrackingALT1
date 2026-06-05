@@ -735,47 +735,47 @@ module.exports = __webpack_require__.p + "icon.png";
 
 /***/ },
 
-/***/ "./icons/archaeology.png"
+/***/ "./icons/Archaeology.png"
 /*!*******************************!*\
-  !*** ./icons/archaeology.png ***!
+  !*** ./icons/Archaeology.png ***!
   \*******************************/
 (module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
-module.exports = __webpack_require__.p + "archaeology.png";
+module.exports = __webpack_require__.p + "Archaeology.png";
 
 /***/ },
 
-/***/ "./icons/fishing.png"
+/***/ "./icons/Fishing.png"
 /*!***************************!*\
-  !*** ./icons/fishing.png ***!
+  !*** ./icons/Fishing.png ***!
   \***************************/
 (module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
-module.exports = __webpack_require__.p + "fishing.png";
+module.exports = __webpack_require__.p + "Fishing.png";
 
 /***/ },
 
-/***/ "./icons/mining.png"
+/***/ "./icons/Mining.png"
 /*!**************************!*\
-  !*** ./icons/mining.png ***!
+  !*** ./icons/Mining.png ***!
   \**************************/
 (module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
-module.exports = __webpack_require__.p + "mining.png";
+module.exports = __webpack_require__.p + "Mining.png";
 
 /***/ },
 
-/***/ "./icons/woodcutting.png"
+/***/ "./icons/Woodcutting.png"
 /*!*******************************!*\
-  !*** ./icons/woodcutting.png ***!
+  !*** ./icons/Woodcutting.png ***!
   \*******************************/
 (module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
-module.exports = __webpack_require__.p + "woodcutting.png";
+module.exports = __webpack_require__.p + "Woodcutting.png";
 
 /***/ },
 
@@ -5081,10 +5081,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
-/* harmony import */ var _icons_mining_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icons/mining.png */ "./icons/mining.png");
-/* harmony import */ var _icons_woodcutting_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./icons/woodcutting.png */ "./icons/woodcutting.png");
-/* harmony import */ var _icons_fishing_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./icons/fishing.png */ "./icons/fishing.png");
-/* harmony import */ var _icons_archaeology_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./icons/archaeology.png */ "./icons/archaeology.png");
+/* harmony import */ var _icons_Mining_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icons/Mining.png */ "./icons/Mining.png");
+/* harmony import */ var _icons_Woodcutting_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./icons/Woodcutting.png */ "./icons/Woodcutting.png");
+/* harmony import */ var _icons_Fishing_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./icons/Fishing.png */ "./icons/Fishing.png");
+/* harmony import */ var _icons_Archaeology_png__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./icons/Archaeology.png */ "./icons/Archaeology.png");
 
 
 
@@ -5126,10 +5126,10 @@ if (savedTabButton) {
     savedTabButton.classList.add("active");
 }
 var skillIcons = {
-    mining: _icons_mining_png__WEBPACK_IMPORTED_MODULE_6__,
-    woodcutting: _icons_woodcutting_png__WEBPACK_IMPORTED_MODULE_7__,
-    fishing: _icons_fishing_png__WEBPACK_IMPORTED_MODULE_8__,
-    archaeology: _icons_archaeology_png__WEBPACK_IMPORTED_MODULE_9__,
+    mining: _icons_Mining_png__WEBPACK_IMPORTED_MODULE_6__,
+    woodcutting: _icons_Woodcutting_png__WEBPACK_IMPORTED_MODULE_7__,
+    fishing: _icons_Fishing_png__WEBPACK_IMPORTED_MODULE_8__,
+    archaeology: _icons_Archaeology_png__WEBPACK_IMPORTED_MODULE_9__,
 };
 document.querySelectorAll(".skill-tab").forEach(function (tab) {
     var button = tab;
