@@ -1,6 +1,6 @@
 {
-  "appName": "HarvestTracker",
-  "description": "Compact RuneScape harvest tracker based on SerenTracker chatbox handling.",
+  "appName": "GatheringTracker",
+  "description": "Compact RuneScape gathering tracker based on SerenTracker chatbox handling.",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",
   "iconUrl": "./icon.png",
