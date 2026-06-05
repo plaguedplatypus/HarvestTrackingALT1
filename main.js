@@ -66,17 +66,18 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
 
 .app-settings {
     position: fixed;
-    right: 6px;
-    bottom: 6px;
+    right: 8px;
+    bottom: 8px;
     z-index: 10;
 }
 
 .app-cog {
-    width: 12px;
-    height: 12px;
-    padding: 0;
-    border-radius: 50%;
-    font-size: 15px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 14px;
 }
 
 .app-settings-panel {
