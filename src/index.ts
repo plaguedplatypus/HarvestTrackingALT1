@@ -314,7 +314,7 @@ function render(highlightItem?: string) {
 		row.innerHTML = `
 			<div class="item-main-row">
 				<div class="item-text">
-					<strong>${escapeHtml(item)}</strong>: ${itemData.count}
+					<strong>${escapeHtml(titleCase(item))}</strong>: ${itemData.count}
 				</div>
 
 				<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
@@ -490,6 +490,10 @@ function escapeHtml(value: string) {
 		.replace(/>/g, "&gt;")
 		.replace(/"/g, "&quot;")
 		.replace(/'/g, "&#039;");
+}
+
+function titleCase(text: string) {
+	return text.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function escapeAttr(value: string) {
