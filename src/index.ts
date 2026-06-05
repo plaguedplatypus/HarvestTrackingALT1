@@ -163,7 +163,11 @@ function processHarvestLine(chatLine: string): boolean {
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);
-		status.innerText = `Tracked: ${amount} x ${item}`;
+		const now = new Date().toLocaleTimeString("en-US", {
+	hour12: false
+});
+
+status.innerText = `Tracked: ${amount} x ${item} @ ${now}`;
 		return;
 	}
 
@@ -177,7 +181,11 @@ function processHarvestLine(chatLine: string): boolean {
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);
-		status.innerText = `Tracked: ${amount} x ${item}`;
+		const now = new Date().toLocaleTimeString("en-US", {
+	hour12: false
+});
+
+status.innerText = `Tracked: ${amount} x ${item} @ ${now}`;
 		return;
 	}
 
@@ -200,7 +208,11 @@ function processHarvestLine(chatLine: string): boolean {
 		if (!item) return;
 
 		incrementItem(item);
-		status.innerText = `Tracked: ${item}`;
+		const now = new Date().toLocaleTimeString("en-US", {
+	hour12: false
+});
+
+status.innerText = `Tracked: ${item} @ ${now}`;
 		return;
 	}
 }
