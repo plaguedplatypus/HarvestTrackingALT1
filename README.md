@@ -28,26 +28,6 @@ copper ore: 28 ⚙
 
 Click the cog to set/remove a goal, reset that item, or delete that item.
 
-## Build
-
-```bash
-npm install
-npm run build
-```
-
-The build output goes to `dist/`.
-
-## Test locally
-
-After building, open `dist/index.html` through Alt1, or add the app with the generated `dist/appconfig.json` URL.
-
-## GitHub Pages deploy
-
-```bash
-npm run build
-npm run deploy
-```
-
 ## Notes
 
 This is still a prototype. If OCR misses chat lines, try:
