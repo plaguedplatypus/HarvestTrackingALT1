@@ -31,193 +31,134 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, `html, body {
-	margin: 0;
-	padding: 0;
-	background: #1e1e1e;
-	color: #f0f0f0;
-	font-family: Arial, sans-serif;
-	font-size: 12px;
-	overflow: hidden;
+___CSS_LOADER_EXPORT___.push([module.id, `body {
+    margin: 0;
+    padding: 6px;
+    background: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
 }
 
-.app-shell {
-	box-sizing: border-box;
-	height: 100vh;
-	padding: 5px;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+.app {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-.topbar, .footer {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	min-height: 22px;
+.topbar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .title {
-	font-weight: bold;
-	font-size: 14px;
-	flex: 1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+select,
+button,
+.import-label {
+    font-size: 11px;
+    padding: 3px 6px;
+}
+
+button,
+.import-label {
+    cursor: pointer;
+}
+
+.import {
+    display: none;
 }
 
 .tracker {
-	flex: 1;
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column;
-	gap: 3px;
-	padding-right: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .item-row {
-	background: rgba(44, 44, 44, 0.96);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 4px;
-	padding: 3px 5px;
-	display: flex;
-	align-items: center;
-	gap: 5px;
-	flex-wrap: wrap;
-	line-height: 1.2;
-	min-height: 20px;
+    background: #2c2c2c;
+    border-radius: 5px;
+    padding: 5px 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    line-height: 1.25;
 }
 
-.item-row.new {
-	animation: flash 550ms ease-out;
-}
-
-@keyframes flash {
-	0% { background: rgba(55, 95, 55, 1); }
-	100% { background: rgba(44, 44, 44, 0.96); }
-}
-
-.item-line {
-	flex: 1 1 auto;
-	min-width: 95px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.item-name {
-	font-weight: bold;
-}
-
-.item-count {
-	font-variant-numeric: tabular-nums;
+.item-text {
+    flex: 1;
+    min-width: 95px;
+    word-break: break-word;
 }
 
 .goal-text {
-	color: #cfcfcf;
-	white-space: nowrap;
-	font-variant-numeric: tabular-nums;
+    color: #d0d0d0;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
 .progress-bar {
-	width: 66px;
-	height: 7px;
-	background: #444;
-	border-radius: 3px;
-	overflow: hidden;
-	flex: 0 0 auto;
+    width: 70px;
+    height: 8px;
+    background: #444;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .progress-fill {
-	height: 100%;
-	background: #4caf50;
+    height: 100%;
+    background: #4caf50;
 }
 
 .cog-btn {
-	background: transparent;
-	border: none;
-	color: #f0f0f0;
-	cursor: pointer;
-	font-size: 13px;
-	line-height: 1;
-	padding: 0 2px;
-	flex: 0 0 auto;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 14px;
 }
 
 .settings-panel {
-	display: none;
-	width: 100%;
-	gap: 4px;
-	align-items: center;
-	flex-wrap: wrap;
-	padding-top: 2px;
-	border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: none;
+    width: 100%;
+    gap: 4px;
+    margin-top: 3px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .settings-panel.open {
-	display: flex;
+    display: flex;
 }
 
-.settings-panel label {
-	display: flex;
-	align-items: center;
-	gap: 3px;
-}
-
-.goal-input {
-	width: 75px;
-	font-size: 12px;
-	padding: 1px 3px;
-}
-
-.nisbutton {
-	font-size: 11px !important;
-	padding: 2px 6px !important;
-	min-height: unset !important;
+.settings-panel input {
+    width: 72px;
+    font-size: 11px;
+    padding: 3px;
 }
 
 .footer {
-	color: #aaa;
-	font-size: 11px;
-}
-
-.status {
-	flex: 1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+    margin-top: 3px;
+    color: #aaaaaa;
+    font-size: 11px;
 }
 
 .empty {
-	color: #aaa;
-	padding: 6px;
-}
-
-.setting-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 10px;
-	margin-bottom: 8px;
-}
-
-.import-label input {
-	display: none;
-}
-
-.help-text {
-	font-size: 12px;
-	color: #ccc;
-}
-
-.danger-zone {
-	justify-content: flex-start;
-}
-
-@media (max-width: 330px) {
-	.title { display: none; }
-	.progress-bar { width: 45px; }
-	.item-line { min-width: 75px; }
+    color: #aaaaaa;
 }
 `, ""]);
 // Exports
@@ -4984,8 +4925,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.html */ "./index.html");
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
-/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
-/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
+/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
+/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 
 
 
@@ -5002,13 +4943,12 @@ var status = document.querySelector(".status");
 var clearButton = document.querySelector(".clear");
 var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
-var testButton = document.querySelector(".test");
 reader.readargs = {
     colors: [
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255), // most normal chat text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0), // some game/info messages
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255), // alternate notification text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255), // common RS3 chat blue-ish text
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
     ],
 };
 if (window.alt1) {
@@ -5038,7 +4978,7 @@ window.setTimeout(function () {
         render();
         setInterval(function () {
             readChatbox();
-        }, 700);
+        }, 600);
     }, 1000);
 }, 50);
 function populateChatSelector() {
@@ -5067,7 +5007,7 @@ function selectSavedChat() {
 }
 function readChatbox() {
     var opts = reader.read() || [];
-    var chatArr = processChat(opts) || [];
+    var chatArr = processChat(opts);
     for (var _i = 0, chatArr_1 = chatArr; _i < chatArr_1.length; _i++) {
         var line = chatArr_1[_i];
         var chatLine = line.trim();
@@ -5098,19 +5038,12 @@ function processChat(opts) {
     if (chatStr.trim() === "")
         return [];
     return chatStr
-        .replace(timestampRegex, "")
         .trim()
         .split("\n")
         .map(function (line) { return line.trim(); });
 }
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
-    /*
-        Exact quantity metal-bank messages.
-        Examples:
-        You transport to your metal bank: 2 x Zephyrium ore.
-        Your Boon of Crondis has doubled the following item and sent it to your metal bank: 1 x Zephyrium ore.
-    */
     var metalBankMatch = cleanLine.match(/You transport to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i);
     if (metalBankMatch) {
         var amount = parseInt(metalBankMatch[1], 10);
@@ -5154,21 +5087,37 @@ function processHarvestLine(chatLine) {
         return;
     }
 }
-function normalizeItemName(name) {
-    return name
+function normalizeItemName(item) {
+    return item
         .toLowerCase()
         .replace(/\.$/, "")
-        .replace(/^some\s+/, "")
-        .replace(/^an?\s+/, "")
         .trim();
 }
-function incrementItem(item, amount) {
-    if (amount === void 0) { amount = 1; }
-    var data = getSaveData();
-    ensureItem(data, item);
-    data.items[item].count += amount;
-    saveData(data);
-    render(item);
+function getSaveData() {
+    var raw = localStorage.getItem(appName);
+    if (!raw) {
+        return {
+            items: {},
+            history: [],
+        };
+    }
+    try {
+        var data = JSON.parse(raw);
+        return {
+            chat: data.chat,
+            items: data.items || {},
+            history: data.history || [],
+        };
+    }
+    catch (_a) {
+        return {
+            items: {},
+            history: [],
+        };
+    }
+}
+function saveData(data) {
+    localStorage.setItem(appName, JSON.stringify(data));
 }
 function ensureItem(data, item) {
     if (!data.items[item]) {
@@ -5179,58 +5128,93 @@ function ensureItem(data, item) {
         };
     }
 }
+function incrementItem(item, amount) {
+    if (amount === void 0) { amount = 1; }
+    var data = getSaveData();
+    ensureItem(data, item);
+    data.items[item].count += amount;
+    saveData(data);
+    render(item);
+}
+function isInHistory(chatLine) {
+    var data = getSaveData();
+    return data.history.includes(chatLine);
+}
+function updateChatHistory(chatLine) {
+    var data = getSaveData();
+    data.history.push(chatLine);
+    if (data.history.length > 120) {
+        data.history = data.history.slice(data.history.length - 120);
+    }
+    saveData(data);
+}
 function render(highlightItem) {
     var data = getSaveData();
     var items = Object.keys(data.items).sort();
     tracker.innerHTML = "";
     if (items.length === 0) {
-        tracker.innerHTML = "<div class=\"empty\">No tracked items yet. Start mining or woodcutting with chat visible.</div>";
+        tracker.innerHTML = "<div class=\"empty\">No tracked items yet.</div>";
         return;
     }
     for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
         var item = items_1[_i];
-        var row = buildItemRow(item, data.items[item], item === highlightItem);
+        var itemData = data.items[item];
+        var row = document.createElement("div");
+        row.className = "item-row";
+        var goalHtml = "";
+        if (itemData.goal) {
+            var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
+            goalHtml = "\n\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\tGoal: ".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t");
+        }
+        row.innerHTML = "\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong>".concat(escapeHtml(item), "</strong>: ").concat(itemData.count, "\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
+        if (highlightItem === item) {
+            row.classList.add("highlight");
+        }
         tracker.appendChild(row);
     }
+    bindRowEvents();
 }
-function buildItemRow(item, itemData, highlight) {
-    var row = document.createElement("div");
-    row.className = "item-row".concat(highlight ? " new" : "");
-    var goalHtml = "";
-    if (itemData.goal) {
-        var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-        goalHtml = "\n\t\t\t<span class=\"goal-text\">Goal: ".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)</span>\n\t\t\t<div class=\"progress-bar\" title=\"").concat(progress.toFixed(1), "%\">\n\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t</div>\n\t\t");
-    }
-    row.innerHTML = "\n\t\t<div class=\"item-line\">\n\t\t\t<span class=\"item-name\">".concat(escapeHtml(item), "</span>: <span class=\"item-count\">").concat(itemData.count, "</span>\n\t\t</div>\n\t\t").concat(goalHtml, "\n\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeHtml(item), "\" title=\"Edit\">\u2699</button>\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<label>Goal <input type=\"number\" class=\"goal-input\" data-item=\"").concat(escapeHtml(item), "\" value=\"").concat(itemData.goal || "", "\" placeholder=\"optional\" /></label>\n\t\t\t<button class=\"save-goal nisbutton\" data-item=\"").concat(escapeHtml(item), "\">Save</button>\n\t\t\t<button class=\"reset-item nisbutton\" data-item=\"").concat(escapeHtml(item), "\">Reset</button>\n\t\t\t<button class=\"delete-item nisbutton\" data-item=\"").concat(escapeHtml(item), "\">Delete</button>\n\t\t</div>\n\t");
-    return row;
+function bindRowEvents() {
+    document.querySelectorAll(".cog-btn").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            var target = e.currentTarget;
+            toggleSettings(target.dataset.item || "");
+        });
+    });
+    document.querySelectorAll(".save-goal").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            var target = e.currentTarget;
+            setGoal(target.dataset.item || "");
+        });
+    });
+    document.querySelectorAll(".reset-item").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            var target = e.currentTarget;
+            resetItem(target.dataset.item || "");
+        });
+    });
+    document.querySelectorAll(".delete-item").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            var target = e.currentTarget;
+            deleteItem(target.dataset.item || "");
+        });
+    });
 }
-tracker.addEventListener("click", function (event) {
-    var target = event.target;
-    var item = target.dataset.item;
-    if (!item)
-        return;
-    if (target.classList.contains("cog-btn"))
-        toggleSettings(item);
-    if (target.classList.contains("save-goal"))
-        saveGoal(item);
-    if (target.classList.contains("reset-item"))
-        resetItem(item);
-    if (target.classList.contains("delete-item"))
-        deleteItem(item);
-});
 function toggleSettings(item) {
     var data = getSaveData();
-    ensureItem(data, item);
+    if (!data.items[item])
+        return;
     data.items[item].settingsOpen = !data.items[item].settingsOpen;
     saveData(data);
     render();
 }
-function saveGoal(item) {
-    var input = document.querySelector(".goal-input[data-item=\"".concat(cssEscape(item), "\"]"));
+function setGoal(item) {
+    var data = getSaveData();
+    if (!data.items[item])
+        return;
+    var input = document.getElementById("goal-".concat(item));
     if (!input)
         return;
-    var data = getSaveData();
-    ensureItem(data, item);
     var value = input.value.trim();
     if (value === "") {
         data.items[item].goal = null;
@@ -5260,98 +5244,69 @@ function deleteItem(item) {
     saveData(data);
     render();
 }
-function getSaveData() {
-    var existing = localStorage.getItem(appName);
-    if (!existing)
-        return { items: {} };
-    try {
-        var parsed = JSON.parse(existing);
-        if (!parsed.items)
-            parsed.items = {};
-        return parsed;
-    }
-    catch (_a) {
-        return { items: {} };
-    }
-}
-function saveData(data) {
-    localStorage.setItem(appName, JSON.stringify(data));
-}
-function updateChatHistory(chatLine) {
-    var key = "".concat(appName, "chatHistory");
-    if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, "".concat(chatLine, "\n"));
-        return;
-    }
-    var history = sessionStorage.getItem(key).split("\n");
-    while (history.length > 100)
-        history.splice(0, 1);
-    history.push(chatLine.trim());
-    sessionStorage.setItem(key, history.join("\n"));
-}
-function isInHistory(chatLine) {
-    var key = "".concat(appName, "chatHistory");
-    if (!sessionStorage.getItem(key))
-        return false;
-    return sessionStorage.getItem(key).split("\n").some(function (historyLine) { return historyLine.trim() === chatLine; });
-}
-function showSelectedChat(chat) {
-    try {
-        alt1.overLayRect(appColor, chat.mainbox.rect.x, chat.mainbox.rect.y, chat.mainbox.rect.width, chat.mainbox.rect.height, 2000, 5);
-    }
-    catch (_a) { }
-}
-function escapeHtml(text) {
-    return text.replace(/[&<>'"]/g, function (char) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;" }[char]); });
-}
-function cssEscape(text) {
-    return text.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-}
-exportButton.addEventListener("click", function () {
+function clearAll() {
     var data = getSaveData();
-    var str = "Item,Count,Goal\n";
-    for (var _i = 0, _a = Object.keys(data.items).sort(); _i < _a.length; _i++) {
-        var item = _a[_i];
-        str += "".concat(item, ",").concat(data.items[item].count, ",").concat(data.items[item].goal || "", "\n");
-    }
-    var blob = new Blob([str], { type: "text/csv;charset=utf-8;" });
-    var link = document.createElement("a");
+    data.items = {};
+    data.history = [];
+    saveData(data);
+    render();
+    status.innerText = "Tracker cleared.";
+}
+function exportData() {
+    var data = getSaveData();
+    var blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+    });
     var url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "harvest-tracker-export.csv");
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-});
-importInput.addEventListener("change", function () {
-    var _a;
-    var file = (_a = importInput.files) === null || _a === void 0 ? void 0 : _a[0];
-    if (!file)
-        return;
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "harvest-tracker-save.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+function importData(file) {
     var reader = new FileReader();
     reader.onload = function () {
         try {
-            var imported = JSON.parse(String(reader.result));
-            if (!imported.items)
-                throw new Error("Bad import");
-            saveData(imported);
+            var imported = JSON.parse(reader.result);
+            var data = {
+                chat: imported.chat,
+                items: imported.items || {},
+                history: imported.history || [],
+            };
+            saveData(data);
             render();
-            status.innerText = "Import complete.";
+            status.innerText = "Save imported.";
         }
         catch (_a) {
             status.innerText = "Import failed.";
         }
     };
     reader.readAsText(file);
-});
-clearButton.addEventListener("click", function () {
-    localStorage.removeItem(appName);
-    sessionStorage.removeItem("".concat(appName, "chatHistory"));
-    location.reload();
-});
-testButton.addEventListener("click", function () {
-    processHarvestLine("You manage to mine some copper ore.");
+}
+function showSelectedChat(pos) {
+    if (!pos || !pos.mainbox)
+        return;
+    alt1.overLayRect(appColor, pos.mainbox.rect.x, pos.mainbox.rect.y, pos.mainbox.rect.width, pos.mainbox.rect.height, 2000, 3);
+}
+function escapeHtml(value) {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+function escapeAttr(value) {
+    return escapeHtml(value);
+}
+clearButton.addEventListener("click", clearAll);
+exportButton.addEventListener("click", exportData);
+importInput.addEventListener("change", function () {
+    if (this.files && this.files[0]) {
+        importData(this.files[0]);
+        this.value = "";
+    }
 });
 render();
 

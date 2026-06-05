@@ -1,52 +1,41 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="https://runeapps.org/nis/nis.css" />
-		<link rel="stylesheet" type="text/css" href="https://runeapps.org/runeappslib.css" />
-	</head>
-	<body class="nis">
-		<div class="app-shell">
-			<div class="topbar">
-				<div class="title">Harvest Tracker</div>
-				<button class="nisbutton test" title="Adds one copper ore test line">Test</button>
-			</div>
+<head>
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://runeapps.org/nis/nis.css" />
 
-			<div class="tracker"></div>
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://runeapps.org/runeappslib.css" />
+</head>
 
-			<div class="footer">
-				<span class="status">Initializing...</span>
-				<button class="nisbutton settings-toggle" data-bs-toggle="modal" data-bs-target="#settings" type="button">Settings</button>
-			</div>
-		</div>
+<body class="nis">
+    <div class="app">
+        <div class="topbar">
+            <div class="title">Harvest Tracker</div>
 
-		<div class="modal nis" tabindex="-1" role="dialog" id="settings">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Harvest Tracker Settings</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					</div>
-					<div class="modal-body">
-						<div class="setting-row">
-							<label>Select Chat</label>
-							<select class="chat"><option value="">Select Chat</option></select>
-						</div>
-						<div class="setting-row">
-							<button class="nisbutton export">CSV Export</button>
-							<label class="import-label nisbutton">Import JSON <input class="import" type="file" accept="application/json" /></label>
-						</div>
-						<div class="setting-row danger-zone">
-							<button class="nisbutton clear">Factory Reset</button>
-						</div>
-						<div class="help-text">
-							Tracked rows stay compact. Click the cog on any item to set or remove an optional goal.
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+            <div class="controls">
+                <select class="chat">
+                    <option value="">Select Chat</option>
+                </select>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-		<script src="./main.js"></script>
-	</body>
+                <button class="export">Export</button>
+                <label class="import-label">
+                    Import
+                    <input class="import" type="file" accept=".json">
+                </label>
+                <button class="clear">Clear</button>
+            </div>
+        </div>
+
+        <div class="tracker"></div>
+
+        <div class="footer">
+            <span class="status">Initializing...</span>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
 </html>
