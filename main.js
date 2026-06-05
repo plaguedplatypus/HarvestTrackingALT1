@@ -55,6 +55,7 @@ body {
 .topbar,
 .footer {
     flex: 0 0 auto;
+    padding-right: 22px;
 }
 
 .tracker {
@@ -62,7 +63,7 @@ body {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-
+    padding-right: 14px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -82,9 +83,9 @@ body {
 
 .app-settings {
     position: absolute;
-    right: 8px;
-    bottom: 8px;
-    z-index: 20;
+    right: 4px;
+    bottom: 4px;
+    z-index: 50;
 }
 
 .app-cog {
