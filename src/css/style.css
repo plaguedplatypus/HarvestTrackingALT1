@@ -42,19 +42,15 @@ body {
 }
 
 .skill-tab {
+    width: 20px;
+    height: 20px;
+    padding: 2px;
     background: #2c2c2c;
     border: 1px solid #444;
     color: white;
     cursor: pointer;
-    padding: 2px 5px;
     font-size: 12px;
-    min-width: 24px;
-}
-
-.skill-tab {
-    width: 20px;
-    height: 20px;
-    padding: 2px;
+    min-width: 20px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -75,19 +75,15 @@ body {
 }
 
 .skill-tab {
+    width: 20px;
+    height: 20px;
+    padding: 2px;
     background: #2c2c2c;
     border: 1px solid #444;
     color: white;
     cursor: pointer;
-    padding: 2px 5px;
     font-size: 12px;
-    min-width: 24px;
-}
-
-.skill-tab {
-    width: 20px;
-    height: 20px;
-    padding: 2px;
+    min-width: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5037,14 +5033,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './mining.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './woodcutting.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './fishing.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './archaeology.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-
-
-
-
 
 
 
