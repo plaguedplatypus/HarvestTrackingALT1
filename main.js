@@ -44,6 +44,7 @@ body {
 }
 
 .app {
+    position: relative;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -81,6 +82,9 @@ body {
 
 .app-settings {
     position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 20;
 }
 
 .app-cog {
@@ -96,7 +100,7 @@ body {
     display: none;
     position: absolute;
     right: 0;
-    bottom: 32px;
+    bottom: 24px;
     background: #2c2c2c;
     border: 1px solid #555;
     border-radius: 6px;
