@@ -256,9 +256,8 @@ function incrementItem(item: string, amount: number = 1) {
 	render(item);
 }
 
-function isInHistory(chatLine: string) {
-	const data = getSaveData();
-	return data.history.includes(chatLine);
+function isInHistory(_chatLine: string) {
+	return false;
 }
 
 function updateChatHistory(chatLine: string) {
