@@ -18,7 +18,7 @@ type SaveData = {
 	history: string[];
 };
 
-const appName = "HarvestTracker";
+const appName = "GatheringTracker";
 const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
@@ -161,13 +161,13 @@ function processChat(opts: any[]) {
 function processHarvestLine(chatLine: string) {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 
-	const metalBankMatch = cleanLine.match(
-		/You transport to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i
-	);
+	const transportMatch = cleanLine.match(
+	/You transport to your .*?:\s*(\d+)\s*x\s*(.+?)\./i
+);
 
-	if (metalBankMatch) {
-		const amount = parseInt(metalBankMatch[1], 10);
-		const item = normalizeItemName(metalBankMatch[2]);
+	if (transportMatch) {
+	const amount = parseInt(transportMatch[1], 10);
+	const item = normalizeItemName(transportMatch[2]);
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);

@@ -4989,7 +4989,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var appName = "HarvestTracker";
+var appName = "GatheringTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
@@ -5110,10 +5110,10 @@ function processChat(opts) {
 }
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
-    var metalBankMatch = cleanLine.match(/You transport to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i);
-    if (metalBankMatch) {
-        var amount = parseInt(metalBankMatch[1], 10);
-        var item = normalizeItemName(metalBankMatch[2]);
+    var transportMatch = cleanLine.match(/You transport to your .*?:\s*(\d+)\s*x\s*(.+?)\./i);
+    if (transportMatch) {
+        var amount = parseInt(transportMatch[1], 10);
+        var item = normalizeItemName(transportMatch[2]);
         if (!item || isNaN(amount))
             return;
         incrementItem(item, amount);
