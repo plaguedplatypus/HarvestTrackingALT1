@@ -1,0 +1,13 @@
+{
+  "appName": "HarvestTracker",
+  "description": "Compact RuneScape mining and woodcutting harvest tracker with optional per-item goals.",
+  "appUrl": "./index.html",
+  "configUrl": "./index.html",
+  "iconUrl": "./icon.png",
+  "defaultWidth": 430,
+  "defaultHeight": 350,
+  "minWidth": 240,
+  "minHeight": 140,
+  "requestHandlers": [],
+  "activators": []
+}
