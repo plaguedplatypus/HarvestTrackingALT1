@@ -465,7 +465,7 @@ function importData(file: File) {
 	reader.readAsText(file);
 }
 
-function showSelectedChat(pos) {
+function showSelectedChat(pos: any) {
 	if (!pos || !pos.mainbox) return;
 
 	alt1.overLayRect(
