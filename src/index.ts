@@ -23,6 +23,12 @@ const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
 
+function getTimeStamp() {
+	return new Date().toLocaleTimeString("en-US", {
+		hour12: false,
+	});
+}
+
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
 const status = document.querySelector(".status") as HTMLElement;
@@ -115,11 +121,8 @@ function readChatbox() {
 		if (!chatLine) continue;
 		if (isInHistory(chatLine)) continue;
 
-		const wasTracked = processHarvestLine(chatLine);
-
-		if (wasTracked) {
-			updateChatHistory(chatLine);
-		}
+		updateChatHistory(chatLine);
+		processHarvestLine(chatLine);
 	}
 }
 
@@ -150,7 +153,7 @@ function processChat(opts: any[]) {
 		.map((line) => line.trim());
 }
 
-function processHarvestLine(chatLine: string): boolean {
+function processHarvestLine(chatLine: string) {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 
 	const metalBankMatch = cleanLine.match(
@@ -163,11 +166,7 @@ function processHarvestLine(chatLine: string): boolean {
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);
-		const now = new Date().toLocaleTimeString("en-US", {
-	hour12: false
-});
-
-status.innerText = `Tracked: ${amount} x ${item} @ ${now}`;
+		status.innerText = `Tracked: ${amount} x ${item} @ ${getTimeStamp()}`;
 		return;
 	}
 
@@ -181,11 +180,7 @@ status.innerText = `Tracked: ${amount} x ${item} @ ${now}`;
 		if (!item || isNaN(amount)) return;
 
 		incrementItem(item, amount);
-		const now = new Date().toLocaleTimeString("en-US", {
-	hour12: false
-});
-
-status.innerText = `Tracked: ${amount} x ${item} @ ${now}`;
+		status.innerText = `Tracked: ${item} @ ${getTimeStamp()}`;
 		return;
 	}
 
@@ -208,11 +203,7 @@ status.innerText = `Tracked: ${amount} x ${item} @ ${now}`;
 		if (!item) return;
 
 		incrementItem(item);
-		const now = new Date().toLocaleTimeString("en-US", {
-	hour12: false
-});
-
-status.innerText = `Tracked: ${item} @ ${now}`;
+		status.innerText = `Tracked: ${item}`;
 		return;
 	}
 }
