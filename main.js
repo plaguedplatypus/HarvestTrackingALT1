@@ -724,6 +724,17 @@ module.exports = __webpack_require__.p + "appconfig.json";
 
 /***/ },
 
+/***/ "./icon.png"
+/*!******************!*\
+  !*** ./icon.png ***!
+  \******************/
+(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+module.exports = __webpack_require__.p + "icon.png";
+
+/***/ },
+
 /***/ "./icons/ar.png"
 /*!**********************!*\
   !*** ./icons/ar.png ***!
@@ -5069,7 +5080,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.html */ "./index.html");
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
-Object(function webpackMissingModule() { var e = new Error("Cannot find module './icon.png'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 /* harmony import */ var _icons_mn_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icons/mn.png */ "./icons/mn.png");
 /* harmony import */ var _icons_wc_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./icons/wc.png */ "./icons/wc.png");
 /* harmony import */ var _icons_fh_png__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./icons/fh.png */ "./icons/fh.png");
