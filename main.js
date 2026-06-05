@@ -63,7 +63,6 @@ body {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-right: 14px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -84,8 +83,8 @@ body {
 .app-settings {
     position: absolute;
     right: 4px;
-    bottom: 4px;
-    z-index: 50;
+    bottom: 0;
+    transform: translateY(2px);
 }
 
 .app-cog {
