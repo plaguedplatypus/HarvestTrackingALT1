@@ -5064,6 +5064,7 @@ function setStatus(message) {
     status.innerText = "".concat(message, " @ ").concat(getTimeStamp());
 }
 var activeSkillTab = "all";
+var sortMode = "recent";
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
@@ -5330,6 +5331,7 @@ function incrementItem(item, amount, skill, colorClass) {
     ensureItem(data, item);
     data.items[item].count += amount;
     data.items[item].skill = skill;
+    data.items[item].lastUpdated = Date.now();
     if (colorClass) {
         data.items[item].colorClass = colorClass;
     }
@@ -5354,7 +5356,20 @@ function render(highlightItem) {
             return true;
         return (data.items[item].skill || "other") === activeSkillTab;
     })
-        .sort();
+        .sort(function (a, b) {
+        var timeA = data.items[a].lastUpdated || 0;
+        var timeB = data.items[b].lastUpdated || 0;
+        return timeB - timeA;
+    });
+    if (sortMode === "recent") {
+        items.sort(function (a, b) {
+            return (data.items[b].lastUpdated || 0) -
+                (data.items[a].lastUpdated || 0);
+        });
+    }
+    else {
+        items.sort();
+    }
     tracker.innerHTML = "";
     if (items.length === 0) {
         tracker.innerHTML = "<div class=\"empty\">No tracked items yet.</div>";

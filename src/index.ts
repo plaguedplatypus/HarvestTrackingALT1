@@ -9,11 +9,12 @@ import "./icon.png";
 type SkillType = "all" | "mining" | "woodcutting" | "fishing" | "archaeology" | "other";
 
 type TrackedItem = {
-	count: number;
-	goal: number | null;
-	settingsOpen: boolean;
-	skill?: SkillType;
-	colorClass?: string;
+    count: number;
+    goal: number | null;
+    settingsOpen: boolean;
+    skill?: SkillType;
+    colorClass?: string;
+    lastUpdated?: number;
 };
 
 type SaveData = {
@@ -38,6 +39,7 @@ function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
 let activeSkillTab: SkillType = "all";
+let sortMode = "recent";
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
@@ -369,6 +371,7 @@ function incrementItem(
 	ensureItem(data, item);
 	data.items[item].count += amount;
 	data.items[item].skill = skill;
+	data.items[item].lastUpdated = Date.now();
 
 	if (colorClass) {
 		data.items[item].colorClass = colorClass;
@@ -399,7 +402,22 @@ function render(highlightItem?: string) {
 		if (activeSkillTab === "all") return true;
 		return (data.items[item].skill || "other") === activeSkillTab;
 	})
-	.sort();
+
+	.sort((a, b) => {
+    	const timeA = data.items[a].lastUpdated || 0;
+    	const timeB = data.items[b].lastUpdated || 0;
+
+    	return timeB - timeA;
+	});
+
+	if (sortMode === "recent") {
+    	items.sort((a, b) =>
+        	(data.items[b].lastUpdated || 0) -
+        	(data.items[a].lastUpdated || 0)
+    	);
+	} else {
+    	items.sort();
+	}
 
 	tracker.innerHTML = "";
 
