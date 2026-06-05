@@ -5,10 +5,10 @@ import "./index.html";
 import "./appconfig.json";
 import "./css/style.css";
 import "./icon.png";
-import "./icons/mn.png";
-import "./icons/wc.png";
-import "./icons/fh.png";
-import "./icons/ar.png";
+import miningIcon from "./icons/mining.png";
+import woodcuttingIcon from "./icons/woodcutting.png";
+import fishingIcon from "./icons/fishing.png";
+import archaeologyIcon from "./icons/archaeology.png";
 
 type SkillType = "all" | "mining" | "woodcutting" | "fishing" | "archaeology" | "other";
 
@@ -66,6 +66,21 @@ if (savedTabButton) {
 	savedTabButton.classList.add("active");
 }
 
+const skillIcons: Record<string, string> = {
+	mining: miningIcon,
+	woodcutting: woodcuttingIcon,
+	fishing: fishingIcon,
+	archaeology: archaeologyIcon,
+};
+
+document.querySelectorAll(".skill-tab").forEach((tab) => {
+	const button = tab as HTMLButtonElement;
+	const skill = button.dataset.skill;
+
+	if (skill && skillIcons[skill]) {
+		button.innerHTML = `<img src="${skillIcons[skill]}" alt="${skill}">`;
+	}
+});
 
 reader.readargs = {
 	colors: [
