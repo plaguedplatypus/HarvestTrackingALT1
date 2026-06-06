@@ -75,8 +75,8 @@ body {
 }
 
 .skill-tab {
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
     padding: 2px;
     background: #2c2c2c;
     border: 1px solid #444;
@@ -90,15 +90,15 @@ body {
 }
 
 .skill-tab img {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
     pointer-events: none;
 }
 
 .skill-tab.active {
     background: #3a3a3a;
-    border-color: #9a9a9a;
+    border-color: #d1d1d1;
 }
 
 .fishing-mode {
