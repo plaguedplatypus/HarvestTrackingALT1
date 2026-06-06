@@ -162,14 +162,14 @@ body {
 .item-text {
     flex: 1;
     min-width: 0;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
 }
 
 .item-count {
     min-width: 24px;
-    text-align: right;
-    font-size: 11px;
+    text-align: center;
+    font-size: 13px;
     font-weight: bold;
 }
 
