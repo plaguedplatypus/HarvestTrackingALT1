@@ -5482,13 +5482,25 @@ function deleteItem(item) {
     saveData(data);
     render();
 }
-function clearAll() {
+function clearCurrentTab() {
     var data = getSaveData();
-    data.items = {};
-    data.history = [];
+    if (activeSkillTab === "all") {
+        data.items = {};
+        data.history = [];
+        saveData(data);
+        render();
+        status.innerText = "All items cleared.";
+        return;
+    }
+    for (var _i = 0, _a = Object.keys(data.items); _i < _a.length; _i++) {
+        var item = _a[_i];
+        if ((data.items[item].skill || "other") === activeSkillTab) {
+            delete data.items[item];
+        }
+    }
     saveData(data);
     render();
-    status.innerText = "Tracker cleared.";
+    status.innerText = "".concat(titleCase(activeSkillTab), " cleared.");
 }
 function exportData() {
     var data = getSaveData();
@@ -5498,7 +5510,7 @@ function exportData() {
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = "harvest-tracker-save.json";
+    a.download = "Gathering-Tracker-save.json";
     a.click();
     URL.revokeObjectURL(url);
 }
@@ -5545,7 +5557,11 @@ function escapeAttr(value) {
 appCog.addEventListener("click", function () {
     appSettingsPanel.classList.toggle("open");
 });
-clearButton.addEventListener("click", clearAll);
+clearButton.addEventListener("click", clearCurrentTab);
+clearButton.innerText =
+    activeSkillTab === "all"
+        ? "Clear All"
+        : "Clear ".concat(titleCase(activeSkillTab));
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
     if (this.files && this.files[0]) {
