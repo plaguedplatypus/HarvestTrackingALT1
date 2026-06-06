@@ -5199,9 +5199,41 @@ window.setTimeout(function () {
         }, 600);
     }, 1000);
 }, 50);
-var redBlessingItems = [
-    "fortunate components"
-];
+var redBlessingItems = new Set([
+    "brassican components",
+    "knightly components",
+    "dragonfire components",
+    "fungal components",
+    "explosive components",
+    "corporeal components",
+    "armadyl components",
+    "bandos components",
+    "saradomin components",
+    "seren components",
+    "zamorak components",
+    "zaros components",
+    "resilient components",
+    "silent components",
+    "noxious components",
+    "rumbling components",
+    "pestiferous components",
+    "third-age components",
+    "culinary components",
+    "shifting components",
+    "harnessed components",
+    "oceanic components",
+    "ascended components",
+    "undead components",
+    "avernic components",
+    "shadow components",
+    "ilujankan components",
+    "cywir components",
+    "faceted components",
+    "clockwork components",
+    "fortunate components",
+    "manufactured components",
+    "ecliptic components"
+]);
 function populateChatSelector() {
     chatSelector.innerHTML = "<option value=\"\">Select Chat</option>";
     reader.pos.boxes.forEach(function (_box, i) {
@@ -5281,7 +5313,7 @@ function processHarvestLine(chatLine) {
         var item = normalizeItemName(blessingMatch[2]);
         if (!item || isNaN(amount))
             return;
-        var colorClass = redBlessingItems.includes(item)
+        var colorClass = redBlessingItems.has(item)
             ? "blessing-item-red"
             : "blessing-item-orange";
         incrementItem(item, amount, "seren", colorClass, "blessing");
