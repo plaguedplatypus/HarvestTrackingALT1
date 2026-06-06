@@ -97,6 +97,16 @@ body {
     gap: 4px;
 }
 
+.group-header {
+    margin-top: 5px;
+    padding: 2px 4px;
+    color: #d8c26a;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #444;
+}
+
 .tracker::-webkit-scrollbar {
     width: 6px;
 }
@@ -119,17 +129,21 @@ body {
 .item-text {
     flex: 1;
     min-width: 0;
+    font-size: 11px;
+    font-weight: 600;
 }
 
 .item-count {
     min-width: 24px;
     text-align: right;
+    font-size: 11px;
     font-weight: bold;
 }
 
 .item-main-row {
     display: flex;
     align-items: center;
+    padding: 2px 4px;
     gap: 3px;
 }
 
@@ -173,6 +187,7 @@ body {
 .cog-btn {
     flex-shrink: 0;
 }
+
 
 .settings-panel {
     display: none;

@@ -130,6 +130,16 @@ body {
     gap: 4px;
 }
 
+.group-header {
+    margin-top: 5px;
+    padding: 2px 4px;
+    color: #d8c26a;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #444;
+}
+
 .tracker::-webkit-scrollbar {
     width: 6px;
 }
@@ -152,17 +162,21 @@ body {
 .item-text {
     flex: 1;
     min-width: 0;
+    font-size: 11px;
+    font-weight: 600;
 }
 
 .item-count {
     min-width: 24px;
     text-align: right;
+    font-size: 11px;
     font-weight: bold;
 }
 
 .item-main-row {
     display: flex;
     align-items: center;
+    padding: 2px 4px;
     gap: 3px;
 }
 
@@ -206,6 +220,7 @@ body {
 .cog-btn {
     flex-shrink: 0;
 }
+
 
 .settings-panel {
     display: none;
@@ -5249,7 +5264,7 @@ function processHarvestLine(chatLine) {
         var item = normalizeItemName(serenMatch[2]);
         if (!item || isNaN(amount))
             return;
-        incrementItem(item, amount, "seren", "seren-item");
+        incrementItem(item, amount, "seren", "seren-item", "seren");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return;
     }
@@ -5259,14 +5274,10 @@ function processHarvestLine(chatLine) {
         var item = normalizeItemName(blessingMatch[2]);
         if (!item || isNaN(amount))
             return;
-        var redBlessingItems_1 = [
-            "precious components",
-            "fortunate components"
-        ];
-        var colorClass = redBlessingItems_1.includes(item)
+        var colorClass = redBlessingItems.includes(item)
             ? "blessing-item-red"
             : "blessing-item-orange";
-        incrementItem(item, amount, "seren", colorClass);
+        incrementItem(item, amount, "seren", colorClass, "blessing");
         setStatus("Blessing: ".concat(amount, " x ").concat(item));
         return;
     }
@@ -5384,7 +5395,7 @@ function ensureItem(data, item) {
         };
     }
 }
-function incrementItem(item, amount, skill, colorClass) {
+function incrementItem(item, amount, skill, colorClass, source) {
     if (amount === void 0) { amount = 1; }
     if (skill === void 0) { skill = "other"; }
     var data = getSaveData();
@@ -5394,6 +5405,9 @@ function incrementItem(item, amount, skill, colorClass) {
     data.items[item].lastUpdated = Date.now();
     if (colorClass) {
         data.items[item].colorClass = colorClass;
+    }
+    if (source) {
+        data.items[item].source = source;
     }
     saveData(data);
     render(item);
@@ -5415,43 +5429,62 @@ function render(highlightItem) {
         if (activeSkillTab === "all")
             return true;
         return (data.items[item].skill || "other") === activeSkillTab;
-    })
-        .sort(function (a, b) {
-        var timeA = data.items[a].lastUpdated || 0;
-        var timeB = data.items[b].lastUpdated || 0;
-        return timeB - timeA;
     });
-    if (sortMode === "recent") {
-        items.sort(function (a, b) {
-            return (data.items[b].lastUpdated || 0) -
-                (data.items[a].lastUpdated || 0);
-        });
-    }
-    else {
-        items.sort();
-    }
+    sortItems(items, data);
     tracker.innerHTML = "";
     if (items.length === 0) {
         tracker.innerHTML = "<div class=\"empty\">No tracked items yet.</div>";
         return;
     }
+    if (activeSkillTab === "seren") {
+        var serenItems = items.filter(function (item) { return data.items[item].source === "seren"; });
+        var blessingItems = items.filter(function (item) { return data.items[item].source === "blessing"; });
+        renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
+        renderItemGroup("Divine Blessing", blessingItems, data, highlightItem);
+        bindRowEvents();
+        return;
+    }
     for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
         var item = items_1[_i];
-        var itemData = data.items[item];
-        var row = document.createElement("div");
-        row.className = "item-row";
-        var goalHtml = "";
-        if (itemData.goal) {
-            var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-            goalHtml = "\n\t\t\t\t<div class=\"goal-row\">\n\t\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t\t</span>\n\n\t\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t");
-        }
-        row.innerHTML = "\n    \t\t<div class=\"item-main-row\">\n        \t\t<div class=\"item-text\">\n            \t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n                \t\t").concat(escapeHtml(titleCase(item)), "\n            \t\t</strong>\n        \t\t</div>\n\n        \t<div class=\"item-count\">\n           \t\t").concat(itemData.count, "\n        \t</div>\n\n        \t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n    \t\t</div>\n\n    \t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
-        if (highlightItem === item) {
-            row.classList.add("highlight");
-        }
-        tracker.appendChild(row);
+        renderItemRow(item, data.items[item], highlightItem);
     }
     bindRowEvents();
+}
+function sortItems(items, data) {
+    if (sortMode === "recent") {
+        items.sort(function (a, b) {
+            return (data.items[b].lastUpdated || 0) -
+                (data.items[a].lastUpdated || 0);
+        });
+        return;
+    }
+    items.sort();
+}
+function renderItemGroup(label, items, data, highlightItem) {
+    if (items.length === 0)
+        return;
+    var header = document.createElement("div");
+    header.className = "group-header";
+    header.innerText = label;
+    tracker.appendChild(header);
+    for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
+        var item = items_2[_i];
+        renderItemRow(item, data.items[item], highlightItem);
+    }
+}
+function renderItemRow(item, itemData, highlightItem) {
+    var row = document.createElement("div");
+    row.className = "item-row";
+    var goalHtml = "";
+    if (itemData.goal) {
+        var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
+        goalHtml = "\n\t\t\t<div class=\"goal-row\">\n\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
+    }
+    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n\t\t\t\t").concat(itemData.count, "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t</div>\n\t");
+    if (highlightItem === item) {
+        row.classList.add("highlight");
+    }
+    tracker.appendChild(row);
 }
 function bindRowEvents() {
     document.querySelectorAll(".cog-btn").forEach(function (btn) {

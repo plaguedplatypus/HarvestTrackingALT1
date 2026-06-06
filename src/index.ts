@@ -20,6 +20,7 @@ type TrackedItem = {
     goal: number | null;
     settingsOpen: boolean;
     skill?: SkillType;
+    source?: "seren" | "blessing";
     colorClass?: string;
     lastUpdated?: number;
 };
@@ -246,7 +247,7 @@ function processHarvestLine(chatLine: string) {
 
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount, "seren", "seren-item");
+		incrementItem(item, amount, "seren", "seren-item", "seren");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
 		return;
 	}
@@ -261,16 +262,11 @@ function processHarvestLine(chatLine: string) {
 
 		if (!item || isNaN(amount)) return;
 
-		const redBlessingItems = [
-			"precious components",
-			"fortunate components"
-		];
-
 		const colorClass = redBlessingItems.includes(item)
 			? "blessing-item-red"
 			: "blessing-item-orange";
 
-		incrementItem(item, amount, "seren", colorClass);
+		incrementItem(item, amount, "seren", colorClass, "blessing");
 		setStatus(`Blessing: ${amount} x ${item}`);
 		return;
 	}
@@ -415,7 +411,8 @@ function incrementItem(
 	item: string,
 	amount: number = 1,
 	skill: SkillType = "other",
-	colorClass?: string
+	colorClass?: string,
+	source?: "seren" | "blessing"
 ) {
 	const data = getSaveData();
 	ensureItem(data, item);
@@ -425,6 +422,10 @@ function incrementItem(
 
 	if (colorClass) {
 		data.items[item].colorClass = colorClass;
+	}
+
+	if (source) {
+		data.items[item].source = source;
 	}
 
 	saveData(data);
@@ -447,27 +448,14 @@ function updateChatHistory(chatLine: string) {
 
 function render(highlightItem?: string) {
 	const data = getSaveData();
+
 	const items = Object.keys(data.items)
-	.filter((item) => {
-		if (activeSkillTab === "all") return true;
-		return (data.items[item].skill || "other") === activeSkillTab;
-	})
+		.filter((item) => {
+			if (activeSkillTab === "all") return true;
+			return (data.items[item].skill || "other") === activeSkillTab;
+		});
 
-	.sort((a, b) => {
-    	const timeA = data.items[a].lastUpdated || 0;
-    	const timeB = data.items[b].lastUpdated || 0;
-
-    	return timeB - timeA;
-	});
-
-	if (sortMode === "recent") {
-    	items.sort((a, b) =>
-        	(data.items[b].lastUpdated || 0) -
-        	(data.items[a].lastUpdated || 0)
-    	);
-	} else {
-    	items.sort();
-	}
+	sortItems(items, data);
 
 	tracker.innerHTML = "";
 
@@ -476,66 +464,114 @@ function render(highlightItem?: string) {
 		return;
 	}
 
+	if (activeSkillTab === "seren") {
+		const serenItems = items.filter((item) => data.items[item].source === "seren");
+		const blessingItems = items.filter((item) => data.items[item].source === "blessing");
+
+		renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
+		renderItemGroup("Divine Blessing", blessingItems, data, highlightItem);
+
+		bindRowEvents();
+		return;
+	}
+
 	for (const item of items) {
-		const itemData = data.items[item];
-		const row = document.createElement("div");
-		row.className = "item-row";
-
-		let goalHtml = "";
-
-		if (itemData.goal) {
-			const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-
-			goalHtml = `
-				<div class="goal-row">
-					<span class="goal-text">
-						${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
-					</span>
-
-					<div class="progress-bar">
-						<div class="progress-fill" style="width:${progress}%"></div>
-					</div>
-				</div>
-			`;
-		}
-
-		row.innerHTML = `
-    		<div class="item-main-row">
-        		<div class="item-text">
-            		<strong class="${itemData.colorClass || ""}">
-                		${escapeHtml(titleCase(item))}
-            		</strong>
-        		</div>
-
-        	<div class="item-count">
-           		${itemData.count}
-        	</div>
-
-        	<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
-    		</div>
-
-    		${goalHtml}
-
-			<div class="settings-panel ${itemData.settingsOpen ? "open" : ""}">
-				<input type="number"
-					   id="goal-${escapeAttr(item)}"
-					   placeholder="Goal"
-					   value="${itemData.goal || ""}">
-
-				<button class="save-goal" data-item="${escapeAttr(item)}">Save</button>
-				<button class="reset-item" data-item="${escapeAttr(item)}">Reset</button>
-				<button class="delete-item" data-item="${escapeAttr(item)}">Delete</button>
-			</div>
-		`;
-
-		if (highlightItem === item) {
-			row.classList.add("highlight");
-		}
-
-		tracker.appendChild(row);
+		renderItemRow(item, data.items[item], highlightItem);
 	}
 
 	bindRowEvents();
+}
+
+function sortItems(items: string[], data: SaveData) {
+	if (sortMode === "recent") {
+		items.sort((a, b) =>
+			(data.items[b].lastUpdated || 0) -
+			(data.items[a].lastUpdated || 0)
+		);
+		return;
+	}
+
+	items.sort();
+}
+
+function renderItemGroup(
+	label: string,
+	items: string[],
+	data: SaveData,
+	highlightItem?: string
+) {
+	if (items.length === 0) return;
+
+	const header = document.createElement("div");
+	header.className = "group-header";
+	header.innerText = label;
+	tracker.appendChild(header);
+
+	for (const item of items) {
+		renderItemRow(item, data.items[item], highlightItem);
+	}
+}
+
+function renderItemRow(
+	item: string,
+	itemData: TrackedItem,
+	highlightItem?: string
+) {
+	const row = document.createElement("div");
+	row.className = "item-row";
+
+	let goalHtml = "";
+
+	if (itemData.goal) {
+		const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
+
+		goalHtml = `
+			<div class="goal-row">
+				<span class="goal-text">
+					${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
+				</span>
+
+				<div class="progress-bar">
+					<div class="progress-fill" style="width:${progress}%"></div>
+				</div>
+			</div>
+		`;
+	}
+
+	row.innerHTML = `
+		<div class="item-main-row">
+			<div class="item-text">
+				<strong class="${itemData.colorClass || ""}">
+					${escapeHtml(titleCase(item))}
+				</strong>
+			</div>
+
+			<div class="item-count">
+				${itemData.count}
+			</div>
+
+			<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
+		</div>
+
+		${goalHtml}
+
+		<div class="settings-panel ${itemData.settingsOpen ? "open" : ""}">
+			<input type="number"
+				   id="goal-${escapeAttr(item)}"
+				   placeholder="Goal"
+				   value="${itemData.goal || ""}">
+
+			<button class="save-goal" data-item="${escapeAttr(item)}">Save</button>
+			<button class="reset-item" data-item="${escapeAttr(item)}">Reset</button>
+			<button class="delete-item" data-item="${escapeAttr(item)}">Delete</button>
+		</div>
+	`;
+
+	if (highlightItem === item) {
+		row.classList.add("highlight");
+	}
+
+	tracker.appendChild(row);
 }
 
 function bindRowEvents() {
