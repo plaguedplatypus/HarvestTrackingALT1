@@ -110,14 +110,17 @@ reader.readargs = {
 		a1lib.mixColor(255, 255, 0),
 		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
+
+		// Orange blessing text
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 102, 0),
 
-		// Blessing / component orange text
-		a1lib.mixColor(255, 153, 0),
-		a1lib.mixColor(255, 128, 0),
-		a1lib.mixColor(255, 102, 0),
+		// Red blessing text
+		a1lib.mixColor(255, 0, 0),
+		a1lib.mixColor(220, 0, 0),
+		a1lib.mixColor(200, 0, 0),
+		a1lib.mixColor(255, 50, 50),
 	],
 };
 
@@ -157,7 +160,6 @@ window.setTimeout(function () {
 }, 50);
 
 const redBlessingItems = [
-	"precious components",
 	"fortunate components"
 ];
 
@@ -565,7 +567,7 @@ function renderItemRow(
 				   value="${itemData.goal || ""}">
 
 			<button class="save-goal" data-item="${escapeAttr(item)}">Save</button>
-			<button class="reset-item" data-item="${escapeAttr(item)}">Reset</button>
+			<button class="reset-item" data-item="${escapeAttr(item)}">Reset Count</button>
 			<button class="delete-item" data-item="${escapeAttr(item)}">Delete</button>
 		</div>
 	`;

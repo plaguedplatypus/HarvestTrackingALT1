@@ -5158,13 +5158,15 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // Orange blessing text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
-        // Blessing / component orange text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
+        // Red blessing text
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
     ],
 };
 if (window.alt1) {
@@ -5198,7 +5200,6 @@ window.setTimeout(function () {
     }, 1000);
 }, 50);
 var redBlessingItems = [
-    "precious components",
     "fortunate components"
 ];
 function populateChatSelector() {
@@ -5488,7 +5489,7 @@ function renderItemRow(item, itemData, highlightItem) {
         var goal = itemData.goal.toLocaleString();
         goalHtml = "\n    \t\t<div class=\"goal-row\">\n        \t\t<span class=\"goal-text\">\n           \t\t\t ".concat(current, " / ").concat(goal, " (").concat(progress.toFixed(1), "%)\n        \t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
     }
-    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n    \t\t\t").concat(itemData.count.toLocaleString(), "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t</div>\n\t");
+    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n    \t\t\t").concat(itemData.count.toLocaleString(), "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset Count</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t</div>\n\t");
     if (highlightItem === item) {
         row.classList.add("highlight");
     }
