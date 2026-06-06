@@ -1,5 +1,5 @@
 {
-  "appName": "GatheringTracker",
+  "appName": "Resource Tracker",
   "description": "Compact RuneScape gathering tracker based on SerenTracker chatbox handling.",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",

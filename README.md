@@ -6,6 +6,8 @@ An Alt1 Toolkit app that started as a simple mining tracker has gradually grown 
 
 ### Goal Tracking
 
+[img]https://imgur.com/a/uCtXnGA[/img]
+
 - Set goals for any tracked item
 - Progress bars
 - Percentage completion
