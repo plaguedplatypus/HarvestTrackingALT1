@@ -12,7 +12,7 @@ type SkillType =
 	| "woodcutting"
 	| "fishing"
 	| "archaeology"
-	| "special"
+	| "seren"
 	| "other";
 
 type TrackedItem = {
@@ -224,7 +224,7 @@ function processHarvestLine(chatLine: string) {
 
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount, "special", "seren-item");
+		incrementItem(item, amount, "seren", "seren-item");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
 		return;
 	}
@@ -248,7 +248,7 @@ function processHarvestLine(chatLine: string) {
 			? "blessing-item-red"
 			: "blessing-item-orange";
 
-		incrementItem(item, amount, "special", colorClass);
+		incrementItem(item, amount, "seren", colorClass);
 		setStatus(`Blessing: ${amount} x ${item}`);
 		return;
 	}
