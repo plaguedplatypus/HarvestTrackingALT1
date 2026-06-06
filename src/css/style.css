@@ -286,6 +286,10 @@ button,
     color: #66ffff;
 }
 
+.seren-item-rare {
+    color: #ffd700;
+}
+
 .empty {
     color: #aaaaaa;
 }

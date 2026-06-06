@@ -319,6 +319,10 @@ button,
     color: #66ffff;
 }
 
+.seren-item-rare {
+    color: #ffd700;
+}
+
 .empty {
     color: #aaaaaa;
 }
@@ -5234,6 +5238,11 @@ var redBlessingItems = new Set([
     "manufactured components",
     "ecliptic components"
 ]);
+var rareSerenItems = new Set([
+    "hazelmere's signet ring",
+    "blurberry special",
+    "cheese+tom batta"
+]);
 function populateChatSelector() {
     chatSelector.innerHTML = "<option value=\"\">Select Chat</option>";
     reader.pos.boxes.forEach(function (_box, i) {
@@ -5303,7 +5312,10 @@ function processHarvestLine(chatLine) {
         var item = normalizeItemName(serenMatch[2]);
         if (!item || isNaN(amount))
             return;
-        incrementItem(item, amount, "seren", "seren-item", "seren");
+        var colorClass = rareSerenItems.has(item)
+            ? "seren-item-red"
+            : "seren-item";
+        incrementItem(item, amount, "seren", colorClass, "seren");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return;
     }

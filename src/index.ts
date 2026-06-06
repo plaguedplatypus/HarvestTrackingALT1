@@ -195,6 +195,12 @@ const redBlessingItems = new Set([
     "ecliptic components"
 ]);
 
+const rareSerenItems = new Set([
+    "hazelmere's signet ring",
+    "blurberry special",
+    "cheese+tom batta"
+]);
+
 function populateChatSelector() {
 	chatSelector.innerHTML = `<option value="">Select Chat</option>`;
 
@@ -281,7 +287,11 @@ function processHarvestLine(chatLine: string) {
 
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount, "seren", "seren-item", "seren");
+		const colorClass = rareSerenItems.has(item)
+    		? "seren-item-red"
+    		: "seren-item";
+
+		incrementItem(item, amount, "seren", colorClass, "seren");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
 		return;
 	}
