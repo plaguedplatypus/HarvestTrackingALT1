@@ -5085,9 +5085,14 @@ if (savedTabButton) {
 reader.readargs = {
     colors: [
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
         // Blessing / component orange text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
@@ -5218,7 +5223,7 @@ function processHarvestLine(chatLine) {
         setStatus("Blessing: ".concat(amount, " x ").concat(item));
         return;
     }
-    var transportMatch = cleanLine.match(/You transport to your (.*?):\s*(\d+)\s*x\s*(.+?)\./i);
+    var transportMatch = cleanLine.match(/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i);
     if (transportMatch) {
         var destination = transportMatch[1].toLowerCase();
         var amount = parseInt(transportMatch[2], 10);

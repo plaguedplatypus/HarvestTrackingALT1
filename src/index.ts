@@ -75,9 +75,14 @@ if (savedTabButton) {
 reader.readargs = {
 	colors: [
 		a1lib.mixColor(255, 255, 255),
+		a1lib.mixColor(230, 230, 230),
+		a1lib.mixColor(200, 200, 200),
 		a1lib.mixColor(255, 255, 0),
 		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
+		a1lib.mixColor(255, 153, 0),
+		a1lib.mixColor(255, 128, 0),
+		a1lib.mixColor(255, 102, 0),
 
 		// Blessing / component orange text
 		a1lib.mixColor(255, 153, 0),
@@ -242,7 +247,7 @@ function processHarvestLine(chatLine: string) {
 	}
 
 	const transportMatch = cleanLine.match(
-		/You transport to your (.*?):\s*(\d+)\s*x\s*(.+?)\./i
+		/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i
 	);
 
 	if (transportMatch) {
