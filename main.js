@@ -99,6 +99,7 @@ body {
 .skill-tab.active {
     background: #3a3a3a;
     border-color: #d1d1d1;
+    box-shadow: inset 0 0 3px rgba(255, 215, 0, 0.4);
 }
 
 .fishing-mode {
@@ -152,11 +153,11 @@ body {
 .item-row {
     background: #2c2c2c;
     border-radius: 3px;
-    padding: 5px 7px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    line-height: 1.25;
+    padding: 1px 5px;
+    gap: 1px;
+    line-height: 1;
 }
 
 .item-text {
@@ -164,20 +165,23 @@ body {
     min-width: 0;
     font-size: 12px;
     font-weight: 600;
+    line-height: 1;
 }
 
 .item-count {
-    min-width: 24px;
-    text-align: center;
+    min-width: 0;
     font-size: 13px;
     font-weight: bold;
+    line-height: 1;
+    margin-right: 6px;
 }
 
 .item-main-row {
     display: flex;
     align-items: center;
-    padding: 2px 4px;
-    gap: 3px;
+    height: auto;
+    min-height: 0;
+    line-height: 1;
 }
 
 .goal-row {
@@ -185,6 +189,7 @@ body {
     align-items: center;
     gap: 4px;
     width: 100%;
+    margin-bottom: 3px;
 }
 
 .goal-text {
@@ -200,6 +205,7 @@ body {
     border-radius: 4px;
     overflow: hidden;
     min-width: 25px;
+    margin-bottom: 2px;
 }
 
 .progress-fill {
@@ -226,9 +232,9 @@ body {
     display: none;
     width: 100%;
     gap: 4px;
-    margin-top: 3px;
     flex-wrap: wrap;
     align-items: center;
+    margin-bottom: 3px;
 }
 
 .settings-panel.open {
@@ -5478,9 +5484,11 @@ function renderItemRow(item, itemData, highlightItem) {
     var goalHtml = "";
     if (itemData.goal) {
         var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-        goalHtml = "\n\t\t\t<div class=\"goal-row\">\n\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
+        var current = itemData.count.toLocaleString();
+        var goal = itemData.goal.toLocaleString();
+        goalHtml = "\n    \t\t<div class=\"goal-row\">\n        \t\t<span class=\"goal-text\">\n           \t\t\t ".concat(current, " / ").concat(goal, " (").concat(progress.toFixed(1), "%)\n        \t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
     }
-    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n\t\t\t\t").concat(itemData.count, "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t</div>\n\t");
+    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n    \t\t\t").concat(itemData.count.toLocaleString(), "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t</div>\n\t");
     if (highlightItem === item) {
         row.classList.add("highlight");
     }

@@ -525,11 +525,14 @@ function renderItemRow(
 	if (itemData.goal) {
 		const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
 
+		const current = itemData.count.toLocaleString();
+		const goal = itemData.goal.toLocaleString();
+
 		goalHtml = `
-			<div class="goal-row">
-				<span class="goal-text">
-					${itemData.count}/${itemData.goal} (${progress.toFixed(1)}%)
-				</span>
+    		<div class="goal-row">
+        		<span class="goal-text">
+           			 ${current} / ${goal} (${progress.toFixed(1)}%)
+        		</span>
 
 				<div class="progress-bar">
 					<div class="progress-fill" style="width:${progress}%"></div>
@@ -547,7 +550,7 @@ function renderItemRow(
 			</div>
 
 			<div class="item-count">
-				${itemData.count}
+    			${itemData.count.toLocaleString()}
 			</div>
 
 			<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
