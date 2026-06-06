@@ -297,6 +297,22 @@ button,
     display: none;
 }
 
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.sort-button {
+    background: #aaaaaa;
+    align-self: center;
+    font-size: 10px;
+    padding: 2px 6px;
+    margin-bottom: 1px;
+}
+
 .footer {
     color: #888888;
     font-size: 10px;
@@ -5125,9 +5141,11 @@ var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
+var sortButton = document.querySelector(".sort-button");
 var savedData = getSaveData();
 activeSkillTab = savedData.activeTab || "all";
 fishingUsePorters = (_a = savedData.fishingUsePorters) !== null && _a !== void 0 ? _a : true;
+sortMode = savedData.sortMode || "recent";
 if (fishingPortersInput) {
     fishingPortersInput.checked = fishingUsePorters;
 }
@@ -5413,6 +5431,7 @@ function getSaveData() {
     var raw = localStorage.getItem(appName);
     if (!raw) {
         return {
+            sortMode: "recent",
             items: {},
             history: [],
         };
@@ -5423,12 +5442,14 @@ function getSaveData() {
             chat: data.chat,
             activeTab: data.activeTab || "all",
             fishingUsePorters: (_a = data.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
+            sortMode: data.sortMode || "recent",
             items: data.items || {},
             history: data.history || [],
         };
     }
     catch (_b) {
         return {
+            sortMode: "recent",
             items: {},
             history: [],
         };
@@ -5509,7 +5530,38 @@ function sortItems(items, data) {
         });
         return;
     }
+    if (sortMode === "count") {
+        items.sort(function (a, b) {
+            return data.items[b].count - data.items[a].count;
+        });
+        return;
+    }
     items.sort();
+}
+function updateSortButtonLabel() {
+    if (!sortButton)
+        return;
+    sortButton.innerText =
+        sortMode === "recent"
+            ? "Sort: Recent"
+            : sortMode === "alpha"
+                ? "Sort: A-Z"
+                : "Sort: Count";
+}
+if (sortButton) {
+    sortButton.addEventListener("click", function () {
+        sortMode =
+            sortMode === "recent"
+                ? "alpha"
+                : sortMode === "alpha"
+                    ? "count"
+                    : "recent";
+        var data = getSaveData();
+        data.sortMode = sortMode;
+        saveData(data);
+        updateSortButtonLabel();
+        render();
+    });
 }
 function renderItemGroup(label, items, data, highlightItem) {
     if (items.length === 0)
@@ -5667,6 +5719,7 @@ function importData(file) {
                 chat: imported.chat,
                 activeTab: imported.activeTab || "all",
                 fishingUsePorters: (_a = imported.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
+                sortMode: imported.sortMode || "recent",
                 items: imported.items || {},
                 history: imported.history || [],
             };
@@ -5713,6 +5766,7 @@ if (fishingPortersInput) {
 }
 updateClearButtonLabel();
 updateFishingModeVisibility();
+updateSortButtonLabel();
 render();
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {

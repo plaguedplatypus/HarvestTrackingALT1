@@ -25,10 +25,13 @@ type TrackedItem = {
     lastUpdated?: number;
 };
 
+type SortMode = "recent" | "alpha" | "count";
+
 type SaveData = {
     chat?: string;
     activeTab?: SkillType;
     fishingUsePorters?: boolean;
+    sortMode?: SortMode;
     items: Record<string, TrackedItem>;
     history: string[];
 };
@@ -47,8 +50,9 @@ function getTimeStamp() {
 function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
+
 let activeSkillTab: SkillType = "all";
-let sortMode = "recent";
+let sortMode: SortMode = "recent";
 let fishingUsePorters = true;
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
@@ -63,11 +67,12 @@ const importInput = document.querySelector(".import") as HTMLInputElement;
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
 
-
+const sortButton = document.querySelector(".sort-button") as HTMLElement;
 
 const savedData = getSaveData();
 activeSkillTab = savedData.activeTab || "all";
 fishingUsePorters = savedData.fishingUsePorters ?? true;
+sortMode = savedData.sortMode || "recent";
 
 if (fishingPortersInput) {
 	fishingPortersInput.checked = fishingUsePorters;
@@ -242,8 +247,8 @@ function readChatbox() {
 		if (!chatLine) continue;
 		if (isInHistory(chatLine)) continue;
 
-			updateChatHistory(chatLine);
-			processHarvestLine(chatLine);
+		updateChatHistory(chatLine);
+		processHarvestLine(chatLine);
 	}
 }
 
@@ -296,9 +301,9 @@ function processHarvestLine(chatLine: string) {
 		return;
 	}
 
-		const blessingMatch = cleanLine.match(
-			/Materials gained:\s*(\d+)\s*x\s*([A-Za-z\s-]+components)\.?/i
-		);
+	const blessingMatch = cleanLine.match(
+		/Materials gained:\s*(\d+)\s*x\s*([A-Za-z\s-]+components)\.?/i
+	);
 
 	if (blessingMatch) {
 		const amount = parseInt(blessingMatch[1], 10);
@@ -415,6 +420,7 @@ function getSaveData(): SaveData {
 
 	if (!raw) {
 		return {
+			sortMode: "recent",
 			items: {},
 			history: [],
 		};
@@ -426,11 +432,13 @@ function getSaveData(): SaveData {
 			chat: data.chat,
 			activeTab: data.activeTab || "all",
 			fishingUsePorters: data.fishingUsePorters ?? true,
+			sortMode: data.sortMode || "recent",
 			items: data.items || {},
 			history: data.history || [],
 		};
 	} catch {
 		return {
+			sortMode: "recent",
 			items: {},
 			history: [],
 		};
@@ -535,7 +543,43 @@ function sortItems(items: string[], data: SaveData) {
 		return;
 	}
 
+	if (sortMode === "count") {
+		items.sort((a, b) =>
+			data.items[b].count - data.items[a].count
+		);
+		return;
+	}
+
 	items.sort();
+}
+
+function updateSortButtonLabel() {
+	if (!sortButton) return;
+
+	sortButton.innerText =
+		sortMode === "recent"
+			? "Sort: Recent"
+			: sortMode === "alpha"
+				? "Sort: A-Z"
+				: "Sort: Count";
+}
+
+if (sortButton) {
+	sortButton.addEventListener("click", function () {
+		sortMode =
+			sortMode === "recent"
+				? "alpha"
+				: sortMode === "alpha"
+					? "count"
+					: "recent";
+
+		const data = getSaveData();
+		data.sortMode = sortMode;
+		saveData(data);
+
+		updateSortButtonLabel();
+		render();
+	});
 }
 
 function renderItemGroup(
@@ -772,6 +816,7 @@ function importData(file: File) {
 				chat: imported.chat,
 				activeTab: imported.activeTab || "all",
 				fishingUsePorters: imported.fishingUsePorters ?? true,
+				sortMode: imported.sortMode || "recent",
 				items: imported.items || {},
 				history: imported.history || [],
 			};
@@ -836,6 +881,7 @@ if (fishingPortersInput) {
 
 updateClearButtonLabel();
 updateFishingModeVisibility();
+updateSortButtonLabel();
 render();
 
 exportButton.addEventListener("click", exportData);
