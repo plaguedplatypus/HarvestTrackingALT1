@@ -101,8 +101,19 @@ body {
     border-color: #9a9a9a;
 }
 
+.fishing-mode {
+	display: none;
+	font-size: 10px;
+	color: #aaa;
+	margin-bottom: 3px;
+}
+
+.fishing-mode.visible {
+	display: block;
+}
+
 .tab-clear {
-    background: #727070;
+    background: #aaaaaa;
     align-self: center;
     font-size: 10px;
     padding: 2px 6px;
@@ -5053,6 +5064,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
+var _a;
 
 
 
@@ -5073,6 +5085,7 @@ function setStatus(message) {
 }
 var activeSkillTab = "all";
 var sortMode = "recent";
+var fishingUsePorters = true;
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
@@ -5081,8 +5094,14 @@ var status = document.querySelector(".status");
 var clearButton = document.querySelector(".clear");
 var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
+var fishingMode = document.querySelector(".fishing-mode");
+var fishingPortersInput = document.querySelector(".fishing-porters");
 var savedData = getSaveData();
 activeSkillTab = savedData.activeTab || "all";
+fishingUsePorters = (_a = savedData.fishingUsePorters) !== null && _a !== void 0 ? _a : true;
+if (fishingPortersInput) {
+    fishingPortersInput.checked = fishingUsePorters;
+}
 document.querySelectorAll(".skill-tab").forEach(function (btn) {
     btn.classList.remove("active");
 });
@@ -5091,6 +5110,16 @@ function updateClearButtonLabel() {
         activeSkillTab === "all"
             ? "Clear All"
             : "Clear ".concat(titleCase(activeSkillTab));
+}
+function updateFishingModeVisibility() {
+    if (!fishingMode)
+        return;
+    if (activeSkillTab === "fishing") {
+        fishingMode.classList.add("visible");
+    }
+    else {
+        fishingMode.classList.remove("visible");
+    }
 }
 var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(activeSkillTab, "\"]"));
 if (savedTabButton) {
@@ -5254,6 +5283,9 @@ function processHarvestLine(chatLine) {
         else if (destination.includes("bank")) {
             skill = getSkillForItem(item);
         }
+        if (skill === "fishing" && !fishingUsePorters) {
+            return;
+        }
         incrementItem(item, amount, skill);
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
@@ -5275,8 +5307,8 @@ function processHarvestLine(chatLine) {
         { pattern: /You cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
         { pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
         { pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-        //{ pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
-        //{ pattern: /You catch some (.+?)\./i, skill: "fishing" },
+        { pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
+        { pattern: /You catch some (.+?)\./i, skill: "fishing" },
         { pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
     ];
     for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
@@ -5284,6 +5316,9 @@ function processHarvestLine(chatLine) {
         var match = cleanLine.match(entry.pattern);
         if (!match)
             continue;
+        if (entry.skill === "fishing" && fishingUsePorters) {
+            continue;
+        }
         var item = normalizeItemName(match[1]);
         if (!item)
             return;
@@ -5308,6 +5343,7 @@ function normalizeItemName(item) {
         .trim();
 }
 function getSaveData() {
+    var _a;
     var raw = localStorage.getItem(appName);
     if (!raw) {
         return {
@@ -5320,11 +5356,12 @@ function getSaveData() {
         return {
             chat: data.chat,
             activeTab: data.activeTab || "all",
+            fishingUsePorters: (_a = data.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
             items: data.items || {},
             history: data.history || [],
         };
     }
-    catch (_a) {
+    catch (_b) {
         return {
             items: {},
             history: [],
@@ -5449,6 +5486,7 @@ document.querySelectorAll(".skill-tab").forEach(function (tab) {
             btn.classList.remove("active");
         });
         target.classList.add("active");
+        updateFishingModeVisibility();
         updateClearButtonLabel();
         render();
     });
@@ -5532,11 +5570,13 @@ function exportData() {
 function importData(file) {
     var reader = new FileReader();
     reader.onload = function () {
+        var _a;
         try {
             var imported = JSON.parse(reader.result);
             var data = {
                 chat: imported.chat,
                 activeTab: imported.activeTab || "all",
+                fishingUsePorters: (_a = imported.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
                 items: imported.items || {},
                 history: imported.history || [],
             };
@@ -5544,7 +5584,7 @@ function importData(file) {
             render();
             status.innerText = "Save imported.";
         }
-        catch (_a) {
+        catch (_b) {
             status.innerText = "Import failed.";
         }
     };
@@ -5573,7 +5613,16 @@ appCog.addEventListener("click", function () {
     appSettingsPanel.classList.toggle("open");
 });
 clearButton.addEventListener("click", clearCurrentTab);
+if (fishingPortersInput) {
+    fishingPortersInput.addEventListener("change", function () {
+        fishingUsePorters = this.checked;
+        var data = getSaveData();
+        data.fishingUsePorters = fishingUsePorters;
+        saveData(data);
+    });
+}
 updateClearButtonLabel();
+updateFishingModeVisibility();
 render();
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
@@ -5582,7 +5631,6 @@ importInput.addEventListener("change", function () {
         this.value = "";
     }
 });
-render();
 
 })();
 

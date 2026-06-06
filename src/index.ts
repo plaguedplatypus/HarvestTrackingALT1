@@ -27,6 +27,7 @@ type TrackedItem = {
 type SaveData = {
     chat?: string;
     activeTab?: SkillType;
+    fishingUsePorters?: boolean;
     items: Record<string, TrackedItem>;
     history: string[];
 };
@@ -47,6 +48,7 @@ function setStatus(message: string) {
 }
 let activeSkillTab: SkillType = "all";
 let sortMode = "recent";
+let fishingUsePorters = true;
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
@@ -57,8 +59,18 @@ const clearButton = document.querySelector(".clear") as HTMLElement;
 const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
 
+const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
+const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
+
+
+
 const savedData = getSaveData();
 activeSkillTab = savedData.activeTab || "all";
+fishingUsePorters = savedData.fishingUsePorters ?? true;
+
+if (fishingPortersInput) {
+	fishingPortersInput.checked = fishingUsePorters;
+}
 
 document.querySelectorAll(".skill-tab").forEach((btn) => {
 	btn.classList.remove("active");
@@ -69,6 +81,16 @@ function updateClearButtonLabel() {
 		activeSkillTab === "all"
 			? "Clear All"
 			: `Clear ${titleCase(activeSkillTab)}`;
+}
+
+function updateFishingModeVisibility() {
+	if (!fishingMode) return;
+
+	if (activeSkillTab === "fishing") {
+		fishingMode.classList.add("visible");
+	} else {
+		fishingMode.classList.remove("visible");
+	}
 }
 
 const savedTabButton = document.querySelector(
@@ -274,6 +296,10 @@ function processHarvestLine(chatLine: string) {
 			skill = getSkillForItem(item);
 		}
 
+		if (skill === "fishing" && !fishingUsePorters) {
+			return;
+		}
+
 		incrementItem(item, amount, skill);
 		setStatus(`Tracked: ${amount} x ${item}`);
 		return;
@@ -306,8 +332,8 @@ function processHarvestLine(chatLine: string) {
 		{ pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
 		{ pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
 
-		//{ pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
-		//{ pattern: /You catch some (.+?)\./i, skill: "fishing" },
+		{ pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
+		{ pattern: /You catch some (.+?)\./i, skill: "fishing" },
 
 		{ pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
 	];
@@ -315,6 +341,10 @@ function processHarvestLine(chatLine: string) {
 	for (const entry of skillPatterns) {
 		const match = cleanLine.match(entry.pattern);
 		if (!match) continue;
+
+		if (entry.skill === "fishing" && fishingUsePorters) {
+			continue;
+		}
 
 		const item = normalizeItemName(match[1]);
 		if (!item) return;
@@ -355,6 +385,7 @@ function getSaveData(): SaveData {
 		return {
 			chat: data.chat,
 			activeTab: data.activeTab || "all",
+			fishingUsePorters: data.fishingUsePorters ?? true,
 			items: data.items || {},
 			history: data.history || [],
 		};
@@ -549,6 +580,7 @@ document.querySelectorAll(".skill-tab").forEach((tab) => {
 
 		target.classList.add("active");
 
+		updateFishingModeVisibility();
 		updateClearButtonLabel();
 		render();
 	});
@@ -652,6 +684,7 @@ function importData(file: File) {
 			const data: SaveData = {
 				chat: imported.chat,
 				activeTab: imported.activeTab || "all",
+				fishingUsePorters: imported.fishingUsePorters ?? true,
 				items: imported.items || {},
 				history: imported.history || [],
 			};
@@ -704,7 +737,18 @@ appCog.addEventListener("click", function () {
 
 clearButton.addEventListener("click", clearCurrentTab);
 
+if (fishingPortersInput) {
+	fishingPortersInput.addEventListener("change", function () {
+		fishingUsePorters = this.checked;
+
+		const data = getSaveData();
+		data.fishingUsePorters = fishingUsePorters;
+		saveData(data);
+	});
+}
+
 updateClearButtonLabel();
+updateFishingModeVisibility();
 render();
 
 exportButton.addEventListener("click", exportData);
@@ -715,5 +759,3 @@ importInput.addEventListener("change", function () {
 		this.value = "";
 	}
 });
-
-render();

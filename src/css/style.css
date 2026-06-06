@@ -68,8 +68,19 @@ body {
     border-color: #9a9a9a;
 }
 
+.fishing-mode {
+	display: none;
+	font-size: 10px;
+	color: #aaa;
+	margin-bottom: 3px;
+}
+
+.fishing-mode.visible {
+	display: block;
+}
+
 .tab-clear {
-    background: #727070;
+    background: #aaaaaa;
     align-self: center;
     font-size: 10px;
     padding: 2px 6px;
