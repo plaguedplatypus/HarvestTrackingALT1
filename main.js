@@ -102,10 +102,11 @@ body {
 }
 
 .tab-clear {
-    align-self: flex-start;
+    background: #727070;
+    align-self: center;
     font-size: 10px;
     padding: 2px 6px;
-    margin-bottom: 3px;
+    margin-bottom: 1px;
 }
 
 .tracker {
@@ -148,18 +149,6 @@ body {
     flex: 1;
     min-width: 0;
     word-break: break-word;
-}
-
-.blessing-item-orange {
-    color: #ff9900;
-}
-
-.blessing-item-red {
-    color: #ff3333;
-}
-
-.seren-item {
-    color: #66ffff;
 }
 
 .goal-row {
@@ -280,6 +269,18 @@ button,
 .status {
     color: #7a7a7a;
     font-size: 10px;
+}
+
+.blessing-item-orange {
+    color: #ff9900;
+}
+
+.blessing-item-red {
+    color: #ff3333;
+}
+
+.seren-item {
+    color: #66ffff;
 }
 
 .empty {
