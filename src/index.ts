@@ -32,7 +32,7 @@ type SaveData = {
     history: string[];
 };
 
-const appName = "GatheringTracker";
+const appName = "ResourceTracker";
 const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
@@ -670,7 +670,7 @@ function exportData() {
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement("a");
 	a.href = url;
-	a.download = "Gathering-Tracker-save.json";
+	a.download = "Resource-Tracker-save.json";
 	a.click();
 	URL.revokeObjectURL(url);
 }

@@ -5071,7 +5071,7 @@ var _a;
 
 
 
-var appName = "GatheringTracker";
+var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
@@ -5563,7 +5563,7 @@ function exportData() {
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = "Gathering-Tracker-save.json";
+    a.download = "Resource-Tracker-save.json";
     a.click();
     URL.revokeObjectURL(url);
 }
