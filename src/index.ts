@@ -64,6 +64,13 @@ document.querySelectorAll(".skill-tab").forEach((btn) => {
 	btn.classList.remove("active");
 });
 
+function updateClearButtonLabel() {
+	clearButton.innerText =
+		activeSkillTab === "all"
+			? "Clear All"
+			: `Clear ${titleCase(activeSkillTab)}`;
+}
+
 const savedTabButton = document.querySelector(
 	`.skill-tab[data-skill="${activeSkillTab}"]`
 );
@@ -541,6 +548,8 @@ document.querySelectorAll(".skill-tab").forEach((tab) => {
 		});
 
 		target.classList.add("active");
+
+		updateClearButtonLabel();
 		render();
 	});
 });
@@ -694,10 +703,10 @@ appCog.addEventListener("click", function () {
 });
 
 clearButton.addEventListener("click", clearCurrentTab);
-clearButton.innerText =
-	activeSkillTab === "all"
-		? "Clear All"
-		: `Clear ${titleCase(activeSkillTab)}`;
+
+updateClearButtonLabel();
+render();
+
 exportButton.addEventListener("click", exportData);
 
 importInput.addEventListener("change", function () {

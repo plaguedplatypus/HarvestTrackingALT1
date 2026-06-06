@@ -101,6 +101,13 @@ body {
     border-color: #9a9a9a;
 }
 
+.tab-clear {
+    align-self: flex-start;
+    font-size: 10px;
+    padding: 2px 6px;
+    margin-bottom: 3px;
+}
+
 .tracker {
     flex: 1 1 auto;
     min-height: 0;
@@ -5078,6 +5085,12 @@ activeSkillTab = savedData.activeTab || "all";
 document.querySelectorAll(".skill-tab").forEach(function (btn) {
     btn.classList.remove("active");
 });
+function updateClearButtonLabel() {
+    clearButton.innerText =
+        activeSkillTab === "all"
+            ? "Clear All"
+            : "Clear ".concat(titleCase(activeSkillTab));
+}
 var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(activeSkillTab, "\"]"));
 if (savedTabButton) {
     savedTabButton.classList.add("active");
@@ -5435,6 +5448,7 @@ document.querySelectorAll(".skill-tab").forEach(function (tab) {
             btn.classList.remove("active");
         });
         target.classList.add("active");
+        updateClearButtonLabel();
         render();
     });
 });
@@ -5558,10 +5572,8 @@ appCog.addEventListener("click", function () {
     appSettingsPanel.classList.toggle("open");
 });
 clearButton.addEventListener("click", clearCurrentTab);
-clearButton.innerText =
-    activeSkillTab === "all"
-        ? "Clear All"
-        : "Clear ".concat(titleCase(activeSkillTab));
+updateClearButtonLabel();
+render();
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
     if (this.files && this.files[0]) {
