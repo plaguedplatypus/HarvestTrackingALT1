@@ -1,6 +1,6 @@
 # Plague's Resource Tracker
 
-An Alt1 Toolkit app that started as a simple mining tracker has gradually grown into a full-featured gathering companion for multiple skills. Designed to automatically track gathered resources, special rewards, and progress toward long-term goals. Utilizes chat box timestamps for duplicate protection and accurate tracking.
+An Alt1 Toolkit app that started as a simple mining tracker has gradually grown into a full-featured gathering companion for multiple skills. Designed to automatically track gathered resources, special rewards, and progress toward long-term goals. Utilizes chat box timestamps for duplicate protection and accurate tracking. Certain skills may require the use of Porters/GOTE to track.
 
 ## Features
 
@@ -56,7 +56,7 @@ Supports both:
 ## Installation
 
 1. Open the app URL in Alt1. 
-    alt1://addapp/https://plaguedplatypus.github.io/GatheringTrackingALT1/appconfig.json
+    alt1://addapp/https://plaguedplatypus.github.io/PlaguesResourceTracking/appconfig.json
 2. Allow:
    - View Screen
    - Get Game State
