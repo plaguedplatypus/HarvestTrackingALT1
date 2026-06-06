@@ -149,17 +149,21 @@ body {
     line-height: 1.25;
 }
 
+.item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.item-count {
+    min-width: 42px;
+    text-align: right;
+    font-weight: bold;
+}
+
 .item-main-row {
     display: flex;
     align-items: center;
     gap: 6px;
-    width: 100%;
-}
-
-.item-text {
-    flex: 1;
-    min-width: 0;
-    word-break: break-word;
 }
 
 .goal-row {
@@ -5441,7 +5445,7 @@ function render(highlightItem) {
             var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
             goalHtml = "\n\t\t\t\t<div class=\"goal-row\">\n\t\t\t\t\t<span class=\"goal-text\">\n\t\t\t\t\t\t".concat(itemData.count, "/").concat(itemData.goal, " (").concat(progress.toFixed(1), "%)\n\t\t\t\t\t</span>\n\n\t\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t");
         }
-        row.innerHTML = "\n\t\t\t<div class=\"item-main-row\">\n\t\t\t\t<div class=\"item-text\">\n\t\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t\t</strong>: ").concat(itemData.count, "\n\t\t\t\t</div>\n\n\t\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t\t</div>\n\n\t\t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
+        row.innerHTML = "\n    \t\t<div class=\"item-main-row\">\n        \t\t<div class=\"item-text\">\n            \t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n                \t\t").concat(escapeHtml(titleCase(item)), "\n            \t\t</strong>\n        \t\t</div>\n\n        \t<div class=\"item-count\">\n           \t\t").concat(itemData.count, "\n        \t</div>\n\n        \t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n    \t\t</div>\n\n    \t\t").concat(goalHtml, "\n\n\t\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t\t<input type=\"number\"\n\t\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset</button>\n\t\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t\t</div>\n\t\t");
         if (highlightItem === item) {
             row.classList.add("highlight");
         }

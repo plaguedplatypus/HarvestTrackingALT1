@@ -116,17 +116,21 @@ body {
     line-height: 1.25;
 }
 
+.item-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.item-count {
+    min-width: 42px;
+    text-align: right;
+    font-weight: bold;
+}
+
 .item-main-row {
     display: flex;
     align-items: center;
     gap: 6px;
-    width: 100%;
-}
-
-.item-text {
-    flex: 1;
-    min-width: 0;
-    word-break: break-word;
 }
 
 .goal-row {

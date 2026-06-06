@@ -500,17 +500,21 @@ function render(highlightItem?: string) {
 		}
 
 		row.innerHTML = `
-			<div class="item-main-row">
-				<div class="item-text">
-					<strong class="${itemData.colorClass || ""}">
-						${escapeHtml(titleCase(item))}
-					</strong>: ${itemData.count}
-				</div>
+    		<div class="item-main-row">
+        		<div class="item-text">
+            		<strong class="${itemData.colorClass || ""}">
+                		${escapeHtml(titleCase(item))}
+            		</strong>
+        		</div>
 
-				<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
-			</div>
+        	<div class="item-count">
+           		${itemData.count}
+        	</div>
 
-			${goalHtml}
+        	<button class="cog-btn" data-item="${escapeAttr(item)}">⚙</button>
+    		</div>
+
+    		${goalHtml}
 
 			<div class="settings-panel ${itemData.settingsOpen ? "open" : ""}">
 				<input type="number"
