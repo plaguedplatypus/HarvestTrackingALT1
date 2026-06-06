@@ -141,7 +141,7 @@ body {
 
 .item-row {
     background: #2c2c2c;
-    border-radius: 5px;
+    border-radius: 3px;
     padding: 5px 7px;
     display: flex;
     flex-direction: column;
@@ -155,7 +155,7 @@ body {
 }
 
 .item-count {
-    min-width: 42px;
+    min-width: 24px;
     text-align: right;
     font-weight: bold;
 }
@@ -163,13 +163,13 @@ body {
 .item-main-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 3px;
 }
 
 .goal-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     width: 100%;
 }
 
