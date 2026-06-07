@@ -6,7 +6,7 @@
   "iconUrl": "./icon.png",
   "defaultWidth": 230,
   "defaultHeight": 350,
-  "minWidth": 200,
+  "minWidth": 100,
   "minHeight": 100,
   "requestHandlers": [],
   "activators": [],

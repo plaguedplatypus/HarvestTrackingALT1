@@ -714,8 +714,8 @@ function renderItemRow(
 	row.innerHTML = `
 		<div class="item-main-row">
 			<div class="item-text">
-				<strong class="${itemData.colorClass || ""}">
-					${escapeHtml(titleCase(item))}
+				<strong class="${itemData.colorClass || ""}"
+						title="${escapeHtml(titleCase(item))}">
 				</strong>
 			</div>
 
