@@ -250,9 +250,7 @@ body {
 .app-settings {
     position: absolute;
     right: 4px;
-    bottom: 0;
-    transform: translateY(2px);
-    z-index: 50;
+    bottom: 2px;
 }
 
 .app-settings-panel {
@@ -300,9 +298,9 @@ button,
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 6px;
-    margin-top: 4px;
-    margin-bottom: 4px;
+    gap: 4px;
+    margin-top: 1px;
+    margin-bottom: 1px;
 }
 
 .sort-button {
@@ -337,11 +335,13 @@ button,
 .footer {
     color: #888888;
     font-size: 10px;
+    line-height: 1;
 }
 
 .status {
     color: #7a7a7a;
     font-size: 10px;
+    line-height: 1;
 }
 
 .uncommon-component {
