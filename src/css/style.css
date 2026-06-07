@@ -83,16 +83,6 @@ body {
 	display: block;
 }
 
-.tracker {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 .group-header {
     margin-top: 5px;
     padding: 2px 4px;
@@ -101,6 +91,16 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     border-bottom: 1px solid #444;
+}
+
+.tracker {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .tracker::-webkit-scrollbar {

@@ -145,24 +145,23 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
-		a1lib.mixColor(255, 255, 255),
-		a1lib.mixColor(230, 230, 230),
-		a1lib.mixColor(200, 200, 200),
-		a1lib.mixColor(255, 255, 0),
-		a1lib.mixColor(0, 255, 255),
-		a1lib.mixColor(127, 169, 255),
+    	// Standard chat text
+    	a1lib.mixColor(255,255,255),
+    	a1lib.mixColor(230,230,230),
 
-		// Orange uncommon component text
-		a1lib.mixColor(255, 153, 0),
-		a1lib.mixColor(255, 128, 0),
-		a1lib.mixColor(255, 102, 0),
+    	// Seren spirit
+    	a1lib.mixColor(0,255,255),
 
-		// Red rare component text
-		a1lib.mixColor(255, 0, 0),
-		a1lib.mixColor(220, 0, 0),
-		a1lib.mixColor(200, 0, 0),
-		a1lib.mixColor(255, 50, 50),
-	],
+    	// Divine blessing / uncommon components
+		a1lib.mixColor(255,255,0),
+    	a1lib.mixColor(255,153,0),
+
+    	// Rare components
+    	a1lib.mixColor(255,0,0),
+
+    	// Boons / Fortune perk
+    	a1lib.mixColor(0,255,0),
+]
 };
 
 if (window.alt1) {
@@ -414,17 +413,28 @@ function processHarvestLine(chatLine: string) {
 		return;
 	}
 
-	const boonMetalBankMatch = cleanLine.match(
-		/sent it to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i
+	const perkSendMatch = cleanLine.match(
+		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\./i
 	);
 
-	if (boonMetalBankMatch) {
-		const amount = parseInt(boonMetalBankMatch[1], 10);
-		const item = normalizeItemName(boonMetalBankMatch[2]);
+	if (perkSendMatch) {
+		const destination = perkSendMatch[1].toLowerCase();
+		const amount = parseInt(perkSendMatch[2], 10);
+		const item = normalizeItemName(perkSendMatch[3]);
 
 		if (!item || isNaN(amount)) return;
 
-		incrementItem(item, amount, "mining");
+		let skill: InternalSkillType = "other";
+
+		if (destination.includes("metal bank")) {
+			skill = "mining";
+		} else if (destination.includes("material storage")) {
+			skill = "archaeology";
+		} else if (destination.includes("bank")) {
+			skill = getSkillForItem(item);
+		}
+
+		incrementItem(item, amount, skill);
 		setStatus(`Tracked: ${amount} x ${item}`);
 		return;
 	}

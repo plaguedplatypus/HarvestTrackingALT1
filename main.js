@@ -116,16 +116,6 @@ body {
 	display: block;
 }
 
-.tracker {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 .group-header {
     margin-top: 5px;
     padding: 2px 4px;
@@ -134,6 +124,16 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     border-bottom: 1px solid #444;
+}
+
+.tracker {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .tracker::-webkit-scrollbar {
@@ -5243,22 +5243,19 @@ if (savedTabButton) {
 }
 reader.readargs = {
     colors: [
+        // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
+        // Seren spirit
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // Orange uncommon component text
+        // Divine blessing / uncommon components
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
-        // Red rare component text
+        // Rare components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
-    ],
+        // Boons / Fortune perk
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
+    ]
 };
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
@@ -5465,13 +5462,24 @@ function processHarvestLine(chatLine) {
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
-    var boonMetalBankMatch = cleanLine.match(/sent it to your metal bank:\s*(\d+)\s*x\s*(.+?)\./i);
-    if (boonMetalBankMatch) {
-        var amount = parseInt(boonMetalBankMatch[1], 10);
-        var item = normalizeItemName(boonMetalBankMatch[2]);
+    var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\./i);
+    if (perkSendMatch) {
+        var destination = perkSendMatch[1].toLowerCase();
+        var amount = parseInt(perkSendMatch[2], 10);
+        var item = normalizeItemName(perkSendMatch[3]);
         if (!item || isNaN(amount))
             return;
-        incrementItem(item, amount, "mining");
+        var skill = "other";
+        if (destination.includes("metal bank")) {
+            skill = "mining";
+        }
+        else if (destination.includes("material storage")) {
+            skill = "archaeology";
+        }
+        else if (destination.includes("bank")) {
+            skill = getSkillForItem(item);
+        }
+        incrementItem(item, amount, skill);
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
