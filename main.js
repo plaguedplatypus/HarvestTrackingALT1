@@ -5534,12 +5534,6 @@ function render(highlightItem) {
         tracker.innerHTML = "<div class=\"empty\">No tracked items yet.</div>";
         return;
     }
-    if (activeSkillTab === "seren") {
-        var serenItems = items.filter(function (item) { return data.items[item].source === "seren-spirit"; });
-        renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
-        bindRowEvents();
-        return;
-    }
     if (activeSkillTab === "invention") {
         var rareItems = items.filter(function (item) { return data.items[item].source === "rare-components"; });
         var uncommonItems = items.filter(function (item) {

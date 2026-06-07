@@ -550,15 +550,6 @@ function render(highlightItem?: string) {
 		return;
 	}
 
-	if (activeSkillTab === "seren") {
-		const serenItems = items.filter((item) => data.items[item].source === "seren-spirit");
-
-		renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
-
-		bindRowEvents();
-		return;
-	}
-
 	if (activeSkillTab === "invention") {
 		const rareItems = items.filter(
 			(item) => data.items[item].source === "rare-components"
