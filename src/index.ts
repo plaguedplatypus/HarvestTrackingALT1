@@ -27,7 +27,15 @@ type TrackedItem = {
     lastUpdated?: number;
 };
 
+type InventionFilter = "all" | "rare" | "uncommon" | "common";
+let inventionFilter: InventionFilter = "all";
+
+let activeSkillTab: SkillType = "all";
+
 type SortMode = "recent" | "alpha" | "count";
+let sortMode: SortMode = "recent";
+
+let fishingUsePorters = true;
 
 type SaveData = {
     chat?: string;
@@ -53,10 +61,6 @@ function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
 
-let activeSkillTab: SkillType = "all";
-let sortMode: SortMode = "recent";
-let fishingUsePorters = true;
-
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
@@ -70,6 +74,7 @@ const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
 
 const sortButton = document.querySelector(".sort-button") as HTMLElement;
+const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
 
 const savedData = getSaveData();
 const savedActiveTab = savedData.activeTab as string | undefined;
@@ -104,6 +109,31 @@ function updateFishingModeVisibility() {
 		fishingMode.classList.remove("visible");
 	}
 }
+
+function updateInventionFilterVisibility() {
+	if (!inventionFilters) return;
+
+	if (activeSkillTab === "invention") {
+		inventionFilters.classList.add("visible");
+	} else {
+		inventionFilters.classList.remove("visible");
+	}
+}
+
+document.querySelectorAll(".invention-filter").forEach((button) => {
+	button.addEventListener("click", (e: Event) => {
+		const target = e.currentTarget as HTMLElement;
+
+		inventionFilter = (target.dataset.filter as InventionFilter) || "all";
+
+		document.querySelectorAll(".invention-filter").forEach((btn) => {
+			btn.classList.remove("active");
+		});
+
+		target.classList.add("active");
+		render();
+	});
+});
 
 const savedTabButton = document.querySelector(
 	`.skill-tab[data-skill="${activeSkillTab}"]`
@@ -551,24 +581,29 @@ function render(highlightItem?: string) {
 	}
 
 	if (activeSkillTab === "invention") {
-		const rareItems = items.filter(
-			(item) => data.items[item].source === "rare-components"
-		);
+	const rareItems = items.filter(
+		(item) => data.items[item].source === "rare-components"
+	);
 
-		const uncommonItems = items.filter(
-			(item) =>
-				data.items[item].source === "uncommon-components" ||
-				data.items[item].source === "divine-blessing" ||
-				data.items[item].source === "blessing"
-		);
+	const uncommonItems = items.filter(
+		(item) => data.items[item].source === "uncommon-components"
+	);
 
-		const inventionItems = items.filter(
-			(item) => data.items[item].source === "invention" || !data.items[item].source
-		);
+	const commonItems = items.filter(
+		(item) => data.items[item].source === "invention" || !data.items[item].source
+	);
 
+	if (inventionFilter === "all" || inventionFilter === "rare") {
 		renderItemGroup("Rare Components", rareItems, data, highlightItem);
+	}
+
+	if (inventionFilter === "all" || inventionFilter === "uncommon") {
 		renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-		renderItemGroup("Common Components", inventionItems, data, highlightItem);
+	}
+
+	if (inventionFilter === "all" || inventionFilter === "common") {
+		renderItemGroup("Common Components", commonItems, data, highlightItem);
+	}
 
 		bindRowEvents();
 		return;
@@ -759,6 +794,7 @@ document.querySelectorAll(".skill-tab").forEach((tab) => {
 		target.classList.add("active");
 
 		updateFishingModeVisibility();
+		updateInventionFilterVisibility();
 		updateClearButtonLabel();
 		render();
 	});
@@ -928,6 +964,7 @@ if (fishingPortersInput) {
 
 updateClearButtonLabel();
 updateFishingModeVisibility();
+updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
 

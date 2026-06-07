@@ -39,7 +39,7 @@ body {
 
 body {
     margin: 0;
-    padding: 6px;
+    padding: 4px;
     box-sizing: border-box;
     background: #1e1e1e;
     color: white;
@@ -52,7 +52,7 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 3px;
     overflow: hidden;
 }
 
@@ -311,6 +311,27 @@ button,
     font-size: 10px;
     padding: 2px 6px;
     margin-bottom: 1px;
+}
+
+.invention-filters {
+	display: none;
+	justify-content: left;
+	gap: 2px;
+	margin-left: 15px;
+}
+
+.invention-filters.visible {
+	display: flex;
+}
+
+.invention-filter {
+    background: #aaaaaa;
+	font-size: 10px;
+	padding: 2px 5px;
+}
+
+.invention-filter.active {
+    border-color: #ffffff;
 }
 
 .footer {
@@ -5116,6 +5137,10 @@ var _a;
 
 
 
+var inventionFilter = "all";
+var activeSkillTab = "all";
+var sortMode = "recent";
+var fishingUsePorters = true;
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
@@ -5128,9 +5153,6 @@ function getTimeStamp() {
 function setStatus(message) {
     status.innerText = "".concat(message, " @ ").concat(getTimeStamp());
 }
-var activeSkillTab = "all";
-var sortMode = "recent";
-var fishingUsePorters = true;
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
@@ -5142,6 +5164,7 @@ var importInput = document.querySelector(".import");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
 var sortButton = document.querySelector(".sort-button");
+var inventionFilters = document.querySelector(".invention-filters");
 var savedData = getSaveData();
 var savedActiveTab = savedData.activeTab;
 activeSkillTab =
@@ -5172,6 +5195,27 @@ function updateFishingModeVisibility() {
         fishingMode.classList.remove("visible");
     }
 }
+function updateInventionFilterVisibility() {
+    if (!inventionFilters)
+        return;
+    if (activeSkillTab === "invention") {
+        inventionFilters.classList.add("visible");
+    }
+    else {
+        inventionFilters.classList.remove("visible");
+    }
+}
+document.querySelectorAll(".invention-filter").forEach(function (button) {
+    button.addEventListener("click", function (e) {
+        var target = e.currentTarget;
+        inventionFilter = target.dataset.filter || "all";
+        document.querySelectorAll(".invention-filter").forEach(function (btn) {
+            btn.classList.remove("active");
+        });
+        target.classList.add("active");
+        render();
+    });
+});
 var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(activeSkillTab, "\"]"));
 if (savedTabButton) {
     savedTabButton.classList.add("active");
@@ -5536,15 +5580,17 @@ function render(highlightItem) {
     }
     if (activeSkillTab === "invention") {
         var rareItems = items.filter(function (item) { return data.items[item].source === "rare-components"; });
-        var uncommonItems = items.filter(function (item) {
-            return data.items[item].source === "uncommon-components" ||
-                data.items[item].source === "divine-blessing" ||
-                data.items[item].source === "blessing";
-        });
-        var inventionItems = items.filter(function (item) { return data.items[item].source === "invention" || !data.items[item].source; });
-        renderItemGroup("Rare Components", rareItems, data, highlightItem);
-        renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-        renderItemGroup("Common Components", inventionItems, data, highlightItem);
+        var uncommonItems = items.filter(function (item) { return data.items[item].source === "uncommon-components"; });
+        var commonItems = items.filter(function (item) { return data.items[item].source === "invention" || !data.items[item].source; });
+        if (inventionFilter === "all" || inventionFilter === "rare") {
+            renderItemGroup("Rare Components", rareItems, data, highlightItem);
+        }
+        if (inventionFilter === "all" || inventionFilter === "uncommon") {
+            renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
+        }
+        if (inventionFilter === "all" || inventionFilter === "common") {
+            renderItemGroup("Common Components", commonItems, data, highlightItem);
+        }
         bindRowEvents();
         return;
     }
@@ -5661,6 +5707,7 @@ document.querySelectorAll(".skill-tab").forEach(function (tab) {
         });
         target.classList.add("active");
         updateFishingModeVisibility();
+        updateInventionFilterVisibility();
         updateClearButtonLabel();
         render();
     });
@@ -5798,6 +5845,7 @@ if (fishingPortersInput) {
 }
 updateClearButtonLabel();
 updateFishingModeVisibility();
+updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
 exportButton.addEventListener("click", exportData);
