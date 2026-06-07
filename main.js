@@ -63,7 +63,7 @@ body {
 }
 
 .title {
-    font-size: 15px;
+    font-size: 12px;
     font-weight: bold;
 }
 
@@ -313,9 +313,8 @@ button,
 
 .invention-filters {
 	display: none;
-	justify-content: left;
+    align-self: left;
 	gap: 2px;
-	margin-left: 15px;
 }
 
 .invention-filters.visible {
