@@ -264,10 +264,9 @@ button,
 .action-buttons {
     display: flex;
     justify-content: center;
-    height: 1px;
     gap: 4px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin-top: 1px;
+    margin-bottom: 1px;
 }
 
 .tab-clear {
