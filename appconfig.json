@@ -1,13 +1,13 @@
 {
   "appName": "Resource Tracker",
-  "description": "Compact RuneScape gathering tracker based on SerenTracker chatbox handling.",
+  "description": "Compact RuneScape gathering tracker for Alt1 Toolkit",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",
   "iconUrl": "./icon.png",
-  "defaultWidth": 240,
+  "defaultWidth": 230,
   "defaultHeight": 350,
-  "minWidth": 240,
-  "minHeight": 140,
+  "minWidth": 200,
+  "minHeight": 100,
   "requestHandlers": [],
   "activators": [],
   "permissions": "pixel,gamestate,overlay"
