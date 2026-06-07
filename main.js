@@ -113,14 +113,6 @@ body {
 	display: block;
 }
 
-.tab-clear {
-    background: #aaaaaa;
-    align-self: center;
-    font-size: 10px;
-    padding: 2px 6px;
-    margin-bottom: 1px;
-}
-
 .tracker {
     flex: 1 1 auto;
     min-height: 0;
@@ -288,7 +280,14 @@ button,
 
 button,
 .import-label {
-    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e0e0e0;
+    border: 1px solid #666;
+    color: black;
+    height: 22px;
+    box-sizing: border-box;
 }
 
 .import {
@@ -298,8 +297,17 @@ button,
 .action-buttons {
     display: flex;
     justify-content: center;
+    height: 1px;
     gap: 4px;
-    margin-top: 1px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.tab-clear {
+    background: #aaaaaa;
+    align-self: center;
+    font-size: 10px;
+    padding: 2px 6px;
     margin-bottom: 1px;
 }
 
