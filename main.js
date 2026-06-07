@@ -5255,6 +5255,7 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         // Boons / Fortune perk
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(60, 180, 30),
     ]
 };
 if (window.alt1) {

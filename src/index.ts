@@ -161,6 +161,7 @@ reader.readargs = {
 
     	// Boons / Fortune perk
     	a1lib.mixColor(0,255,0),
+    	a1lib.mixColor(60,180,30),
 ]
 };
 
