@@ -5535,7 +5535,7 @@ function render(highlightItem) {
         return;
     }
     if (activeSkillTab === "seren") {
-        var serenItems = items.filter(function (item) { return data.items[item].source === "seren"; });
+        var serenItems = items.filter(function (item) { return data.items[item].source === "seren-spirit"; });
         renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
         bindRowEvents();
         return;

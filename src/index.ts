@@ -551,7 +551,7 @@ function render(highlightItem?: string) {
 	}
 
 	if (activeSkillTab === "seren") {
-		const serenItems = items.filter((item) => data.items[item].source === "seren");
+		const serenItems = items.filter((item) => data.items[item].source === "seren-spirit");
 
 		renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
 
