@@ -5544,7 +5544,7 @@ function render(highlightItem) {
         var inventionItems = items.filter(function (item) { return data.items[item].source === "invention" || !data.items[item].source; });
         renderItemGroup("Rare Components", rareItems, data, highlightItem);
         renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-        renderItemGroup("Invention", inventionItems, data, highlightItem);
+        renderItemGroup("Common Components", inventionItems, data, highlightItem);
         bindRowEvents();
         return;
     }

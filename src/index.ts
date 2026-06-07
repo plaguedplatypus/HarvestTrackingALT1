@@ -568,7 +568,7 @@ function render(highlightItem?: string) {
 
 		renderItemGroup("Rare Components", rareItems, data, highlightItem);
 		renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-		renderItemGroup("Invention", inventionItems, data, highlightItem);
+		renderItemGroup("Common Components", inventionItems, data, highlightItem);
 
 		bindRowEvents();
 		return;
