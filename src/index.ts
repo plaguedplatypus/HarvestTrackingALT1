@@ -13,14 +13,16 @@ type SkillType =
 	| "fishing"
 	| "archaeology"
 	| "seren"
-	| "other";
+	| "invention";
+
+type InternalSkillType = SkillType | "other";
 
 type TrackedItem = {
     count: number;
     goal: number | null;
     settingsOpen: boolean;
-    skill?: SkillType;
-    source?: "seren" | "blessing";
+    skill?: InternalSkillType;
+	source?: string;
     colorClass?: string;
     lastUpdated?: number;
 };
@@ -29,7 +31,7 @@ type SortMode = "recent" | "alpha" | "count";
 
 type SaveData = {
     chat?: string;
-    activeTab?: SkillType;
+    activeTab?: InternalSkillType;
     fishingUsePorters?: boolean;
     sortMode?: SortMode;
     items: Record<string, TrackedItem>;
@@ -70,7 +72,11 @@ const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLIn
 const sortButton = document.querySelector(".sort-button") as HTMLElement;
 
 const savedData = getSaveData();
-activeSkillTab = savedData.activeTab || "all";
+const savedActiveTab = savedData.activeTab as string | undefined;
+activeSkillTab =
+	savedActiveTab === "other"
+		? "all"
+		: ((savedData.activeTab || "all") as SkillType);
 fishingUsePorters = savedData.fishingUsePorters ?? true;
 sortMode = savedData.sortMode || "recent";
 
@@ -116,12 +122,12 @@ reader.readargs = {
 		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
 
-		// Orange blessing text
+		// Orange uncommon component text
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 102, 0),
 
-		// Red blessing text
+		// Red rare component text
 		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
 		a1lib.mixColor(200, 0, 0),
@@ -164,7 +170,7 @@ window.setTimeout(function () {
 	}, 1000);
 }, 50);
 
-const redBlessingItems = new Set([
+const rareComponents = new Set([
     "brassican components",
     "knightly components",
     "dragonfire components",
@@ -296,28 +302,56 @@ function processHarvestLine(chatLine: string) {
     		? "seren-item-red"
     		: "seren-item";
 
-		incrementItem(item, amount, "seren", colorClass, "seren");
+		incrementItem(item, amount, "seren", colorClass, "seren-spirit");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
 		return;
 	}
 
-	const blessingMatch = cleanLine.match(
-		/Materials gained:\s*(\d+)\s*x\s*([A-Za-z\s-]+components)\.?/i
+	const materialsMatch = cleanLine.match(
+		/Materials gained:\s*(.+)$/i
 	);
 
-	if (blessingMatch) {
-		const amount = parseInt(blessingMatch[1], 10);
-		const item = normalizeItemName(blessingMatch[2]);
+	if (materialsMatch) {
+		const materialText = materialsMatch[1];
 
-		if (!item || isNaN(amount)) return;
+		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
+		let materialMatch: RegExpExecArray | null;
+		let trackedAnyMaterial = false;
 
-		const colorClass = redBlessingItems.has(item)
-    		? "blessing-item-red"
-    		: "blessing-item-orange";
+		while ((materialMatch = materialRegex.exec(materialText)) !== null) {
+			const amount = parseInt(materialMatch[1], 10);
+			const item = normalizeItemName(materialMatch[2]);
 
-		incrementItem(item, amount, "seren", colorClass, "blessing");
-		setStatus(`Blessing: ${amount} x ${item}`);
-		return;
+			if (!item || isNaN(amount)) continue;
+
+			const isRareComponent = rareComponents.has(item);
+			const isUncommonComponent = item.includes("components");
+			const isInventionMaterial =
+				isUncommonComponent ||
+				item.includes("parts") ||
+				item === "junk";
+
+			if (!isInventionMaterial) continue;
+
+			const colorClass = isRareComponent
+				? "rare-component"
+				: isUncommonComponent
+					? "uncommon-component"
+					: undefined;
+
+			const source = isRareComponent
+				? "rare-components"
+				: isUncommonComponent
+					? "uncommon-components"
+					: "invention";
+
+			incrementItem(item, amount, "invention", colorClass, source);
+			setStatus(`Invention: ${amount} x ${item}`);
+
+			trackedAnyMaterial = true;
+		}
+
+		if (trackedAnyMaterial) return;
 	}
 
 	const transportMatch = cleanLine.match(
@@ -331,7 +365,7 @@ function processHarvestLine(chatLine: string) {
 
 		if (!item || isNaN(amount)) return;
 
-		let skill: SkillType = "other";
+		let skill: InternalSkillType = "other";
 
 		if (destination.includes("metal bank")) {
 			skill = "mining";
@@ -400,7 +434,7 @@ function processHarvestLine(chatLine: string) {
 	}
 }
 
-function getSkillForItem(item: string): SkillType {
+function getSkillForItem(item: string): InternalSkillType {
 	if (item.includes("ore")) return "mining";
 	if (item.includes("logs")) return "woodcutting";
 	if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish")) return "fishing";
@@ -462,9 +496,9 @@ function ensureItem(data: SaveData, item: string) {
 function incrementItem(
 	item: string,
 	amount: number = 1,
-	skill: SkillType = "other",
+	skill: InternalSkillType = "other",
 	colorClass?: string,
-	source?: "seren" | "blessing"
+	source?: string
 ) {
 	const data = getSaveData();
 	ensureItem(data, item);
@@ -518,10 +552,32 @@ function render(highlightItem?: string) {
 
 	if (activeSkillTab === "seren") {
 		const serenItems = items.filter((item) => data.items[item].source === "seren");
-		const blessingItems = items.filter((item) => data.items[item].source === "blessing");
 
 		renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
-		renderItemGroup("Divine Blessing", blessingItems, data, highlightItem);
+
+		bindRowEvents();
+		return;
+	}
+
+	if (activeSkillTab === "invention") {
+		const rareItems = items.filter(
+			(item) => data.items[item].source === "rare-components"
+		);
+
+		const uncommonItems = items.filter(
+			(item) =>
+				data.items[item].source === "uncommon-components" ||
+				data.items[item].source === "divine-blessing" ||
+				data.items[item].source === "blessing"
+		);
+
+		const inventionItems = items.filter(
+			(item) => data.items[item].source === "invention" || !data.items[item].source
+		);
+
+		renderItemGroup("Rare Components", rareItems, data, highlightItem);
+		renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
+		renderItemGroup("Invention", inventionItems, data, highlightItem);
 
 		bindRowEvents();
 		return;

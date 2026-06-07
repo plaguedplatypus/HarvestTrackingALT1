@@ -323,11 +323,11 @@ button,
     font-size: 10px;
 }
 
-.blessing-item-orange {
+.uncommon-component {
     color: #ff9900;
 }
 
-.blessing-item-red {
+.rare-component {
     color: #ff3333;
 }
 
@@ -5143,7 +5143,11 @@ var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
 var sortButton = document.querySelector(".sort-button");
 var savedData = getSaveData();
-activeSkillTab = savedData.activeTab || "all";
+var savedActiveTab = savedData.activeTab;
+activeSkillTab =
+    savedActiveTab === "other"
+        ? "all"
+        : (savedData.activeTab || "all");
 fishingUsePorters = (_a = savedData.fishingUsePorters) !== null && _a !== void 0 ? _a : true;
 sortMode = savedData.sortMode || "recent";
 if (fishingPortersInput) {
@@ -5180,11 +5184,11 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // Orange blessing text
+        // Orange uncommon component text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
-        // Red blessing text
+        // Red rare component text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
@@ -5221,7 +5225,7 @@ window.setTimeout(function () {
         }, 600);
     }, 1000);
 }, 50);
-var redBlessingItems = new Set([
+var rareComponents = new Set([
     "brassican components",
     "knightly components",
     "dragonfire components",
@@ -5333,22 +5337,44 @@ function processHarvestLine(chatLine) {
         var colorClass = rareSerenItems.has(item)
             ? "seren-item-red"
             : "seren-item";
-        incrementItem(item, amount, "seren", colorClass, "seren");
+        incrementItem(item, amount, "seren", colorClass, "seren-spirit");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return;
     }
-    var blessingMatch = cleanLine.match(/Materials gained:\s*(\d+)\s*x\s*([A-Za-z\s-]+components)\.?/i);
-    if (blessingMatch) {
-        var amount = parseInt(blessingMatch[1], 10);
-        var item = normalizeItemName(blessingMatch[2]);
-        if (!item || isNaN(amount))
+    var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
+    if (materialsMatch) {
+        var materialText = materialsMatch[1];
+        var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
+        var materialMatch = void 0;
+        var trackedAnyMaterial = false;
+        while ((materialMatch = materialRegex.exec(materialText)) !== null) {
+            var amount = parseInt(materialMatch[1], 10);
+            var item = normalizeItemName(materialMatch[2]);
+            if (!item || isNaN(amount))
+                continue;
+            var isRareComponent = rareComponents.has(item);
+            var isUncommonComponent = item.includes("components");
+            var isInventionMaterial = isUncommonComponent ||
+                item.includes("parts") ||
+                item === "junk";
+            if (!isInventionMaterial)
+                continue;
+            var colorClass = isRareComponent
+                ? "rare-component"
+                : isUncommonComponent
+                    ? "uncommon-component"
+                    : undefined;
+            var source = isRareComponent
+                ? "rare-components"
+                : isUncommonComponent
+                    ? "uncommon-components"
+                    : "invention";
+            incrementItem(item, amount, "invention", colorClass, source);
+            setStatus("Invention: ".concat(amount, " x ").concat(item));
+            trackedAnyMaterial = true;
+        }
+        if (trackedAnyMaterial)
             return;
-        var colorClass = redBlessingItems.has(item)
-            ? "blessing-item-red"
-            : "blessing-item-orange";
-        incrementItem(item, amount, "seren", colorClass, "blessing");
-        setStatus("Blessing: ".concat(amount, " x ").concat(item));
-        return;
     }
     var transportMatch = cleanLine.match(/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i);
     if (transportMatch) {
@@ -5510,9 +5536,21 @@ function render(highlightItem) {
     }
     if (activeSkillTab === "seren") {
         var serenItems = items.filter(function (item) { return data.items[item].source === "seren"; });
-        var blessingItems = items.filter(function (item) { return data.items[item].source === "blessing"; });
         renderItemGroup("Seren Spirit", serenItems, data, highlightItem);
-        renderItemGroup("Divine Blessing", blessingItems, data, highlightItem);
+        bindRowEvents();
+        return;
+    }
+    if (activeSkillTab === "invention") {
+        var rareItems = items.filter(function (item) { return data.items[item].source === "rare-components"; });
+        var uncommonItems = items.filter(function (item) {
+            return data.items[item].source === "uncommon-components" ||
+                data.items[item].source === "divine-blessing" ||
+                data.items[item].source === "blessing";
+        });
+        var inventionItems = items.filter(function (item) { return data.items[item].source === "invention" || !data.items[item].source; });
+        renderItemGroup("Rare Components", rareItems, data, highlightItem);
+        renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
+        renderItemGroup("Invention", inventionItems, data, highlightItem);
         bindRowEvents();
         return;
     }
