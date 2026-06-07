@@ -63,7 +63,7 @@ body {
 }
 
 .title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     overflow: hidden;
     white-space: nowrap;
@@ -150,7 +150,7 @@ body {
     border-radius: 3px;
     display: flex;
     flex-direction: column;
-    padding: 1px 5px;
+    padding: 1px 4px;
     gap: 1px;
     line-height: 1;
 }
@@ -158,8 +158,8 @@ body {
 .item-text {
     flex: 1;
     min-width: 0;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 500;
     line-height: 1;
     overflow: hidden;
     white-space: nowrap;
