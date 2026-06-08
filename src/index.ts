@@ -177,14 +177,19 @@ reader.readargs = {
 		// additional colors
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
-		a1lib.mixColor(255, 153, 0),
+
+		a1lib.mixColor(250, 0, 0),
+		a1lib.mixColor(242, 2, 2),
+		a1lib.mixColor(233, 5, 4),
+		a1lib.mixColor(211, 0, 0),
+		a1lib.mixColor(179, 10, 8),
+		a1lib.mixColor(79, 21, 19),
+
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 112, 0),
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 102, 0),
 		a1lib.mixColor(127, 169, 255),
-		a1lib.mixColor(220, 0, 0),
-		a1lib.mixColor(200, 0, 0),
 		a1lib.mixColor(255, 50, 50),
 		a1lib.mixColor(0, 220, 0),
 		a1lib.mixColor(0, 200, 0),
