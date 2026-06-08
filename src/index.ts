@@ -56,9 +56,12 @@ reader.readargs.colors.push(
 	a1lib.mixColor(0, 220, 0), // Slightly darker green
 	a1lib.mixColor(0, 200, 0), // Even darker green
 	a1lib.mixColor(80, 255, 80), // Lighter green
-	a1lib.mixColor(159, 255, 159), // Very light green
-	a1lib.mixColor(69, 178, 71), // Muted green
-	a1lib.mixColor(0, 111, 0), // Dark green
+	a1lib.mixColor(43, 162, 18), // a green
+	a1lib.mixColor(40, 114, 22), // some green
+	a1lib.mixColor(34, 77, 21), // another green
+	a1lib.mixColor(50, 200, 20), // ANOTHER green
+
+	a1lib.mixColor(48, 48, 48), // what's this?
 
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange

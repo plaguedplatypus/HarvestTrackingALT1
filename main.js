@@ -5170,9 +5170,11 @@ reader.readargs.colors.push(alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0), // Slightly darker green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0), // Even darker green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80), // Lighter green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(159, 255, 159), // Very light green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(69, 178, 71), // Muted green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 111, 0), // Dark green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(43, 162, 18), // a green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(40, 114, 22), // some green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(34, 77, 21), // another green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // ANOTHER green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(48, 48, 48), // what's this?
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0), // Darker orange
