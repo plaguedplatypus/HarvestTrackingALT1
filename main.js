@@ -5147,14 +5147,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alt1/chatbox */ "../node_modules/alt1/dist/chatbox/index.js");
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! alt1/ocr */ "../node_modules/alt1/dist/ocr/index.js");
-/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(alt1_ocr__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./index.html */ "./index.html");
-/* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
-/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
-/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
+/* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.html */ "./index.html");
+/* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
+/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
+/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 var _a;
-
 
 
 
@@ -5256,19 +5253,19 @@ if (savedTabButton) {
 }
 reader.readargs = {
     colors: [
-        // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        // Yellow / orange text
+        // Yellow
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
+        // Seren spirit
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // Orange / uncommon components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
-        // Seren spirit / blue-cyan text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // Rare red text
+        // Red / rare components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
@@ -5280,54 +5277,6 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
     ],
 };
-function addTextBridgeNudge(name, color, match) {
-    reader.forwardnudges.push({
-        name: name,
-        match: match,
-        fn: function (ctx) {
-            var startx = ctx.rightx;
-            var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-            if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
-                return;
-            var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            ctx.addfrag({
-                color: color,
-                index: -1,
-                text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? " 1" : " 1 x",
-                xstart: startx,
-                xend: startx + one.basechar.width + ctx.font.spacewidth,
-            });
-            return true;
-        },
-    });
-}
-function addCommaNudge() {
-    var commaColors = [
-        [255, 255, 255],
-        [255, 0, 0],
-        [255, 128, 0],
-    ];
-    reader.forwardnudges.push({
-        name: "material-comma",
-        match: /Materials gained|parts|components|Junk/i,
-        fn: function (ctx) {
-            var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
-            if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
-                return;
-            ctx.addfrag({
-                color: [255, 255, 255],
-                index: -1,
-                text: ", ",
-                xstart: ctx.rightx,
-                xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
-            });
-            return true;
-        },
-    });
-}
-addCommaNudge();
-addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
-addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
 }
@@ -5478,7 +5427,6 @@ function processHarvestLine(chatLine) {
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
     if (materialsMatch) {
         var materialText = materialsMatch[1];
-        console.log("MATERIAL OCR:", materialText);
         var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
         var materialMatch = void 0;
         var trackedAnyMaterial = false;

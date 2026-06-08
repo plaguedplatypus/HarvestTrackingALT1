@@ -1,6 +1,5 @@
 import * as a1lib from "alt1";
 import ChatboxReader from "alt1/chatbox";
-import * as OCR from "alt1/ocr";
 
 import "./index.html";
 import "./appconfig.json";
@@ -158,22 +157,23 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
-		// Standard chat text
 		a1lib.mixColor(255, 255, 255),
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
 
-		// Yellow / orange text
+		// Yellow
 		a1lib.mixColor(255, 255, 0),
+
+		// Seren spirit
+		a1lib.mixColor(0, 255, 255),
+		a1lib.mixColor(127, 169, 255),
+
+		// Orange / uncommon components
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 112, 0),
 
-		// Seren spirit / blue-cyan text
-		a1lib.mixColor(0, 255, 255),
-		a1lib.mixColor(127, 169, 255),
-
-		// Rare red text
+		// Red / rare components
 		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
 		a1lib.mixColor(200, 0, 0),
@@ -186,101 +186,6 @@ reader.readargs = {
 		a1lib.mixColor(80, 255, 80),
 	],
 };
-
-function addTextBridgeNudge(
-	name: string,
-	color: [number, number, number],
-	match: RegExp
-) {
-	reader.forwardnudges.push({
-		name,
-		match,
-		fn: (ctx) => {
-			const startx = ctx.rightx;
-
-			const one = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				color,
-				startx + ctx.font.spacewidth,
-				ctx.baseliney,
-				false,
-				true
-			);
-
-			if (one?.chr !== "1") return;
-
-			const x = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				color,
-				one.x + one.basechar.width + ctx.font.spacewidth,
-				ctx.baseliney,
-				false,
-				true
-			);
-
-			ctx.addfrag({
-				color,
-				index: -1,
-				text: x?.chr === "x" ? " 1" : " 1 x",
-				xstart: startx,
-				xend: startx + one.basechar.width + ctx.font.spacewidth,
-			});
-
-			return true;
-		},
-	});
-}
-
-function addCommaNudge() {
-	const commaColors: [number, number, number][] = [
-		[255, 255, 255],
-		[255, 0, 0],
-		[255, 128, 0],
-	];
-	reader.forwardnudges.push({
-		name: "material-comma",
-		match: /Materials gained|parts|components|Junk/i,
-		fn: (ctx) => {
-			const comma = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				[255, 255, 255],
-				ctx.rightx,
-				ctx.baseliney,
-				false,
-				true
-			);
-
-			if (comma?.chr !== ",") return;
-
-			ctx.addfrag({
-				color: [255, 255, 255],
-				index: -1,
-				text: ", ",
-				xstart: ctx.rightx,
-				xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
-			});
-
-			return true;
-		},
-	});
-}
-
-addCommaNudge();
-
-addTextBridgeNudge(
-	"rare-component-bridge",
-	[255, 0, 0],
-	/Materials gained|parts|components|Junk/i
-);
-
-addTextBridgeNudge(
-	"uncommon-component-bridge",
-	[255, 128, 0],
-	/Materials gained|parts|components|Junk/i
-);
 
 if (window.alt1) {
 	alt1.identifyAppUrl("./appconfig.json");
@@ -460,9 +365,7 @@ function processHarvestLine(chatLine: string) {
 	);
 
 	if (materialsMatch) {
-	const materialText = materialsMatch[1];
-
-	console.log("MATERIAL OCR:", materialText);
+		const materialText = materialsMatch[1];
 
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
