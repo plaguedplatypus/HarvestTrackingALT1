@@ -63,7 +63,7 @@ reader.readargs.colors.push(
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange
 	a1lib.mixColor(255, 111, 0), // Darker orange
-	a1lib.mixColor(255, 140, 56) // pale orange
+	a1lib.mixColor(255, 140, 56), // pale orange
 );
 
 function getTimeStamp() {

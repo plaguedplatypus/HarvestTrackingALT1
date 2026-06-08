@@ -5205,8 +5205,7 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56) // pale orange
-);
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56));
 function getTimeStamp() {
     return new Date().toLocaleTimeString("en-US", {
         hour12: false,
