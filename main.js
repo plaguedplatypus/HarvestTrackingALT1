@@ -5234,7 +5234,7 @@ function showChatHistory() {
         console.log(line);
     }
     status.innerText =
-        "History contains ".concat(recentLines.length, " lines. Check console.");
+        "History contains ".concat(recentLines.length, " lines. Check F12 console.");
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
@@ -5253,19 +5253,19 @@ if (savedTabButton) {
 }
 reader.readargs = {
     colors: [
+        // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        // Yellow
+        // Yellow / orange text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
-        // Seren spirit
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // Orange / uncommon components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
-        // Red / rare components
+        // Seren spirit / blue-cyan text
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // Rare red text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),

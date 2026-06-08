@@ -1,5 +1,6 @@
 import * as a1lib from "alt1";
 import ChatboxReader from "alt1/chatbox";
+import * as OCR from "alt1/ocr";
 
 import "./index.html";
 import "./appconfig.json";
@@ -129,7 +130,7 @@ function showChatHistory() {
 	}
 
 	status.innerText =
-		`History contains ${recentLines.length} lines. Check console.`;
+		`History contains ${recentLines.length} lines. Check F12 console.`;
 }
 
 document.querySelectorAll(".invention-filter").forEach((button) => {
@@ -157,23 +158,22 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
+		// Standard chat text
 		a1lib.mixColor(255, 255, 255),
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
 
-		// Yellow
+		// Yellow / orange text
 		a1lib.mixColor(255, 255, 0),
-
-		// Seren spirit
-		a1lib.mixColor(0, 255, 255),
-		a1lib.mixColor(127, 169, 255),
-
-		// Orange / uncommon components
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 112, 0),
 
-		// Red / rare components
+		// Seren spirit / blue-cyan text
+		a1lib.mixColor(0, 255, 255),
+		a1lib.mixColor(127, 169, 255),
+
+		// Rare red text
 		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
 		a1lib.mixColor(200, 0, 0),
