@@ -5304,10 +5304,7 @@ function addTextBridgeNudge(name, color, match) {
 function addCommaNudge() {
     var commaColors = [
         [255, 255, 255],
-        [230, 230, 230],
-        [200, 200, 200],
         [255, 0, 0],
-        [220, 0, 0],
         [255, 128, 0],
     ];
     reader.forwardnudges.push({
