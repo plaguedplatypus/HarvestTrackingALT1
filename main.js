@@ -5267,13 +5267,24 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
         //Red messages
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 80, 80),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 100, 100),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(240, 40, 40),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(180, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(160, 0, 0),
         //Green messages
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(100, 255, 100),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(120, 255, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(100, 220, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 200, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 180, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 155, 0),
     ],
 };
 if (window.alt1) {
