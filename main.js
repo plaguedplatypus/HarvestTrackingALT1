@@ -5167,7 +5167,15 @@ var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(43, 97, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(39, 76, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(57, 165, 29), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(43, 162, 18), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(40, 114, 22), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(34, 77, 21), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(157, 52, 229), // what's this?
+// I'll find that green eventually
+// group 1
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(43, 97, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(39, 76, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 177, 30), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 130, 28), 
+// group 2
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(57, 168, 29), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(43, 162, 18), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(43, 162, 18), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(39, 94, 23), 
+// group 3
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(40, 114, 22), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(34, 77, 21), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), 
+// group 4
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 138, 27), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(42, 88, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(45, 108, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(54, 147, 29), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(131, 47, 186), // what's this?
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0), // Darker orange
