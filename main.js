@@ -5373,14 +5373,16 @@ function selectSavedChat() {
 }
 function readChatbox() {
     var opts = reader.read() || [];
+    console.log("opts:", opts);
     var chatArr = processChat(opts);
+    console.log("chatArr:", chatArr);
     for (var _i = 0, chatArr_1 = chatArr; _i < chatArr_1.length; _i++) {
         var line = chatArr_1[_i];
         var chatLine = line.trim();
         if (!chatLine)
             continue;
-        if (isInHistory(chatLine))
-            continue;
+        // temporarily bypass history while testing
+        // if (isInHistory(chatLine)) continue;
         updateChatHistory(chatLine);
         processHarvestLine(chatLine);
     }

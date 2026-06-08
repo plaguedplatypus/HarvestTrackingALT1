@@ -297,12 +297,19 @@ function selectSavedChat() {
 
 function readChatbox() {
 	const opts = reader.read() || [];
+
+	console.log("opts:", opts);
+
 	const chatArr = processChat(opts);
+
+	console.log("chatArr:", chatArr);
 
 	for (const line of chatArr) {
 		const chatLine = line.trim();
 		if (!chatLine) continue;
-		if (isInHistory(chatLine)) continue;
+
+		// temporarily bypass history while testing
+		// if (isInHistory(chatLine)) continue;
 
 		updateChatHistory(chatLine);
 		processHarvestLine(chatLine);
