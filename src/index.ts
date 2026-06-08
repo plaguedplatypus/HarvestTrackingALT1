@@ -51,6 +51,13 @@ const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
 
+reader.readargs.colors.push(
+	a1lib.mixColor(0, 255, 0), // Bright green for timestamps
+	a1lib.mixColor(0, 220, 0), // Slightly darker green
+	a1lib.mixColor(0, 200, 0), // Even darker green
+	a1lib.mixColor(80, 255, 80), // Lighter green
+);
+
 function getTimeStamp() {
 	return new Date().toLocaleTimeString("en-US", {
 		hour12: false,
@@ -60,14 +67,6 @@ function getTimeStamp() {
 function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
-
-reader.readargs.colors.push(
-	a1lib.mixColor(0, 255, 0), // Bright green
-	a1lib.mixColor(0, 220, 0), // Slightly darker green
-	a1lib.mixColor(0, 200, 0), // Even darker green
-	a1lib.mixColor(80, 255, 80), // Lighter green
-
-const reader = new ChatboxReader();
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
