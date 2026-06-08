@@ -1,6 +1,5 @@
 import * as a1lib from "alt1";
 import ChatboxReader from "alt1/chatbox";
-import * as OCR from "alt1/ocr";
 
 import "./index.html";
 import "./appconfig.json";
