@@ -5228,13 +5228,13 @@ function updateInventionFilterVisibility() {
     }
 }
 function showChatHistory() {
-    var historyText = recentLines
-        .slice()
-        .reverse()
-        .join("\n");
-    console.log(historyText);
+    console.log("=== Recent Chat History ===");
+    for (var _i = 0, recentLines_1 = recentLines; _i < recentLines_1.length; _i++) {
+        var line = recentLines_1[_i];
+        console.log(line);
+    }
     status.innerText =
-        "History contains ".concat(recentLines.length, " lines. See browser console.");
+        "History contains ".concat(recentLines.length, " lines. Check F12 console.");
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
@@ -5256,20 +5256,22 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
+        //yellow 
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
+        //Seren spirit
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // orange
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
+        //Red messages
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(155, 0, 0),
+        //Green messages
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 183, 30),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 155, 0),
     ],
 };
 if (window.alt1) {

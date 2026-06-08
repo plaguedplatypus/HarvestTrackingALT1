@@ -122,15 +122,14 @@ function updateInventionFilterVisibility() {
 }
 
 function showChatHistory() {
-	const historyText = recentLines
-		.slice()
-		.reverse()
-		.join("\n");
+	console.log("=== Recent Chat History ===");
 
-	console.log(historyText);
+	for (const line of recentLines) {
+		console.log(line);
+	}
 
 	status.innerText =
-		`History contains ${recentLines.length} lines. See browser console.`;
+		`History contains ${recentLines.length} lines. Check F12 console.`;
 }
 
 document.querySelectorAll(".invention-filter").forEach((button) => {
@@ -162,23 +161,26 @@ reader.readargs = {
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
 
+		//yellow 
 		a1lib.mixColor(255, 255, 0),
+
+		//Seren spirit
 		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
 
+		// orange
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
-		a1lib.mixColor(255, 102, 0),
+		a1lib.mixColor(255, 112, 0),
 
+		//Red messages
 		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
-		a1lib.mixColor(200, 0, 0),
-		a1lib.mixColor(255, 50, 50),
+		a1lib.mixColor(155, 0, 0),
 
-		a1lib.mixColor(0, 255, 0),
-		a1lib.mixColor(0, 220, 0),
-		a1lib.mixColor(0, 200, 0),
-		a1lib.mixColor(80, 255, 80),
+		//Green messages
+		a1lib.mixColor(80, 183, 30),
+		a1lib.mixColor(0, 155, 0),
 	],
 };
 
