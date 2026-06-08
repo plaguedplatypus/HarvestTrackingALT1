@@ -61,6 +61,14 @@ function setStatus(message: string) {
 	status.innerText = `${message} @ ${getTimeStamp()}`;
 }
 
+reader.readargs.colors.push(
+	a1lib.mixColor(0, 255, 0), // Bright green
+	a1lib.mixColor(0, 220, 0), // Slightly darker green
+	a1lib.mixColor(0, 200, 0), // Even darker green
+	a1lib.mixColor(80, 255, 80), // Lighter green
+
+const reader = new ChatboxReader();
+
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;

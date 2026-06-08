@@ -5174,6 +5174,11 @@ function getTimeStamp() {
 function setStatus(message) {
     status.innerText = "".concat(message, " @ ").concat(getTimeStamp());
 }
+reader.readargs.colors.push(alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0), // Slightly darker green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0), // Even darker green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80)); // Lighter green
+var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
