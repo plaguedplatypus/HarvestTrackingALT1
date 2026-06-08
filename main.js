@@ -5184,6 +5184,7 @@ var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
+var historyButton = document.querySelector(".history-button");
 var sortButton = document.querySelector(".sort-button");
 var inventionFilters = document.querySelector(".invention-filters");
 var savedData = getSaveData();
@@ -5224,6 +5225,14 @@ function updateInventionFilterVisibility() {
     }
     else {
         inventionFilters.classList.remove("visible");
+    }
+}
+function showChatHistory() {
+    status.innerText = "History contains ".concat(recentLines.length, " lines. See console.");
+    console.log("=== Recent Chat History ===");
+    for (var _i = 0, recentLines_1 = recentLines; _i < recentLines_1.length; _i++) {
+        var line = recentLines_1[_i];
+        console.log(line);
     }
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
@@ -5882,6 +5891,9 @@ updateFishingModeVisibility();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
+if (historyButton) {
+    historyButton.addEventListener("click", showChatHistory);
+}
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
     if (this.files && this.files[0]) {

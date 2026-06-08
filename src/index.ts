@@ -73,6 +73,7 @@ const importInput = document.querySelector(".import") as HTMLInputElement;
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
 
+const historyButton = document.querySelector(".history-button") as HTMLElement;
 const sortButton = document.querySelector(".sort-button") as HTMLElement;
 const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
 
@@ -117,6 +118,16 @@ function updateInventionFilterVisibility() {
 		inventionFilters.classList.add("visible");
 	} else {
 		inventionFilters.classList.remove("visible");
+	}
+}
+
+function showChatHistory() {
+	status.innerText = `History contains ${recentLines.length} lines. See console.`;
+
+	console.log("=== Recent Chat History ===");
+
+	for (const line of recentLines) {
+		console.log(line);
 	}
 }
 
@@ -982,6 +993,10 @@ updateFishingModeVisibility();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
+
+if (historyButton) {
+	historyButton.addEventListener("click", showChatHistory);
+}
 
 exportButton.addEventListener("click", exportData);
 
