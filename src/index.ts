@@ -74,7 +74,7 @@ reader.readargs.colors.push(
 	a1lib.mixColor(45, 108, 26),
 	a1lib.mixColor(54, 147, 29),
 
-	a1lib.mixColor(131, 47, 186), // what's this?
+	a1lib.mixColor(75, 33, 99), // what's this?
 
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange

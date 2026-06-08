@@ -5175,7 +5175,7 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(57, 168, 29), alt1__WEBPACK_IMPORTED_
 // group 3
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(40, 114, 22), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(34, 77, 21), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), 
 // group 4
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 138, 27), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(42, 88, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(45, 108, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(54, 147, 29), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(131, 47, 186), // what's this?
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 138, 27), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(42, 88, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(45, 108, 26), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(54, 147, 29), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(75, 33, 99), // what's this?
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0), // Darker orange
