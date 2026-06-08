@@ -5237,7 +5237,7 @@ function showChatHistory() {
         console.log(line);
     }
     status.innerText =
-        "History contains ".concat(recentLines.length, " lines. Check F12 console.");
+        "History contains ".concat(recentLines.length, " lines. Check console.");
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
@@ -5280,62 +5280,49 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
     ],
 };
-reader.forwardnudges.push({
-    match: /./,
-    name: "comma",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybeComma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
-        if ((maybeComma === null || maybeComma === void 0 ? void 0 : maybeComma.chr) === ",") {
+function addTextBridgeNudge(name, color, match) {
+    reader.forwardnudges.push({
+        name: name,
+        match: match,
+        fn: function (ctx) {
+            var startx = ctx.rightx;
+            var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+            if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
+                return;
+            var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            ctx.addfrag({
+                color: color,
+                index: -1,
+                text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? " 1" : " 1 x",
+                xstart: startx,
+                xend: startx + one.basechar.width + ctx.font.spacewidth,
+            });
+            return true;
+        },
+    });
+}
+function addCommaNudge() {
+    reader.forwardnudges.push({
+        name: "material-comma",
+        match: /Materials gained|parts|components|Junk/i,
+        fn: function (ctx) {
+            var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
+            if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
+                return;
             ctx.addfrag({
                 color: [255, 255, 255],
                 index: -1,
                 text: ", ",
-                xstart: startx,
-                xend: startx + maybeComma.basechar.width + ctx.font.spacewidth,
+                xstart: ctx.rightx,
+                xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
             });
             return true;
-        }
-    },
-});
-reader.forwardnudges.push({
-    match: /Materials gained|parts|components|Junk/i,
-    name: "uncommon_1",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybeOne = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-        if ((maybeOne === null || maybeOne === void 0 ? void 0 : maybeOne.chr) === "1") {
-            var maybeX = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            ctx.addfrag({
-                color: [255, 128, 0],
-                index: -1,
-                text: (maybeX === null || maybeX === void 0 ? void 0 : maybeX.chr) === "x" ? " 1" : " 1 x",
-                xstart: startx,
-                xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
-            });
-            return true;
-        }
-    },
-});
-reader.forwardnudges.push({
-    match: /Materials gained|parts|components|Junk/i,
-    name: "rare_1",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybeOne = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-        if ((maybeOne === null || maybeOne === void 0 ? void 0 : maybeOne.chr) === "1") {
-            var maybeX = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            ctx.addfrag({
-                color: [255, 0, 0],
-                index: -1,
-                text: (maybeX === null || maybeX === void 0 ? void 0 : maybeX.chr) === "x" ? " 1" : " 1 x",
-                xstart: startx,
-                xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
-            });
-            return true;
-        }
-    },
-});
+        },
+    });
+}
+addCommaNudge();
+addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
 }
@@ -5486,6 +5473,7 @@ function processHarvestLine(chatLine) {
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
     if (materialsMatch) {
         var materialText = materialsMatch[1];
+        console.log("MATERIAL OCR:", materialText);
         var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
         var materialMatch = void 0;
         var trackedAnyMaterial = false;

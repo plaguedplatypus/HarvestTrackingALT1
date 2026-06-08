@@ -130,7 +130,7 @@ function showChatHistory() {
 	}
 
 	status.innerText =
-		`History contains ${recentLines.length} lines. Check F12 console.`;
+		`History contains ${recentLines.length} lines. Check console.`;
 }
 
 document.querySelectorAll(".invention-filter").forEach((button) => {
@@ -187,112 +187,95 @@ reader.readargs = {
 	],
 };
 
-reader.forwardnudges.push({
-	match: /./,
-	name: "comma",
-	fn: (ctx) => {
-		const startx = ctx.rightx;
-		const maybeComma = OCR.readChar(
-			ctx.imgdata,
-			ctx.font,
-			[255, 255, 255],
-			startx,
-			ctx.baseliney,
-			false,
-			true
-		);
+function addTextBridgeNudge(
+	name: string,
+	color: [number, number, number],
+	match: RegExp
+) {
+	reader.forwardnudges.push({
+		name,
+		match,
+		fn: (ctx) => {
+			const startx = ctx.rightx;
 
-		if (maybeComma?.chr === ",") {
+			const one = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				color,
+				startx + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true
+			);
+
+			if (one?.chr !== "1") return;
+
+			const x = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				color,
+				one.x + one.basechar.width + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true
+			);
+
+			ctx.addfrag({
+				color,
+				index: -1,
+				text: x?.chr === "x" ? " 1" : " 1 x",
+				xstart: startx,
+				xend: startx + one.basechar.width + ctx.font.spacewidth,
+			});
+
+			return true;
+		},
+	});
+}
+
+function addCommaNudge() {
+	reader.forwardnudges.push({
+		name: "material-comma",
+		match: /Materials gained|parts|components|Junk/i,
+		fn: (ctx) => {
+			const comma = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				[255, 255, 255],
+				ctx.rightx,
+				ctx.baseliney,
+				false,
+				true
+			);
+
+			if (comma?.chr !== ",") return;
+
 			ctx.addfrag({
 				color: [255, 255, 255],
 				index: -1,
 				text: ", ",
-				xstart: startx,
-				xend: startx + maybeComma.basechar.width + ctx.font.spacewidth,
+				xstart: ctx.rightx,
+				xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
 			});
 
 			return true;
-		}
-	},
-});
+		},
+	});
+}
 
-reader.forwardnudges.push({
-	match: /Materials gained|parts|components|Junk/i,
-	name: "uncommon_1",
-	fn: (ctx) => {
-		const startx = ctx.rightx;
-		const maybeOne = OCR.readChar(
-			ctx.imgdata,
-			ctx.font,
-			[255, 128, 0],
-			startx + ctx.font.spacewidth,
-			ctx.baseliney,
-			false,
-			true
-		);
+addCommaNudge();
 
-		if (maybeOne?.chr === "1") {
-			const maybeX = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				[255, 128, 0],
-				maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth,
-				ctx.baseliney,
-				false,
-				true
-			);
+addTextBridgeNudge(
+	"rare-component-bridge",
+	[255, 0, 0],
+	/Materials gained|parts|components|Junk/i
+);
 
-			ctx.addfrag({
-				color: [255, 128, 0],
-				index: -1,
-				text: maybeX?.chr === "x" ? " 1" : " 1 x",
-				xstart: startx,
-				xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
-			});
-
-			return true;
-		}
-	},
-});
-
-reader.forwardnudges.push({
-	match: /Materials gained|parts|components|Junk/i,
-	name: "rare_1",
-	fn: (ctx) => {
-		const startx = ctx.rightx;
-		const maybeOne = OCR.readChar(
-			ctx.imgdata,
-			ctx.font,
-			[255, 0, 0],
-			startx + ctx.font.spacewidth,
-			ctx.baseliney,
-			false,
-			true
-		);
-
-		if (maybeOne?.chr === "1") {
-			const maybeX = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				[255, 0, 0],
-				maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth,
-				ctx.baseliney,
-				false,
-				true
-			);
-
-			ctx.addfrag({
-				color: [255, 0, 0],
-				index: -1,
-				text: maybeX?.chr === "x" ? " 1" : " 1 x",
-				xstart: startx,
-				xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
-			});
-
-			return true;
-		}
-	},
-});
+addTextBridgeNudge(
+	"uncommon-component-bridge",
+	[255, 128, 0],
+	/Materials gained|parts|components|Junk/i
+);
 
 if (window.alt1) {
 	alt1.identifyAppUrl("./appconfig.json");
@@ -472,7 +455,9 @@ function processHarvestLine(chatLine: string) {
 	);
 
 	if (materialsMatch) {
-		const materialText = materialsMatch[1];
+	const materialText = materialsMatch[1];
+
+	console.log("MATERIAL OCR:", materialText);
 
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
