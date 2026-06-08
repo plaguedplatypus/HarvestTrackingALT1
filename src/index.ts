@@ -234,6 +234,14 @@ function addTextBridgeNudge(
 }
 
 function addCommaNudge() {
+	const commaColors: [number, number, number][] = [
+	[255, 255, 255],
+	[230, 230, 230],
+	[200, 200, 200],
+	[255, 0, 0],
+	[220, 0, 0],
+	[255, 128, 0],
+	];
 	reader.forwardnudges.push({
 		name: "material-comma",
 		match: /Materials gained|parts|components|Junk/i,
