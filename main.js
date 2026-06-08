@@ -5147,11 +5147,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alt1/chatbox */ "../node_modules/alt1/dist/chatbox/index.js");
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.html */ "./index.html");
-/* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
-/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
-/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
+/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! alt1/ocr */ "../node_modules/alt1/dist/ocr/index.js");
+/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(alt1_ocr__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./index.html */ "./index.html");
+/* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
+/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
+/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 var _a;
+
 
 
 
@@ -5253,40 +5256,86 @@ if (savedTabButton) {
 }
 reader.readargs = {
     colors: [
+        // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        //yellow 
+        // Yellow / orange text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
-        //Seren spirit
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // orange
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
-        //Red messages
+        // Seren spirit / blue-cyan text
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // Rare red text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 80, 80),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 100, 100),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 128),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(240, 40, 40),
-        // Dark rare component red
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(190, 20, 20),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(170, 20, 20),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(150, 20, 20),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(130, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(120, 0, 0),
-        //Green messages
+        // Green boon / perk text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(100, 255, 100),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(120, 255, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(100, 220, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 200, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 180, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
     ],
 };
+reader.forwardnudges.push({
+    match: /./,
+    name: "comma",
+    fn: function (ctx) {
+        var startx = ctx.rightx;
+        var maybeComma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
+        if ((maybeComma === null || maybeComma === void 0 ? void 0 : maybeComma.chr) === ",") {
+            ctx.addfrag({
+                color: [255, 255, 255],
+                index: -1,
+                text: ", ",
+                xstart: startx,
+                xend: startx + maybeComma.basechar.width + ctx.font.spacewidth,
+            });
+            return true;
+        }
+    },
+});
+reader.forwardnudges.push({
+    match: /Materials gained|parts|components|Junk/i,
+    name: "uncommon_1",
+    fn: function (ctx) {
+        var startx = ctx.rightx;
+        var maybeOne = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+        if ((maybeOne === null || maybeOne === void 0 ? void 0 : maybeOne.chr) === "1") {
+            var maybeX = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            ctx.addfrag({
+                color: [255, 128, 0],
+                index: -1,
+                text: (maybeX === null || maybeX === void 0 ? void 0 : maybeX.chr) === "x" ? " 1" : " 1 x",
+                xstart: startx,
+                xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
+            });
+            return true;
+        }
+    },
+});
+reader.forwardnudges.push({
+    match: /Materials gained|parts|components|Junk/i,
+    name: "rare_1",
+    fn: function (ctx) {
+        var startx = ctx.rightx;
+        var maybeOne = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+        if ((maybeOne === null || maybeOne === void 0 ? void 0 : maybeOne.chr) === "1") {
+            var maybeX = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            ctx.addfrag({
+                color: [255, 0, 0],
+                index: -1,
+                text: (maybeX === null || maybeX === void 0 ? void 0 : maybeX.chr) === "x" ? " 1" : " 1 x",
+                xstart: startx,
+                xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
+            });
+            return true;
+        }
+    },
+});
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
 }
@@ -5414,6 +5463,7 @@ function processChat(opts) {
     if (chatStr.trim() === "")
         return [];
     return chatStr
+        .replace(/(\d) x x/g, "$1 x")
         .trim()
         .split("\n")
         .map(function (line) { return line.trim(); });

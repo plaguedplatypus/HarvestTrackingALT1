@@ -1,5 +1,6 @@
 import * as a1lib from "alt1";
 import ChatboxReader from "alt1/chatbox";
+import * as OCR from "alt1/ocr";
 
 import "./index.html";
 import "./appconfig.json";
@@ -157,46 +158,141 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
+		// Standard chat text
 		a1lib.mixColor(255, 255, 255),
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
 
-		//yellow 
+		// Yellow / orange text
 		a1lib.mixColor(255, 255, 0),
-
-		//Seren spirit
-		a1lib.mixColor(0, 255, 255),
-		a1lib.mixColor(127, 169, 255),
-
-		// orange
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 112, 0),
 
-		//Red messages
+		// Seren spirit / blue-cyan text
+		a1lib.mixColor(0, 255, 255),
+		a1lib.mixColor(127, 169, 255),
+
+		// Rare red text
 		a1lib.mixColor(255, 0, 0),
+		a1lib.mixColor(220, 0, 0),
+		a1lib.mixColor(200, 0, 0),
 		a1lib.mixColor(255, 50, 50),
-		a1lib.mixColor(255, 80, 80),
-		a1lib.mixColor(255, 100, 100),
-		a1lib.mixColor(255, 128, 128),
-		a1lib.mixColor(240, 40, 40),
 
-		// Dark rare component red
-		a1lib.mixColor(190, 20, 20),
-		a1lib.mixColor(170, 20, 20),
-		a1lib.mixColor(150, 20, 20),
-		a1lib.mixColor(130, 0, 0),
-		a1lib.mixColor(120, 0, 0),
-
-		//Green messages
+		// Green boon / perk text
 		a1lib.mixColor(0, 255, 0),
-		a1lib.mixColor(100, 255, 100),
-		a1lib.mixColor(120, 255, 0),
-		a1lib.mixColor(100, 220, 0),
-		a1lib.mixColor(80, 200, 0),
-		a1lib.mixColor(50, 180, 0),
+		a1lib.mixColor(0, 220, 0),
+		a1lib.mixColor(0, 200, 0),
+		a1lib.mixColor(80, 255, 80),
 	],
 };
+
+reader.forwardnudges.push({
+	match: /./,
+	name: "comma",
+	fn: (ctx) => {
+		const startx = ctx.rightx;
+		const maybeComma = OCR.readChar(
+			ctx.imgdata,
+			ctx.font,
+			[255, 255, 255],
+			startx,
+			ctx.baseliney,
+			false,
+			true
+		);
+
+		if (maybeComma?.chr === ",") {
+			ctx.addfrag({
+				color: [255, 255, 255],
+				index: -1,
+				text: ", ",
+				xstart: startx,
+				xend: startx + maybeComma.basechar.width + ctx.font.spacewidth,
+			});
+
+			return true;
+		}
+	},
+});
+
+reader.forwardnudges.push({
+	match: /Materials gained|parts|components|Junk/i,
+	name: "uncommon_1",
+	fn: (ctx) => {
+		const startx = ctx.rightx;
+		const maybeOne = OCR.readChar(
+			ctx.imgdata,
+			ctx.font,
+			[255, 128, 0],
+			startx + ctx.font.spacewidth,
+			ctx.baseliney,
+			false,
+			true
+		);
+
+		if (maybeOne?.chr === "1") {
+			const maybeX = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				[255, 128, 0],
+				maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true
+			);
+
+			ctx.addfrag({
+				color: [255, 128, 0],
+				index: -1,
+				text: maybeX?.chr === "x" ? " 1" : " 1 x",
+				xstart: startx,
+				xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
+			});
+
+			return true;
+		}
+	},
+});
+
+reader.forwardnudges.push({
+	match: /Materials gained|parts|components|Junk/i,
+	name: "rare_1",
+	fn: (ctx) => {
+		const startx = ctx.rightx;
+		const maybeOne = OCR.readChar(
+			ctx.imgdata,
+			ctx.font,
+			[255, 0, 0],
+			startx + ctx.font.spacewidth,
+			ctx.baseliney,
+			false,
+			true
+		);
+
+		if (maybeOne?.chr === "1") {
+			const maybeX = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				[255, 0, 0],
+				maybeOne.x + maybeOne.basechar.width + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true
+			);
+
+			ctx.addfrag({
+				color: [255, 0, 0],
+				index: -1,
+				text: maybeX?.chr === "x" ? " 1" : " 1 x",
+				xstart: startx,
+				xend: startx + maybeOne.basechar.width + ctx.font.spacewidth,
+			});
+
+			return true;
+		}
+	},
+});
 
 if (window.alt1) {
 	alt1.identifyAppUrl("./appconfig.json");
@@ -343,6 +439,7 @@ function processChat(opts: any[]) {
 	if (chatStr.trim() === "") return [];
 
 	return chatStr
+		.replace(/(\d) x x/g, "$1 x")
 		.trim()
 		.split("\n")
 		.map((line) => line.trim());
@@ -625,29 +722,29 @@ function render(highlightItem?: string) {
 	}
 
 	if (activeSkillTab === "invention") {
-	const rareItems = items.filter(
-		(item) => data.items[item].source === "rare-components"
-	);
+		const rareItems = items.filter(
+			(item) => data.items[item].source === "rare-components"
+		);
 
-	const uncommonItems = items.filter(
-		(item) => data.items[item].source === "uncommon-components"
-	);
+		const uncommonItems = items.filter(
+			(item) => data.items[item].source === "uncommon-components"
+		);
 
-	const commonItems = items.filter(
-		(item) => data.items[item].source === "invention" || !data.items[item].source
-	);
+		const commonItems = items.filter(
+			(item) => data.items[item].source === "invention" || !data.items[item].source
+		);
 
-	if (inventionFilter === "all" || inventionFilter === "rare") {
-		renderItemGroup("Rare Components", rareItems, data, highlightItem);
-	}
+		if (inventionFilter === "all" || inventionFilter === "rare") {
+			renderItemGroup("Rare Components", rareItems, data, highlightItem);
+		}
 
-	if (inventionFilter === "all" || inventionFilter === "uncommon") {
-		renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-	}
+		if (inventionFilter === "all" || inventionFilter === "uncommon") {
+			renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
+		}
 
-	if (inventionFilter === "all" || inventionFilter === "common") {
-		renderItemGroup("Common Components", commonItems, data, highlightItem);
-	}
+		if (inventionFilter === "all" || inventionFilter === "common") {
+			renderItemGroup("Common Components", commonItems, data, highlightItem);
+		}
 
 		bindRowEvents();
 		return;
