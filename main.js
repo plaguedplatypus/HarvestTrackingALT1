@@ -5228,13 +5228,13 @@ function updateInventionFilterVisibility() {
     }
 }
 function showChatHistory() {
-    var historyText = recentLines
-        .slice()
-        .reverse()
-        .join("\n");
-    console.log(historyText);
+    console.log("=== Recent Chat History ===");
+    for (var _i = 0, recentLines_1 = recentLines; _i < recentLines_1.length; _i++) {
+        var line = recentLines_1[_i];
+        console.log(line);
+    }
     status.innerText =
-        "History contains ".concat(recentLines.length, " lines. See browser console.");
+        "History contains ".concat(recentLines.length, " lines. Check F12 console.");
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
@@ -5253,19 +5253,24 @@ if (savedTabButton) {
 }
 reader.readargs = {
     colors: [
+        // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
+        // Yellow / orange text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
+        // Seren spirit / blue-cyan text
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
+        // Rare red text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
+        // Green boon / perk text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
@@ -5399,6 +5404,7 @@ function processChat(opts) {
     if (chatStr.trim() === "")
         return [];
     return chatStr
+        .replace(/(\d) x x/g, "$1 x")
         .trim()
         .split("\n")
         .map(function (line) { return line.trim(); });

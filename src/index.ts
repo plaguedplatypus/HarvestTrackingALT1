@@ -122,15 +122,14 @@ function updateInventionFilterVisibility() {
 }
 
 function showChatHistory() {
-	const historyText = recentLines
-		.slice()
-		.reverse()
-		.join("\n");
+	console.log("=== Recent Chat History ===");
 
-	console.log(historyText);
+	for (const line of recentLines) {
+		console.log(line);
+	}
 
 	status.innerText =
-		`History contains ${recentLines.length} lines. See browser console.`;
+		`History contains ${recentLines.length} lines. Check F12 console.`;
 }
 
 document.querySelectorAll(".invention-filter").forEach((button) => {
@@ -158,23 +157,28 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
+		// Standard chat text
 		a1lib.mixColor(255, 255, 255),
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
 
+		// Yellow / orange text
 		a1lib.mixColor(255, 255, 0),
+		a1lib.mixColor(255, 153, 0),
+		a1lib.mixColor(255, 128, 0),
+		a1lib.mixColor(255, 112, 0),
+
+		// Seren spirit / blue-cyan text
 		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
 
-		a1lib.mixColor(255, 153, 0),
-		a1lib.mixColor(255, 128, 0),
-		a1lib.mixColor(255, 102, 0),
-
+		// Rare red text
 		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
 		a1lib.mixColor(200, 0, 0),
 		a1lib.mixColor(255, 50, 50),
 
+		// Green boon / perk text
 		a1lib.mixColor(0, 255, 0),
 		a1lib.mixColor(0, 220, 0),
 		a1lib.mixColor(0, 200, 0),
@@ -327,6 +331,7 @@ function processChat(opts: any[]) {
 	if (chatStr.trim() === "") return [];
 
 	return chatStr
+		.replace(/(\d) x x/g, "$1 x")
 		.trim()
 		.split("\n")
 		.map((line) => line.trim());
@@ -609,29 +614,29 @@ function render(highlightItem?: string) {
 	}
 
 	if (activeSkillTab === "invention") {
-	const rareItems = items.filter(
-		(item) => data.items[item].source === "rare-components"
-	);
+		const rareItems = items.filter(
+			(item) => data.items[item].source === "rare-components"
+		);
 
-	const uncommonItems = items.filter(
-		(item) => data.items[item].source === "uncommon-components"
-	);
+		const uncommonItems = items.filter(
+			(item) => data.items[item].source === "uncommon-components"
+		);
 
-	const commonItems = items.filter(
-		(item) => data.items[item].source === "invention" || !data.items[item].source
-	);
+		const commonItems = items.filter(
+			(item) => data.items[item].source === "invention" || !data.items[item].source
+		);
 
-	if (inventionFilter === "all" || inventionFilter === "rare") {
-		renderItemGroup("Rare Components", rareItems, data, highlightItem);
-	}
+		if (inventionFilter === "all" || inventionFilter === "rare") {
+			renderItemGroup("Rare Components", rareItems, data, highlightItem);
+		}
 
-	if (inventionFilter === "all" || inventionFilter === "uncommon") {
-		renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-	}
+		if (inventionFilter === "all" || inventionFilter === "uncommon") {
+			renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
+		}
 
-	if (inventionFilter === "all" || inventionFilter === "common") {
-		renderItemGroup("Common Components", commonItems, data, highlightItem);
-	}
+		if (inventionFilter === "all" || inventionFilter === "common") {
+			renderItemGroup("Common Components", commonItems, data, highlightItem);
+		}
 
 		bindRowEvents();
 		return;
