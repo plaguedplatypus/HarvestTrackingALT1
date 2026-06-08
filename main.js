@@ -5255,25 +5255,32 @@ reader.readargs = {
     colors: [
         // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
+        // yellow
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
+        // red
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
+        // green
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
+        // cyan
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        // orange
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 144, 64),
+        // magenta
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255),
+        // lime
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(192, 255, 0),
+        // additional colors
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        // Yellow / orange text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
-        // Seren spirit / blue-cyan text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // Rare red text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
-        // Green boon / perk text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),

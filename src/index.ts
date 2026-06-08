@@ -159,29 +159,33 @@ reader.readargs = {
 	colors: [
 		// Standard chat text
 		a1lib.mixColor(255, 255, 255),
+		// yellow
+		a1lib.mixColor(255, 255, 0),
+		// red
+		a1lib.mixColor(255, 0, 0),
+		// green
+		a1lib.mixColor(0, 255, 0),
+		// cyan
+		a1lib.mixColor(0, 255, 255),
+		// orange
+		a1lib.mixColor(255, 144, 64),
+		// magenta
+		a1lib.mixColor(255, 0, 255),
+		// lime
+		a1lib.mixColor(192, 255, 0),
+
+		// additional colors
 		a1lib.mixColor(230, 230, 230),
 		a1lib.mixColor(200, 200, 200),
-
-		// Yellow / orange text
-		a1lib.mixColor(255, 255, 0),
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 112, 0),
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 102, 0),
-
-		// Seren spirit / blue-cyan text
-		a1lib.mixColor(0, 255, 255),
 		a1lib.mixColor(127, 169, 255),
-
-		// Rare red text
-		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
 		a1lib.mixColor(200, 0, 0),
 		a1lib.mixColor(255, 50, 50),
-
-		// Green boon / perk text
-		a1lib.mixColor(0, 255, 0),
 		a1lib.mixColor(0, 220, 0),
 		a1lib.mixColor(0, 200, 0),
 		a1lib.mixColor(80, 255, 80),
