@@ -5268,9 +5268,11 @@ reader.readargs = {
         //Red messages
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(155, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
         //Green messages
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 183, 30),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 180, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 155, 0),
     ],
 };

@@ -176,10 +176,12 @@ reader.readargs = {
 		//Red messages
 		a1lib.mixColor(255, 0, 0),
 		a1lib.mixColor(220, 0, 0),
-		a1lib.mixColor(155, 0, 0),
+		a1lib.mixColor(200, 0, 0),
 
 		//Green messages
-		a1lib.mixColor(80, 183, 30),
+		a1lib.mixColor(0, 255, 0),
+		a1lib.mixColor(0, 220, 0),
+		a1lib.mixColor(50, 180, 0),
 		a1lib.mixColor(0, 155, 0),
 	],
 };
