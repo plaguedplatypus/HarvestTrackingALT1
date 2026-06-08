@@ -53,15 +53,15 @@ const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
 	a1lib.mixColor(0, 255, 0), // Bright green
-	a1lib.mixColor(0, 220, 0), // Slightly darker green
-	a1lib.mixColor(0, 200, 0), // Even darker green
-	a1lib.mixColor(80, 255, 80), // Lighter green
-	a1lib.mixColor(43, 162, 18), // a green
-	a1lib.mixColor(40, 114, 22), // some green
-	a1lib.mixColor(34, 77, 21), // another green
-	a1lib.mixColor(50, 200, 20), // ANOTHER green
+	a1lib.mixColor(43, 97, 26),
+	a1lib.mixColor(39, 76, 26),
+	a1lib.mixColor(57, 165, 29),
+	a1lib.mixColor(43, 162, 18),
+	a1lib.mixColor(40, 114, 22),
+	a1lib.mixColor(34, 77, 21),
+	a1lib.mixColor(50, 200, 20),
 
-	a1lib.mixColor(48, 48, 48), // what's this?
+	a1lib.mixColor(157, 52, 229), // what's this?
 
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange
