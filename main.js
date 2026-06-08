@@ -5184,7 +5184,6 @@ var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
-var historyButton = document.querySelector(".history-button");
 var sortButton = document.querySelector(".sort-button");
 var inventionFilters = document.querySelector(".invention-filters");
 var savedData = getSaveData();
@@ -5227,15 +5226,6 @@ function updateInventionFilterVisibility() {
         inventionFilters.classList.remove("visible");
     }
 }
-function showChatHistory() {
-    console.log("=== Recent Chat History ===");
-    for (var _i = 0, recentLines_1 = recentLines; _i < recentLines_1.length; _i++) {
-        var line = recentLines_1[_i];
-        console.log(line);
-    }
-    status.innerText =
-        "History contains ".concat(recentLines.length, " lines. Check F12 console.");
-}
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
         var target = e.currentTarget;
@@ -5256,26 +5246,17 @@ reader.readargs = {
         // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        // Yellow / orange text
+        // Seren spirit
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        // Divine blessing / uncommon components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
-        // Seren spirit / blue-cyan text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        // Rare red text
+        // Rare components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
-        // Green boon / perk text
+        // Boons / Fortune perk
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
-    ],
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(60, 180, 30),
+    ]
 };
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
@@ -5404,7 +5385,6 @@ function processChat(opts) {
     if (chatStr.trim() === "")
         return [];
     return chatStr
-        .replace(/(\d) x x/g, "$1 x")
         .trim()
         .split("\n")
         .map(function (line) { return line.trim(); });
@@ -5483,7 +5463,7 @@ function processHarvestLine(chatLine) {
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
-    var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i);
+    var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\./i);
     if (perkSendMatch) {
         var destination = perkSendMatch[1].toLowerCase();
         var amount = parseInt(perkSendMatch[2], 10);
@@ -5610,8 +5590,8 @@ function isInHistory(chatLine) {
 }
 function updateChatHistory(chatLine) {
     recentLines.push(chatLine);
-    if (recentLines.length > 100) {
-        recentLines = recentLines.slice(-100);
+    if (recentLines.length > 300) {
+        recentLines = recentLines.slice(-300);
     }
 }
 function render(highlightItem) {
@@ -5898,9 +5878,6 @@ updateFishingModeVisibility();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
-if (historyButton) {
-    historyButton.addEventListener("click", showChatHistory);
-}
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
     if (this.files && this.files[0]) {

@@ -73,7 +73,6 @@ const importInput = document.querySelector(".import") as HTMLInputElement;
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
 
-const historyButton = document.querySelector(".history-button") as HTMLElement;
 const sortButton = document.querySelector(".sort-button") as HTMLElement;
 const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
 
@@ -121,17 +120,6 @@ function updateInventionFilterVisibility() {
 	}
 }
 
-function showChatHistory() {
-	console.log("=== Recent Chat History ===");
-
-	for (const line of recentLines) {
-		console.log(line);
-	}
-
-	status.innerText =
-		`History contains ${recentLines.length} lines. Check F12 console.`;
-}
-
 document.querySelectorAll(".invention-filter").forEach((button) => {
 	button.addEventListener("click", (e: Event) => {
 		const target = e.currentTarget as HTMLElement;
@@ -157,33 +145,24 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
-		// Standard chat text
-		a1lib.mixColor(255, 255, 255),
-		a1lib.mixColor(230, 230, 230),
-		a1lib.mixColor(200, 200, 200),
+    	// Standard chat text
+    	a1lib.mixColor(255,255,255),
+    	a1lib.mixColor(230,230,230),
 
-		// Yellow / orange text
-		a1lib.mixColor(255, 255, 0),
-		a1lib.mixColor(255, 153, 0),
-		a1lib.mixColor(255, 128, 0),
-		a1lib.mixColor(255, 112, 0),
+    	// Seren spirit
+    	a1lib.mixColor(0,255,255),
 
-		// Seren spirit / blue-cyan text
-		a1lib.mixColor(0, 255, 255),
-		a1lib.mixColor(127, 169, 255),
+    	// Divine blessing / uncommon components
+		a1lib.mixColor(255,255,0),
+    	a1lib.mixColor(255,153,0),
 
-		// Rare red text
-		a1lib.mixColor(255, 0, 0),
-		a1lib.mixColor(220, 0, 0),
-		a1lib.mixColor(200, 0, 0),
-		a1lib.mixColor(255, 50, 50),
+    	// Rare components
+    	a1lib.mixColor(255,0,0),
 
-		// Green boon / perk text
-		a1lib.mixColor(0, 255, 0),
-		a1lib.mixColor(0, 220, 0),
-		a1lib.mixColor(0, 200, 0),
-		a1lib.mixColor(80, 255, 80),
-	],
+    	// Boons / Fortune perk
+    	a1lib.mixColor(0,255,0),
+    	a1lib.mixColor(60,180,30),
+]
 };
 
 if (window.alt1) {
@@ -331,7 +310,6 @@ function processChat(opts: any[]) {
 	if (chatStr.trim() === "") return [];
 
 	return chatStr
-		.replace(/(\d) x x/g, "$1 x")
 		.trim()
 		.split("\n")
 		.map((line) => line.trim());
@@ -437,7 +415,7 @@ function processHarvestLine(chatLine: string) {
 	}
 
 	const perkSendMatch = cleanLine.match(
-		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i
+		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\./i
 	);
 
 	if (perkSendMatch) {
@@ -590,8 +568,8 @@ function isInHistory(chatLine: string) {
 function updateChatHistory(chatLine: string) {
 	recentLines.push(chatLine);
 
-	if (recentLines.length > 100) {
-		recentLines = recentLines.slice(-100);
+	if (recentLines.length > 300) {
+		recentLines = recentLines.slice(-300);
 	}
 }
 
@@ -614,29 +592,29 @@ function render(highlightItem?: string) {
 	}
 
 	if (activeSkillTab === "invention") {
-		const rareItems = items.filter(
-			(item) => data.items[item].source === "rare-components"
-		);
+	const rareItems = items.filter(
+		(item) => data.items[item].source === "rare-components"
+	);
 
-		const uncommonItems = items.filter(
-			(item) => data.items[item].source === "uncommon-components"
-		);
+	const uncommonItems = items.filter(
+		(item) => data.items[item].source === "uncommon-components"
+	);
 
-		const commonItems = items.filter(
-			(item) => data.items[item].source === "invention" || !data.items[item].source
-		);
+	const commonItems = items.filter(
+		(item) => data.items[item].source === "invention" || !data.items[item].source
+	);
 
-		if (inventionFilter === "all" || inventionFilter === "rare") {
-			renderItemGroup("Rare Components", rareItems, data, highlightItem);
-		}
+	if (inventionFilter === "all" || inventionFilter === "rare") {
+		renderItemGroup("Rare Components", rareItems, data, highlightItem);
+	}
 
-		if (inventionFilter === "all" || inventionFilter === "uncommon") {
-			renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
-		}
+	if (inventionFilter === "all" || inventionFilter === "uncommon") {
+		renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
+	}
 
-		if (inventionFilter === "all" || inventionFilter === "common") {
-			renderItemGroup("Common Components", commonItems, data, highlightItem);
-		}
+	if (inventionFilter === "all" || inventionFilter === "common") {
+		renderItemGroup("Common Components", commonItems, data, highlightItem);
+	}
 
 		bindRowEvents();
 		return;
@@ -1000,10 +978,6 @@ updateFishingModeVisibility();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
-
-if (historyButton) {
-	historyButton.addEventListener("click", showChatHistory);
-}
 
 exportButton.addEventListener("click", exportData);
 
