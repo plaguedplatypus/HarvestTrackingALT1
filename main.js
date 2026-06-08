@@ -5251,44 +5251,6 @@ var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(ac
 if (savedTabButton) {
     savedTabButton.classList.add("active");
 }
-reader.readargs = {
-    colors: [
-        // Standard chat text
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
-        // yellow
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
-        // red
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
-        // green
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
-        // cyan
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        // orange
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 144, 64),
-        // magenta
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255),
-        // lime
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(192, 255, 0),
-        // additional colors
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(250, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(242, 2, 2),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(233, 5, 4),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(211, 0, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(179, 10, 8),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(79, 21, 19),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
-    ],
-};
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
 }

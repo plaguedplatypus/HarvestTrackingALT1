@@ -155,48 +155,6 @@ if (savedTabButton) {
 	savedTabButton.classList.add("active");
 }
 
-reader.readargs = {
-	colors: [
-		// Standard chat text
-		a1lib.mixColor(255, 255, 255),
-		// yellow
-		a1lib.mixColor(255, 255, 0),
-		// red
-		a1lib.mixColor(255, 0, 0),
-		// green
-		a1lib.mixColor(0, 255, 0),
-		// cyan
-		a1lib.mixColor(0, 255, 255),
-		// orange
-		a1lib.mixColor(255, 144, 64),
-		// magenta
-		a1lib.mixColor(255, 0, 255),
-		// lime
-		a1lib.mixColor(192, 255, 0),
-
-		// additional colors
-		a1lib.mixColor(230, 230, 230),
-		a1lib.mixColor(200, 200, 200),
-
-		a1lib.mixColor(250, 0, 0),
-		a1lib.mixColor(242, 2, 2),
-		a1lib.mixColor(233, 5, 4),
-		a1lib.mixColor(211, 0, 0),
-		a1lib.mixColor(179, 10, 8),
-		a1lib.mixColor(79, 21, 19),
-
-		a1lib.mixColor(255, 128, 0),
-		a1lib.mixColor(255, 112, 0),
-		a1lib.mixColor(255, 153, 0),
-		a1lib.mixColor(255, 102, 0),
-		a1lib.mixColor(127, 169, 255),
-		a1lib.mixColor(255, 50, 50),
-		a1lib.mixColor(0, 220, 0),
-		a1lib.mixColor(0, 200, 0),
-		a1lib.mixColor(80, 255, 80),
-	],
-};
-
 if (window.alt1) {
 	alt1.identifyAppUrl("./appconfig.json");
 } else {
