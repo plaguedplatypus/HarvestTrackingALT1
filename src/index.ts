@@ -52,10 +52,13 @@ const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
-	a1lib.mixColor(0, 255, 0), // Bright green for timestamps
+	a1lib.mixColor(0, 255, 0), // Bright green
 	a1lib.mixColor(0, 220, 0), // Slightly darker green
 	a1lib.mixColor(0, 200, 0), // Even darker green
 	a1lib.mixColor(80, 255, 80), // Lighter green
+	a1lib.mixColor(159, 255, 159), // Very light green
+	a1lib.mixColor(69, 178, 71), // Muted green
+	a1lib.mixColor(0, 111, 0) // Dark green
 
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange

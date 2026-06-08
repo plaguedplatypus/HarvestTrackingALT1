@@ -5166,10 +5166,14 @@ var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
-reader.readargs.colors.push(alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green for timestamps
+reader.readargs.colors.push(alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0), // Slightly darker green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0), // Even darker green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80), // Lighter green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(159, 255, 159), // Very light green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(69, 178, 71), // Muted green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 111, 0) // Dark green
+, // Dark green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0), // Darker orange
