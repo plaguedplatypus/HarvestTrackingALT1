@@ -145,24 +145,28 @@ if (savedTabButton) {
 
 reader.readargs = {
 	colors: [
-    	// Standard chat text
-    	a1lib.mixColor(255,255,255),
-    	a1lib.mixColor(230,230,230),
+		a1lib.mixColor(255, 255, 255),
+		a1lib.mixColor(230, 230, 230),
+		a1lib.mixColor(200, 200, 200),
 
-    	// Seren spirit
-    	a1lib.mixColor(0,255,255),
+		a1lib.mixColor(255, 255, 0),
+		a1lib.mixColor(0, 255, 255),
+		a1lib.mixColor(127, 169, 255),
 
-    	// Divine blessing / uncommon components
-		a1lib.mixColor(255,255,0),
-    	a1lib.mixColor(255,153,0),
+		a1lib.mixColor(255, 153, 0),
+		a1lib.mixColor(255, 128, 0),
+		a1lib.mixColor(255, 102, 0),
 
-    	// Rare components
-    	a1lib.mixColor(255,0,0),
+		a1lib.mixColor(255, 0, 0),
+		a1lib.mixColor(220, 0, 0),
+		a1lib.mixColor(200, 0, 0),
+		a1lib.mixColor(255, 50, 50),
 
-    	// Boons / Fortune perk
-    	a1lib.mixColor(0,255,0),
-    	a1lib.mixColor(60,180,30),
-]
+		a1lib.mixColor(0, 255, 0),
+		a1lib.mixColor(0, 220, 0),
+		a1lib.mixColor(0, 200, 0),
+		a1lib.mixColor(80, 255, 80),
+	],
 };
 
 if (window.alt1) {
@@ -415,7 +419,7 @@ function processHarvestLine(chatLine: string) {
 	}
 
 	const perkSendMatch = cleanLine.match(
-		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\./i
+		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i
 	);
 
 	if (perkSendMatch) {
@@ -568,8 +572,8 @@ function isInHistory(chatLine: string) {
 function updateChatHistory(chatLine: string) {
 	recentLines.push(chatLine);
 
-	if (recentLines.length > 300) {
-		recentLines = recentLines.slice(-300);
+	if (recentLines.length > 100) {
+		recentLines = recentLines.slice(-100);
 	}
 }
 
