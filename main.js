@@ -5228,12 +5228,13 @@ function updateInventionFilterVisibility() {
     }
 }
 function showChatHistory() {
-    status.innerText = "History contains ".concat(recentLines.length, " lines. See console.");
-    console.log("=== Recent Chat History ===");
-    for (var _i = 0, recentLines_1 = recentLines; _i < recentLines_1.length; _i++) {
-        var line = recentLines_1[_i];
-        console.log(line);
-    }
+    var historyText = recentLines
+        .slice()
+        .reverse()
+        .join("\n");
+    console.log(historyText);
+    status.innerText =
+        "History contains ".concat(recentLines.length, " lines. See browser console.");
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {

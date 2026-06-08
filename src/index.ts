@@ -122,13 +122,15 @@ function updateInventionFilterVisibility() {
 }
 
 function showChatHistory() {
-	status.innerText = `History contains ${recentLines.length} lines. See console.`;
+	const historyText = recentLines
+		.slice()
+		.reverse()
+		.join("\n");
 
-	console.log("=== Recent Chat History ===");
+	console.log(historyText);
 
-	for (const line of recentLines) {
-		console.log(line);
-	}
+	status.innerText =
+		`History contains ${recentLines.length} lines. See browser console.`;
 }
 
 document.querySelectorAll(".invention-filter").forEach((button) => {
