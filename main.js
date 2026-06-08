@@ -5184,6 +5184,7 @@ var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
+var historyButton = document.querySelector(".history-button");
 var sortButton = document.querySelector(".sort-button");
 var inventionFilters = document.querySelector(".invention-filters");
 var savedData = getSaveData();
@@ -5226,6 +5227,15 @@ function updateInventionFilterVisibility() {
         inventionFilters.classList.remove("visible");
     }
 }
+function showChatHistory() {
+    var historyText = recentLines
+        .slice()
+        .reverse()
+        .join("\n");
+    console.log(historyText);
+    status.innerText =
+        "History contains ".concat(recentLines.length, " lines. See browser console.");
+}
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
         var target = e.currentTarget;
@@ -5243,20 +5253,24 @@ if (savedTabButton) {
 }
 reader.readargs = {
     colors: [
-        // Standard chat text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 230, 230),
-        // Seren spirit
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
-        // Divine blessing / uncommon components
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 200, 200),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 255, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
-        // Rare components
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0),
-        // Boons / Fortune perk
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 50, 50),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0),
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(60, 180, 30),
-    ]
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 220, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 200, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(80, 255, 80),
+    ],
 };
 if (window.alt1) {
     alt1.identifyAppUrl("./appconfig.json");
@@ -5463,7 +5477,7 @@ function processHarvestLine(chatLine) {
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return;
     }
-    var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\./i);
+    var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i);
     if (perkSendMatch) {
         var destination = perkSendMatch[1].toLowerCase();
         var amount = parseInt(perkSendMatch[2], 10);
@@ -5590,8 +5604,8 @@ function isInHistory(chatLine) {
 }
 function updateChatHistory(chatLine) {
     recentLines.push(chatLine);
-    if (recentLines.length > 300) {
-        recentLines = recentLines.slice(-300);
+    if (recentLines.length > 100) {
+        recentLines = recentLines.slice(-100);
     }
 }
 function render(highlightItem) {
@@ -5878,6 +5892,9 @@ updateFishingModeVisibility();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
+if (historyButton) {
+    historyButton.addEventListener("click", showChatHistory);
+}
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
     if (this.files && this.files[0]) {
