@@ -5234,7 +5234,7 @@ function showChatHistory() {
         console.log(line);
     }
     status.innerText =
-        "History contains ".concat(recentLines.length, " lines. Check F12 console.");
+        "History contains ".concat(recentLines.length, " lines. Check console.");
 }
 document.querySelectorAll(".invention-filter").forEach(function (button) {
     button.addEventListener("click", function (e) {
@@ -5262,6 +5262,8 @@ reader.readargs = {
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 112, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0),
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 102, 0),
         // Seren spirit / blue-cyan text
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(127, 169, 255),
@@ -5427,10 +5429,17 @@ function processHarvestLine(chatLine) {
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
     if (materialsMatch) {
         var materialText = materialsMatch[1];
+        if (materialText.endsWith(",")) {
+            console.warn("CUT OFF MATERIALS:", materialText);
+        }
+        var finalMaterialText = materialText;
+        if (materialText.endsWith(",")) {
+            finalMaterialText = recoverCutOffMaterialsLine(materialText);
+        }
         var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
         var materialMatch = void 0;
         var trackedAnyMaterial = false;
-        while ((materialMatch = materialRegex.exec(materialText)) !== null) {
+        while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
             var amount = parseInt(materialMatch[1], 10);
             var item = normalizeItemName(materialMatch[2]);
             if (!item || isNaN(amount))

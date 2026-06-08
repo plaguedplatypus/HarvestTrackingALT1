@@ -129,7 +129,7 @@ function showChatHistory() {
 	}
 
 	status.innerText =
-		`History contains ${recentLines.length} lines. Check F12 console.`;
+		`History contains ${recentLines.length} lines. Check console.`;
 }
 
 document.querySelectorAll(".invention-filter").forEach((button) => {
@@ -167,6 +167,8 @@ reader.readargs = {
 		a1lib.mixColor(255, 153, 0),
 		a1lib.mixColor(255, 128, 0),
 		a1lib.mixColor(255, 112, 0),
+		a1lib.mixColor(255, 153, 0),
+		a1lib.mixColor(255, 102, 0),
 
 		// Seren spirit / blue-cyan text
 		a1lib.mixColor(0, 255, 255),
@@ -366,13 +368,23 @@ function processHarvestLine(chatLine: string) {
 	);
 
 	if (materialsMatch) {
-		const materialText = materialsMatch[1];
+	const materialText = materialsMatch[1];
+
+		if (materialText.endsWith(",")) {
+			console.warn("CUT OFF MATERIALS:", materialText);
+		}
+		
+	let finalMaterialText = materialText;
+
+	if (materialText.endsWith(",")) {
+		finalMaterialText = recoverCutOffMaterialsLine(materialText);
+	}
 
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
 		let trackedAnyMaterial = false;
 
-		while ((materialMatch = materialRegex.exec(materialText)) !== null) {
+		while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
 			const amount = parseInt(materialMatch[1], 10);
 			const item = normalizeItemName(materialMatch[2]);
 
@@ -403,7 +415,7 @@ function processHarvestLine(chatLine: string) {
 			setStatus(`Invention: ${amount} x ${item}`);
 
 			trackedAnyMaterial = true;
-		}
+		}	
 
 		if (trackedAnyMaterial) return;
 	}
