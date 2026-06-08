@@ -117,7 +117,7 @@ body {
 }
 
 .group-header {
-    margin-top: 5px;
+    margin-top: 3px;
     padding: 2px 4px;
     color: #d8c26a;
     font-size: 10px;
@@ -147,11 +147,12 @@ body {
 
 .item-row {
     background: #2c2c2c;
+    border: 1px solid #3a3a3a;
     border-radius: 3px;
     display: flex;
     flex-direction: column;
-    padding: 1px 4px;
-    gap: 1px;
+    padding: 0px 4px;
+    gap: 0px;
     line-height: 1;
 }
 
@@ -205,6 +206,16 @@ body {
     white-space: nowrap;
 }
 
+.goal-complete {
+	font-size: 10px;
+	line-height: 10px;
+	margin-top: -3px;
+	margin-bottom: 3px;
+	color: #ffd700;
+	font-weight: bold;
+	text-shadow: 0 0 2px rgba(255, 215, 0, 0.4);
+}
+
 .progress-bar {
     flex: 1;
     height: 8px;
@@ -234,7 +245,6 @@ body {
     flex: 0 0 auto;
 }
 
-
 .settings-panel {
     display: none;
     width: 100%;
@@ -249,9 +259,28 @@ body {
 }
 
 .settings-panel input {
-    width: 72px;
+    width: 50px;
     font-size: 11px;
     padding: 3px;
+}
+
+.settings-panel button {
+	width: 22px;
+	height: 22px;
+	padding: 0;
+    background: #e0e0e0;
+    border: 1px solid #666;
+    color: #000000;
+    cursor: pointer;
+	font-size: 16px;
+	line-height: 20px;
+	box-shadow: inset 0 0 0 1px #0b1417;
+}
+
+.button-separator {
+	margin: 0 6px;
+	opacity: 0.5;
+	user-select: none;
 }
 
 .app-settings {
@@ -5701,12 +5730,22 @@ function renderItemRow(item, itemData, highlightItem) {
     row.className = "item-row";
     var goalHtml = "";
     if (itemData.goal) {
-        var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
-        var current = itemData.count.toLocaleString();
-        var goal = itemData.goal.toLocaleString();
-        goalHtml = "\n    \t\t<div class=\"goal-row\">\n        \t\t<span class=\"goal-text\">\n           \t\t\t ".concat(current, " / ").concat(goal, " (").concat(progress.toFixed(1), "%)\n        \t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
+        var goalReached = itemData.count >= itemData.goal;
+        var overage = itemData.count - itemData.goal;
+        var overageText = overage > 0
+            ? " (+".concat(overage.toLocaleString(), ")")
+            : "";
+        if (goalReached) {
+            goalHtml = "\n\t\t\t\t<div class=\"goal-complete\">\u2605 Goal Reached!  ".concat(overageText, "</div>\n\t");
+        }
+        else {
+            var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
+            var current = itemData.count.toLocaleString();
+            var goal = itemData.goal.toLocaleString();
+            goalHtml = "\n    \t\t<div class=\"goal-row\">\n        \t\t<span class=\"goal-text\">\n           \t\t\t ".concat(current, " / ").concat(goal, " (").concat(progress.toFixed(1), "%)\n        \t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
+        }
     }
-    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n    \t\t\t").concat(itemData.count.toLocaleString(), "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\">Save</button>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\">Reset Count</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\">Delete</button>\n\t\t</div>\n\t");
+    row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n    \t\t\t").concat(itemData.count.toLocaleString(), "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"clear-goal\" data-item=\"").concat(escapeAttr(item), "\" title=\"Clear Goal\">\u2716</button>\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\" title=\"Save Goal\">\uD83D\uDCBE</button>\n\t\t\t<span class=\"button-separator\">\u2022</span>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\" title=\"Reset Item\">\u21BA</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\" title=\"Delete Item\">\uD83D\uDDD1</button>\n\t\t</div>\n\t");
     if (highlightItem === item) {
         row.classList.add("highlight");
     }
@@ -5717,6 +5756,12 @@ function bindRowEvents() {
         btn.addEventListener("click", function (e) {
             var target = e.currentTarget;
             toggleSettings(target.dataset.item || "");
+        });
+    });
+    document.querySelectorAll(".clear-goal").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            var target = e.currentTarget;
+            clearGoal(target.dataset.item || "");
         });
     });
     document.querySelectorAll(".save-goal").forEach(function (btn) {
@@ -5760,6 +5805,14 @@ function toggleSettings(item) {
     if (!data.items[item])
         return;
     data.items[item].settingsOpen = !data.items[item].settingsOpen;
+    saveData(data);
+    render();
+}
+function clearGoal(item) {
+    var data = getSaveData();
+    if (!data.items[item])
+        return;
+    data.items[item].goal = null;
     saveData(data);
     render();
 }

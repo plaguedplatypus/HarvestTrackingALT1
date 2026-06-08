@@ -734,8 +734,20 @@ function renderItemRow(
 	let goalHtml = "";
 
 	if (itemData.goal) {
-		const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
+		const goalReached = itemData.count >= itemData.goal;
+		const overage = itemData.count - itemData.goal;
+		const overageText = 
+			overage > 0
+				? ` (+${overage.toLocaleString()})`
+				: "";
 
+		if (goalReached) {
+			goalHtml = `
+				<div class="goal-complete">★ Goal Reached!  ${overageText}</div>
+	`;
+
+		} else {
+		const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
 		const current = itemData.count.toLocaleString();
 		const goal = itemData.goal.toLocaleString();
 
@@ -750,6 +762,7 @@ function renderItemRow(
 				</div>
 			</div>
 		`;
+		}
 	}
 
 	row.innerHTML = `
@@ -775,9 +788,11 @@ function renderItemRow(
 				   placeholder="Goal"
 				   value="${itemData.goal || ""}">
 
-			<button class="save-goal" data-item="${escapeAttr(item)}">Save</button>
-			<button class="reset-item" data-item="${escapeAttr(item)}">Reset Count</button>
-			<button class="delete-item" data-item="${escapeAttr(item)}">Delete</button>
+			<button class="clear-goal" data-item="${escapeAttr(item)}" title="Clear Goal">✖</button>
+			<button class="save-goal" data-item="${escapeAttr(item)}" title="Save Goal">💾</button>
+			<span class="button-separator">•</span>
+			<button class="reset-item" data-item="${escapeAttr(item)}" title="Reset Item">↺</button>
+			<button class="delete-item" data-item="${escapeAttr(item)}" title="Delete Item">🗑</button>
 		</div>
 	`;
 
@@ -793,6 +808,13 @@ function bindRowEvents() {
 		btn.addEventListener("click", (e: Event) => {
 			const target = e.currentTarget as HTMLElement;
 			toggleSettings(target.dataset.item || "");
+		});
+	});
+
+	document.querySelectorAll(".clear-goal").forEach((btn) => {
+		btn.addEventListener("click", (e: Event) => {
+			const target = e.currentTarget as HTMLElement;
+			clearGoal(target.dataset.item || "");
 		});
 	});
 
@@ -846,6 +868,16 @@ function toggleSettings(item: string) {
 	if (!data.items[item]) return;
 
 	data.items[item].settingsOpen = !data.items[item].settingsOpen;
+	saveData(data);
+	render();
+}
+
+function clearGoal(item: string) {
+	const data = getSaveData();
+	if (!data.items[item]) return;
+
+	data.items[item].goal = null;
+
 	saveData(data);
 	render();
 }
