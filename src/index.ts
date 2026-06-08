@@ -373,12 +373,8 @@ function processHarvestLine(chatLine: string) {
 		if (materialText.endsWith(",")) {
 			console.warn("CUT OFF MATERIALS:", materialText);
 		}
-		
-	let finalMaterialText = materialText;
 
-	if (materialText.endsWith(",")) {
-		finalMaterialText = recoverCutOffMaterialsLine(materialText);
-	}
+	let finalMaterialText = materialText;
 
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;

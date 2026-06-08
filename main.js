@@ -5433,9 +5433,6 @@ function processHarvestLine(chatLine) {
             console.warn("CUT OFF MATERIALS:", materialText);
         }
         var finalMaterialText = materialText;
-        if (materialText.endsWith(",")) {
-            finalMaterialText = recoverCutOffMaterialsLine(materialText);
-        }
         var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
         var materialMatch = void 0;
         var trackedAnyMaterial = false;
