@@ -59,6 +59,7 @@ reader.readargs.colors.push(
 	a1lib.mixColor(232, 47, 47), // You missed that seren spirit btw...
 
 	a1lib.mixColor(161, 53, 235), // what's this?
+	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange
@@ -84,7 +85,7 @@ const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLIn
 const clearButton = document.querySelector(".clear") as HTMLElement;
 const sortButton = document.querySelector(".sort-button") as HTMLElement;
 const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
-
+const inventionFilterButton = document.querySelector(".invention-filter-cycle") as HTMLElement;
 const savedData = getSaveData();
 
 // Wait for alt1 to initialize and find the chatbox
@@ -278,19 +279,31 @@ function updateInventionFilterVisibility() {
 }
 
 // Invention filter button handlers
-document.querySelectorAll(".invention-filter").forEach((button) => {
-	button.addEventListener("click", (e: Event) => {
-		const target = e.currentTarget as HTMLElement;
+function updateInventionFilterButton() {
+	if (!inventionFilterButton) return;
 
-		inventionFilter = (target.dataset.filter as InventionFilter) || "all";
+	inventionFilterButton.innerText =
+		inventionFilter === "all"
+			? "Filter Components: All"
+			: inventionFilter === "rare"
+				? "Filter Components: Rare"
+				: inventionFilter === "uncommon"
+					? "Filter Components: Uncommon"
+					: "Filter Components: Common";
+}
 
-		document.querySelectorAll(".invention-filter").forEach((btn) => {
-			btn.classList.remove("active");
-		});
+inventionFilterButton.addEventListener("click", () => {
+	inventionFilter =
+		inventionFilter === "all"
+			? "rare"
+			: inventionFilter === "rare"
+				? "uncommon"
+				: inventionFilter === "uncommon"
+					? "common"
+					: "all";
 
-		target.classList.add("active");
-		render();
-	});
+	updateInventionFilterButton();
+	render();
 });
 
 // Activate the saved skill tab or default to "all"
@@ -305,6 +318,7 @@ if (savedTabButton) {
 
 updateClearButtonLabel();
 updateFishingModeVisibility();
+updateInventionFilterButton();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();

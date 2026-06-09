@@ -307,14 +307,6 @@ body {
     display: flex;
 }
 
-.app-settings-panel select,
-.app-settings-panel button,
-.app-settings-panel .import-label {
-    width: 100%;
-    box-sizing: border-box;
-    text-align: center;
-}
-
 select,
 button,
 .import-label {
@@ -327,11 +319,24 @@ button,
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #e0e0e0;
+    background: #aaaaaa;
     border: 1px solid #666;
     color: black;
+    cursor: pointer;
     height: 22px;
     box-sizing: border-box;
+}
+
+.import-export-row {
+	display: flex;
+	gap: 5px;
+	width: 100%;
+}
+
+.import-export-row .export,
+.import-export-row .import-label {
+	flex: 1;
+	width: auto;
 }
 
 .import {
@@ -380,6 +385,14 @@ button,
 
 .invention-filter.active {
     border-color: #ffffff;
+}
+
+.invention-filter-cycle {
+	background: #aaaaaa;
+	align-self: flex-start;
+	font-size: 10px;
+	padding: 2px 6px;
+	margin-bottom: 2px;
 }
 
 .footer {
@@ -5202,6 +5215,7 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // alt1 hates this color or font for some reason
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // You missed that seren spirit btw...
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
@@ -5220,6 +5234,7 @@ var fishingPortersInput = document.querySelector(".fishing-porters");
 var clearButton = document.querySelector(".clear");
 var sortButton = document.querySelector(".sort-button");
 var inventionFilters = document.querySelector(".invention-filters");
+var inventionFilterButton = document.querySelector(".invention-filter-cycle");
 var savedData = getSaveData();
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
@@ -5385,16 +5400,29 @@ function updateInventionFilterVisibility() {
     }
 }
 // Invention filter button handlers
-document.querySelectorAll(".invention-filter").forEach(function (button) {
-    button.addEventListener("click", function (e) {
-        var target = e.currentTarget;
-        inventionFilter = target.dataset.filter || "all";
-        document.querySelectorAll(".invention-filter").forEach(function (btn) {
-            btn.classList.remove("active");
-        });
-        target.classList.add("active");
-        render();
-    });
+function updateInventionFilterButton() {
+    if (!inventionFilterButton)
+        return;
+    inventionFilterButton.innerText =
+        inventionFilter === "all"
+            ? "Filter Components: All"
+            : inventionFilter === "rare"
+                ? "Filter Components: Rare"
+                : inventionFilter === "uncommon"
+                    ? "Filter Components: Uncommon"
+                    : "Filter Components: Common";
+}
+inventionFilterButton.addEventListener("click", function () {
+    inventionFilter =
+        inventionFilter === "all"
+            ? "rare"
+            : inventionFilter === "rare"
+                ? "uncommon"
+                : inventionFilter === "uncommon"
+                    ? "common"
+                    : "all";
+    updateInventionFilterButton();
+    render();
 });
 // Activate the saved skill tab or default to "all"
 var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(activeSkillTab, "\"]"));
@@ -5404,6 +5432,7 @@ if (savedTabButton) {
 }
 updateClearButtonLabel();
 updateFishingModeVisibility();
+updateInventionFilterButton();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();

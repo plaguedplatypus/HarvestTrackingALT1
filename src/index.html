@@ -44,10 +44,7 @@
         </div>
 
 <div class="invention-filters">
-	<button data-filter="all" class="invention-filter active">All</button>
-	<button data-filter="rare" class="invention-filter">Rare</button>
-	<button data-filter="uncommon" class="invention-filter">Uncommon</button>
-	<button data-filter="common" class="invention-filter">Common</button>
+	<button class="invention-filter-cycle">Filter: All</button>
 </div>
 
 <label class="fishing-mode">
@@ -71,13 +68,13 @@
             <option value="">Select Chat</option>
             </select>
             <button class="history-button">History (Debug)</button>
-            <button class="export">Export</button>
-
-            <label class="import-label">
-            Import
-            <input class="import" type="file" accept=".json">
-            </label>
-
+                <div class="import-export-row">
+                <button class="export">Export</button>
+                <label class="import-label">
+                Import
+                <input class="import" type="file" accept=".json">
+                </label>
+                </div>
         </div>
         </div>
     </div>
