@@ -59,7 +59,7 @@ body {
 .topbar,
 .footer {
     flex: 0 0 auto;
-    padding-right: 22px;
+	padding-right: 38px;
 }
 
 .title {
@@ -241,13 +241,23 @@ body {
 }
 
 
-.app-cog,
+.app-cog {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-bottom: -6px;
+    padding: 3 0px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
 .sort-button {
     background: transparent;
     border: none;
     color: white;
     cursor: pointer;
-    margin-bottom: -5px;
+    margin-bottom: -7px;
     padding: 3 0px;
     font-size: 16px;
     font-weight: bold;
@@ -396,7 +406,10 @@ button,
 .status {
     color: #7a7a7a;
     font-size: 10px;
-    line-height: 1;
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .uncommon-component {
