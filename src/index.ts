@@ -408,7 +408,7 @@ function processHarvestLine(chatLine: string): string {
 	}
 
 	const birdNestMatch = cleanLine.match(
-		/You find an?\s+(.+?)!\s+You pick it up and place it in your wood box\./i
+		/You find (?:a|an)?\s+(.+?)[!.]\s+You pick it up and place it in your wood box\./i
 	);
 
 	// Check for bird's nests

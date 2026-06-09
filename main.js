@@ -39,7 +39,10 @@ body {
 
 body {
     margin: 0;
-    padding: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 0px;
     box-sizing: border-box;
     background: #1e1e1e;
     color: white;
@@ -279,15 +282,10 @@ body {
 
 .footer {
 	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
 	min-width: 0;
 	color: #888;
 	font-size: 10px;
 	line-height: 1;
-    margin-top: 0;
-    padding-top: 0;
-    padding-bottom: 0;
 }
 
 .status {
@@ -297,8 +295,7 @@ body {
 	color: #7a7a7a;
 	font-size: 10px;
 	line-height: 1;
-	margin-top: 0;
-	padding-top: 0;
+	padding-top: 4px;
 
 	overflow: hidden;
 	white-space: nowrap;
@@ -5511,7 +5508,7 @@ function processHarvestLine(chatLine) {
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
-    var birdNestMatch = cleanLine.match(/You find an?\s+(.+?)!\s+You pick it up and place it in your wood box\./i);
+    var birdNestMatch = cleanLine.match(/You find (?:a|an)?\s+(.+?)[!.]\s+You pick it up and place it in your wood box\./i);
     // Check for bird's nests
     if (birdNestMatch) {
         var item = normalizeItemName(birdNestMatch[1]);
