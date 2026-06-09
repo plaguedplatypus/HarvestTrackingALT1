@@ -250,15 +250,11 @@ body {
 .footer {
 	display: flex;
 	min-width: 0;
-	color: #888;
-	font-size: 10px;
-	line-height: 1;
 }
 
 .status {
 	flex: 1;
 	min-width: 0;
-
 	color: #7a7a7a;
 	font-size: 10px;
 	line-height: 1;
