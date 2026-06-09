@@ -59,7 +59,7 @@ body {
 .topbar,
 .footer {
     flex: 0 0 auto;
-	padding-right: 38px;
+	padding-right: 48px;
 }
 
 .title {
@@ -5309,8 +5309,8 @@ function readChatbox() {
             continue;
         if (isInHistory(chatLine))
             continue;
-        updateChatHistory(chatLine);
-        processHarvestLine(chatLine);
+        var debugStatus = processHarvestLine(chatLine);
+        updateChatHistory(chatLine, debugStatus);
     }
 }
 // Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
@@ -5490,7 +5490,7 @@ function processHarvestLine(chatLine) {
             : "seren-item";
         incrementItem(item, amount, "seren", colorClass, "seren-spirit");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
-        return;
+        return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
     // Check for invention material harvests
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
@@ -5536,7 +5536,7 @@ function processHarvestLine(chatLine) {
             trackedAnyMaterial = true;
         }
         if (trackedAnyMaterial)
-            return;
+            return "[COUNTED: invention materials]";
     }
     // Check for item transports
     var transportMatch = cleanLine.match(/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i);
@@ -5561,7 +5561,7 @@ function processHarvestLine(chatLine) {
         }
         incrementItem(item, amount, skill);
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
-        return;
+        return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
     // Some transport lines use "sent it to your" instead of "You transport to your"
     var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i);
@@ -5583,7 +5583,7 @@ function processHarvestLine(chatLine) {
         }
         incrementItem(item, amount, skill);
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
-        return;
+        return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
     // Check for mining, woodcutting, fishing, and archaeology harvests
     var skillPatterns = [
@@ -5610,7 +5610,7 @@ function processHarvestLine(chatLine) {
             return;
         incrementItem(item, 1, entry.skill);
         setStatus("Tracked: ".concat(item));
-        return;
+        return "[IGNORED]";
     }
 }
 function getSkillForItem(item) {
@@ -5694,11 +5694,13 @@ function incrementItem(item, amount, skill, colorClass, source) {
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
 var recentLines = [];
 function isInHistory(chatLine) {
-    return recentLines.includes(chatLine);
+    return recentLines.some(function (line) { return line.includes(chatLine); });
 }
 // Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
-function updateChatHistory(chatLine) {
-    recentLines.push(chatLine);
+function updateChatHistory(chatLine, debugStatus) {
+    if (debugStatus === void 0) { debugStatus = "[IGNORED]"; }
+    var debugLine = chatLine.replace(timestampRegex, function (match) { return "".concat(match, " ").concat(debugStatus); });
+    recentLines.push(debugLine);
     if (recentLines.length > 50) {
         recentLines = recentLines.slice(-50);
     }

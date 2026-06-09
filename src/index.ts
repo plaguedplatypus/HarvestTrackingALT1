@@ -170,8 +170,8 @@ function readChatbox() {
 
 		if (isInHistory(chatLine)) continue;
 
-		updateChatHistory(chatLine);
-		processHarvestLine(chatLine);
+		const debugStatus = processHarvestLine(chatLine);
+		updateChatHistory(chatLine, debugStatus);
 	}
 }
 
@@ -359,7 +359,7 @@ const rareSerenItems = new Set([
 ]);
 
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
-function processHarvestLine(chatLine: string) {
+function processHarvestLine(chatLine: string): string {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 	
 	// Check for Seren spirit harvests
@@ -379,7 +379,7 @@ function processHarvestLine(chatLine: string) {
 
 		incrementItem(item, amount, "seren", colorClass, "seren-spirit");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
-		return;
+		return `[COUNTED: ${item} +${amount}]`;
 	}
 
 	// Check for invention material harvests
@@ -439,7 +439,7 @@ function processHarvestLine(chatLine: string) {
 			trackedAnyMaterial = true;
 		}	
 
-		if (trackedAnyMaterial) return;
+		if (trackedAnyMaterial) return "[COUNTED: invention materials]";
 	}
 
 	// Check for item transports
@@ -470,7 +470,7 @@ function processHarvestLine(chatLine: string) {
 
 		incrementItem(item, amount, skill);
 		setStatus(`Tracked: ${amount} x ${item}`);
-		return;
+		return `[COUNTED: ${item} +${amount}]`;
 	}
 
 	// Some transport lines use "sent it to your" instead of "You transport to your"
@@ -497,7 +497,7 @@ function processHarvestLine(chatLine: string) {
 
 		incrementItem(item, amount, skill);
 		setStatus(`Tracked: ${amount} x ${item}`);
-		return;
+		return `[COUNTED: ${item} +${amount}]`;
 	}
 
 	// Check for mining, woodcutting, fishing, and archaeology harvests
@@ -532,7 +532,7 @@ function processHarvestLine(chatLine: string) {
 
 		incrementItem(item, 1, entry.skill);
 		setStatus(`Tracked: ${item}`);
-		return;
+		return "[IGNORED]";
 	}
 }
 
@@ -629,12 +629,17 @@ function incrementItem(
 let recentLines: string[] = [];
 
 function isInHistory(chatLine: string) {
-	return recentLines.includes(chatLine);
+	return recentLines.some((line) => line.includes(chatLine));
 }
 
 // Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
-function updateChatHistory(chatLine: string) {
-	recentLines.push(chatLine);
+function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
+	const debugLine = chatLine.replace(
+		timestampRegex,
+		(match) => `${match} ${debugStatus}`
+	);
+
+	recentLines.push(debugLine);
 
 	if (recentLines.length > 50) {
 		recentLines = recentLines.slice(-50);

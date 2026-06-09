@@ -26,7 +26,7 @@ body {
 .topbar,
 .footer {
     flex: 0 0 auto;
-	padding-right: 38px;
+	padding-right: 48px;
 }
 
 .title {
