@@ -52,32 +52,35 @@
 	Using Porters/GOTE
 </label>
 
-        <div class="tracker"></div>
-        <div class="action-buttons">
-            <button class="clear tab-clear">Clear All</button>
-            <button class="sort-button">Sort: A-Z</button>
-        </div>
-        <div class="footer">
-            <span class="status">Initializing...</span>
-        </div>
-        <div class="app-settings">
-          <button class="app-cog">⚙</button>
+<div class="tracker"></div>
 
-        <div class="app-settings-panel">
-            <select class="chat">
-            <option value="">Select Chat</option>
-            </select>
-            <button class="history-button">History (Debug)</button>
-                <div class="import-export-row">
-                <button class="export">Export</button>
-                <label class="import-label">
-                Import
-                <input class="import" type="file" accept=".json">
-                </label>
-                </div>
-        </div>
-        </div>
-    </div>
+<div class="footer">
+	<span class="status">Initializing...</span>
+</div>
+
+<div class="app-settings">
+	<button class="sort-button sort-icon" title="Sort">⇅</button>
+	<button class="app-cog" title="Settings">⚙</button>
+
+	<div class="app-settings-panel">
+		<select class="chat">
+			<option value="">Select Chat</option>
+		</select>
+
+		<button class="history-button">History (Debug)</button>
+
+		<div class="import-export-row">
+			<button class="export">Export</button>
+
+			<label class="import-label">
+				Import
+				<input class="import" type="file" accept=".json">
+			</label>
+		</div>
+
+		<button class="clear tab-clear">Clear Tab</button>
+	</div>
+</div>
 
     <script src="./main.js"></script>
 </body>

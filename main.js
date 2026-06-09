@@ -231,14 +231,26 @@ body {
     background: #4caf50;
 }
 
-.cog-btn,
-.app-cog {
+.cog-btn{
     background: transparent;
     border: none;
     color: white;
     cursor: pointer;
     padding: 0 2px;
-    font-size: 14px;
+    font-size: 11px;
+}
+
+
+.app-cog,
+.sort-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-bottom: -5px;
+    padding: 3 0px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .cog-btn {
@@ -287,6 +299,10 @@ body {
     position: absolute;
     right: 4px;
     bottom: 2px;
+
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
 .app-settings-panel {
@@ -341,30 +357,6 @@ button,
 
 .import {
     display: none;
-}
-
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
-
-.tab-clear {
-    background: #aaaaaa;
-    align-self: center;
-    font-size: 10px;
-    padding: 2px 6px;
-    margin-bottom: 1px;
-}
-
-.sort-button {
-    background: #aaaaaa;
-    align-self: center;
-    font-size: 10px;
-    padding: 2px 6px;
-    margin-bottom: 1px;
 }
 
 .invention-filters {
@@ -5370,13 +5362,6 @@ function showChatHistory() {
     status.innerText =
         "History contains ".concat(recentLines.length, " lines. Check console.");
 }
-// Update clear button label based on active tab
-function updateClearButtonLabel() {
-    clearButton.innerText =
-        activeSkillTab === "all"
-            ? "Clear All"
-            : "Clear ".concat(titleCase(activeSkillTab));
-}
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {
     if (!fishingMode)
@@ -5430,7 +5415,6 @@ var savedTabButton = document.querySelector(".skill-tab[data-skill=\"".concat(ac
 if (savedTabButton) {
     savedTabButton.classList.add("active");
 }
-updateClearButtonLabel();
 updateFishingModeVisibility();
 updateInventionFilterButton();
 updateInventionFilterVisibility();
@@ -5760,11 +5744,11 @@ function sortItems(items, data) {
     }
     items.sort();
 }
-// Update the label of the sort button to reflect the current sort mode.
+// Update the tooltip to reflect the current sort mode.
 function updateSortButtonLabel() {
     if (!sortButton)
         return;
-    sortButton.innerText =
+    sortButton.title =
         sortMode === "recent"
             ? "Sort: Recent"
             : sortMode === "alpha"
@@ -5873,7 +5857,6 @@ document.querySelectorAll(".skill-tab").forEach(function (tab) {
         target.classList.add("active");
         updateFishingModeVisibility();
         updateInventionFilterVisibility();
-        updateClearButtonLabel();
         render();
     });
 });

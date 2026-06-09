@@ -248,14 +248,6 @@ function showChatHistory() {
 		`History contains ${recentLines.length} lines. Check console.`;
 }
 
-// Update clear button label based on active tab
-function updateClearButtonLabel() {
-	clearButton.innerText =
-		activeSkillTab === "all"
-			? "Clear All"
-			: `Clear ${titleCase(activeSkillTab)}`;
-}
-
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {
 	if (!fishingMode) return;
@@ -316,7 +308,6 @@ if (savedTabButton) {
 	savedTabButton.classList.add("active");
 }
 
-updateClearButtonLabel();
 updateFishingModeVisibility();
 updateInventionFilterButton();
 updateInventionFilterVisibility();
@@ -725,11 +716,11 @@ function sortItems(items: string[], data: SaveData) {
 	items.sort();
 }
 
-// Update the label of the sort button to reflect the current sort mode.
+// Update the tooltip to reflect the current sort mode.
 function updateSortButtonLabel() {
 	if (!sortButton) return;
 
-	sortButton.innerText =
+	sortButton.title =
 		sortMode === "recent"
 			? "Sort: Recent"
 			: sortMode === "alpha"
@@ -912,7 +903,6 @@ document.querySelectorAll(".skill-tab").forEach((tab) => {
 
 		updateFishingModeVisibility();
 		updateInventionFilterVisibility();
-		updateClearButtonLabel();
 		render();
 	});
 });
