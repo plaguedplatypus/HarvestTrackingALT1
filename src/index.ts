@@ -387,7 +387,7 @@ const rareSerenItems = new Set([
 function processHarvestLine(chatLine: string): string {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 	
-	// Check for Seren spirit harvests
+	// Check for Seren spirit's
 	const serenMatch = cleanLine.match(
 		/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i
 	);
@@ -407,7 +407,23 @@ function processHarvestLine(chatLine: string): string {
 		return `[COUNTED: ${item} +${amount}]`;
 	}
 
-	// Check for invention material harvests
+	const birdNestMatch = cleanLine.match(
+		/You find an?\s+(.+?)!\s+You pick it up and place it in your wood box\./i
+	);
+
+	// Check for bird's nests
+	if (birdNestMatch) {
+		const item = normalizeItemName(birdNestMatch[1]);
+
+		if (!item) return "[IGNORED]";
+
+		incrementItem(item, 1, "woodcutting");
+		setStatus(`Tracked: ${item}`);
+
+		return `[COUNTED: ${titleCase(item)} +1]`;
+	}
+
+	// Check for invention materials
 	const materialsMatch = cleanLine.match(
 		/Materials gained:\s*(.+)$/i
 	);
@@ -535,7 +551,7 @@ function processHarvestLine(chatLine: string): string {
 		return `[COUNTED: ${item} +${amount}]`;
 	}
 
-	// Check for mining, woodcutting, fishing, and archaeology harvests
+	// Check for mining, woodcutting, fishing, and archaeology
 	const skillPatterns: Array<{
 		pattern: RegExp;
 		skill: SkillType;
@@ -571,7 +587,7 @@ function processHarvestLine(chatLine: string): string {
 }
 
 function getSkillForItem(item: string): InternalSkillType {
-	if (item.includes("bamboo") || item.includes("bird's nest") || item.includes("enchanted bird's nest") || item.includes("eternal magic tree branch")) return "woodcutting";
+	if (item.includes("bamboo") || item.includes("eternal magic tree branch")) return "woodcutting";
 	if (item.includes("(damaged)")) return "archaeology";
 	if (item.includes("ore")) return "mining";
 	if (item.includes("logs")) return "woodcutting";

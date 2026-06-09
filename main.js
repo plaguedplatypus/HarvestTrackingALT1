@@ -279,7 +279,8 @@ body {
 
 .footer {
 	display: flex;
-	align-items: flex-end;
+	align-items: flex-start;
+	justify-content: space-between;
 	min-width: 0;
 	color: #888;
 	font-size: 10px;
@@ -290,12 +291,14 @@ body {
 }
 
 .status {
-	flex: 1 1 auto;
+	flex: 1;
 	min-width: 0;
 
 	color: #7a7a7a;
 	font-size: 10px;
 	line-height: 1;
+	margin-top: 0;
+	padding-top: 0;
 
 	overflow: hidden;
 	white-space: nowrap;
@@ -5494,7 +5497,7 @@ var rareSerenItems = new Set([
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
-    // Check for Seren spirit harvests
+    // Check for Seren spirit's
     var serenMatch = cleanLine.match(/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i);
     if (serenMatch) {
         var amount = parseInt(serenMatch[1], 10);
@@ -5508,7 +5511,17 @@ function processHarvestLine(chatLine) {
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
-    // Check for invention material harvests
+    var birdNestMatch = cleanLine.match(/You find an?\s+(.+?)!\s+You pick it up and place it in your wood box\./i);
+    // Check for bird's nests
+    if (birdNestMatch) {
+        var item = normalizeItemName(birdNestMatch[1]);
+        if (!item)
+            return "[IGNORED]";
+        incrementItem(item, 1, "woodcutting");
+        setStatus("Tracked: ".concat(item));
+        return "[COUNTED: ".concat(titleCase(item), " +1]");
+    }
+    // Check for invention materials
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
     // If the line contains "Materials gained:"
     // we will attempt to parse it for invention materials. 
@@ -5609,7 +5622,7 @@ function processHarvestLine(chatLine) {
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
-    // Check for mining, woodcutting, fishing, and archaeology harvests
+    // Check for mining, woodcutting, fishing, and archaeology
     var skillPatterns = [
         { pattern: /You manage to mine some\s+(.+?)[!.]/i, skill: "mining" },
         { pattern: /You mine (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "mining" },
@@ -5637,7 +5650,7 @@ function processHarvestLine(chatLine) {
     }
 }
 function getSkillForItem(item) {
-    if (item.includes("bamboo") || item.includes("bird's nest") || item.includes("enchanted bird's nest") || item.includes("eternal magic tree branch"))
+    if (item.includes("bamboo") || item.includes("eternal magic tree branch"))
         return "woodcutting";
     if (item.includes("(damaged)"))
         return "archaeology";
