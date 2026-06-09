@@ -66,117 +66,28 @@ reader.readargs.colors.push(
 	a1lib.mixColor(255, 140, 56), // pale orange
 );
 
-function getTimeStamp() {
-	return new Date().toLocaleTimeString("en-US", {
-		hour12: false,
-	});
-}
-
-function setStatus(message: string) {
-	status.innerText = `${message} @ ${getTimeStamp()}`;
-}
-
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
+
+// The status element is used to display messages to the user in the footer
 const status = document.querySelector(".status") as HTMLElement;
-const clearButton = document.querySelector(".clear") as HTMLElement;
+
+const historyButton = document.querySelector(".history-button") as HTMLElement;
 const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
 
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
 
-const historyButton = document.querySelector(".history-button") as HTMLElement;
+const clearButton = document.querySelector(".clear") as HTMLElement;
 const sortButton = document.querySelector(".sort-button") as HTMLElement;
 const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
 
 const savedData = getSaveData();
-const savedActiveTab = savedData.activeTab as string | undefined;
-activeSkillTab =
-	savedActiveTab === "other"
-		? "all"
-		: ((savedData.activeTab || "all") as SkillType);
-fishingUsePorters = savedData.fishingUsePorters ?? true;
-sortMode = savedData.sortMode || "recent";
 
-if (fishingPortersInput) {
-	fishingPortersInput.checked = fishingUsePorters;
-}
-
-document.querySelectorAll(".skill-tab").forEach((btn) => {
-	btn.classList.remove("active");
-});
-
-function updateClearButtonLabel() {
-	clearButton.innerText =
-		activeSkillTab === "all"
-			? "Clear All"
-			: `Clear ${titleCase(activeSkillTab)}`;
-}
-
-function updateFishingModeVisibility() {
-	if (!fishingMode) return;
-
-	if (activeSkillTab === "fishing") {
-		fishingMode.classList.add("visible");
-	} else {
-		fishingMode.classList.remove("visible");
-	}
-}
-
-function updateInventionFilterVisibility() {
-	if (!inventionFilters) return;
-
-	if (activeSkillTab === "invention") {
-		inventionFilters.classList.add("visible");
-	} else {
-		inventionFilters.classList.remove("visible");
-	}
-}
-
-function showChatHistory() {
-	console.log("=== Recent Chat History ===");
-
-	for (const line of recentLines) {
-		console.log(line);
-	}
-
-	status.innerText =
-		`History contains ${recentLines.length} lines. Check console.`;
-}
-
-document.querySelectorAll(".invention-filter").forEach((button) => {
-	button.addEventListener("click", (e: Event) => {
-		const target = e.currentTarget as HTMLElement;
-
-		inventionFilter = (target.dataset.filter as InventionFilter) || "all";
-
-		document.querySelectorAll(".invention-filter").forEach((btn) => {
-			btn.classList.remove("active");
-		});
-
-		target.classList.add("active");
-		render();
-	});
-});
-
-const savedTabButton = document.querySelector(
-	`.skill-tab[data-skill="${activeSkillTab}"]`
-);
-
-if (savedTabButton) {
-	savedTabButton.classList.add("active");
-}
-
-if (window.alt1) {
-	alt1.identifyAppUrl("./appconfig.json");
-} else {
-	const addappurl = `alt1://addapp/${new URL("./appconfig.json", document.location.href).href}`;
-	status.innerHTML = `Alt1 not detected. <a href='${addappurl}'>Add this app to Alt1</a>`;
-}
-
+// Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
 	if (!window.alt1) {
 		render();
@@ -205,6 +116,200 @@ window.setTimeout(function () {
 	}, 1000);
 }, 50);
 
+if (window.alt1) {
+	alt1.identifyAppUrl("./appconfig.json");
+} else {
+	const addappurl = `alt1://addapp/${new URL("./appconfig.json", document.location.href).href}`;
+	status.innerHTML = `Alt1 not detected. <a href='${addappurl}'>Add this app to Alt1</a>`;
+}
+
+// Populate the chat selector dropdown with available chatboxes
+function populateChatSelector() {
+	chatSelector.innerHTML = `<option value="">Select Chat</option>`;
+
+	reader.pos.boxes.forEach((_box, i) => {
+		chatSelector.insertAdjacentHTML("beforeend", `<option value="${i}">Chat ${i}</option>`);
+	});
+
+	chatSelector.addEventListener("change", function () {
+		if (this.value === "") return;
+
+		reader.pos.mainbox = reader.pos.boxes[Number(this.value)];
+		showSelectedChat(reader.pos);
+
+		const data = getSaveData();
+		data.chat = this.value;
+		saveData(data);
+
+		status.innerText = `Using Chat ${this.value}.`;
+	});
+}
+
+// Select the saved chatbox or default to the first one
+function selectSavedChat() {
+	const data = getSaveData();
+	const savedChat = data.chat || "0";
+
+	reader.pos.mainbox = reader.pos.boxes[Number(savedChat)] || reader.pos.boxes[0];
+	chatSelector.value = savedChat;
+
+	data.chat = savedChat;
+	saveData(data);
+}
+
+// Read the chatbox, process new lines, and update the tracker accordingly
+function readChatbox() {
+	const opts = reader.read() || [];
+
+	const chatArr = processChat(opts);
+
+	for (const line of chatArr) {
+		const chatLine = line.trim();
+		if (!chatLine) continue;
+
+		if (isInHistory(chatLine)) continue;
+
+		updateChatHistory(chatLine);
+		processHarvestLine(chatLine);
+	}
+}
+
+// Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
+function processChat(opts: any[]) {
+	let chatStr = "";
+
+	if (opts.length !== 0) {
+		for (const line in opts) {
+			if (!opts[line].text.match(timestampRegex) && line === "0") {
+				continue;
+			}
+
+			if (opts[line].text.match(timestampRegex)) {
+				if (Number(line) > 0) chatStr += "\n";
+				chatStr += opts[line].text + " ";
+				continue;
+			}
+
+			chatStr += opts[line].text;
+		}
+	}
+
+	if (chatStr.trim() === "") return [];
+
+	return chatStr
+		.replace(/(\d) x x/g, "$1 x")
+		.trim()
+		.split("\n")
+		.map((line) => line.trim());
+}
+
+function getTimeStamp() {
+	return new Date().toLocaleTimeString("en-US", {
+		hour12: false,
+	});
+}
+
+// Update the status message in the footer with a timestamp for better user feedback on when events occurred.
+function setStatus(message: string) {
+	status.innerText = `${message} @ ${getTimeStamp()}`;
+}
+
+// Activate the saved fishing porters setting or default to true if not set
+const savedActiveTab = savedData.activeTab as string | undefined;
+activeSkillTab =
+	savedActiveTab === "other"
+		? "all"
+		: ((savedData.activeTab || "all") as SkillType);
+fishingUsePorters = savedData.fishingUsePorters ?? true;
+sortMode = savedData.sortMode || "recent";
+
+// Set initial state of fishing porters checkbox based on saved data
+if (fishingPortersInput) {
+	fishingPortersInput.checked = fishingUsePorters;
+}
+
+// Set initial sort button label
+document.querySelectorAll(".skill-tab").forEach((btn) => {
+	btn.classList.remove("active");
+});
+
+// Debug function to show recent chat history in console
+// This can be useful for troubleshooting parsing issues or understanding why certain lines are not being tracked correctly. 
+// It will print the last 50 chat lines that were processed by the tracker.
+function showChatHistory() {
+	console.log("=== Recent Chat History ===");
+
+	for (const line of recentLines) {
+		console.log(line);
+	}
+
+	status.innerText =
+		`History contains ${recentLines.length} lines. Check console.`;
+}
+
+// Update clear button label based on active tab
+function updateClearButtonLabel() {
+	clearButton.innerText =
+		activeSkillTab === "all"
+			? "Clear All"
+			: `Clear ${titleCase(activeSkillTab)}`;
+}
+
+// Show/hide fishing mode based on active tab
+function updateFishingModeVisibility() {
+	if (!fishingMode) return;
+
+	if (activeSkillTab === "fishing") {
+		fishingMode.classList.add("visible");
+	} else {
+		fishingMode.classList.remove("visible");
+	}
+}
+
+// Hide invention filters when not on invention tab
+function updateInventionFilterVisibility() {
+	if (!inventionFilters) return;
+
+	if (activeSkillTab === "invention") {
+		inventionFilters.classList.add("visible");
+	} else {
+		inventionFilters.classList.remove("visible");
+	}
+}
+
+// Invention filter button handlers
+document.querySelectorAll(".invention-filter").forEach((button) => {
+	button.addEventListener("click", (e: Event) => {
+		const target = e.currentTarget as HTMLElement;
+
+		inventionFilter = (target.dataset.filter as InventionFilter) || "all";
+
+		document.querySelectorAll(".invention-filter").forEach((btn) => {
+			btn.classList.remove("active");
+		});
+
+		target.classList.add("active");
+		render();
+	});
+});
+
+// Activate the saved skill tab or default to "all"
+const savedTabButton = document.querySelector(
+	`.skill-tab[data-skill="${activeSkillTab}"]`
+);
+
+// If the saved active tab is "other", we will default to "all" and not activate any specific tab button, since "other" is not a selectable tab in the UI.
+if (savedTabButton) {
+	savedTabButton.classList.add("active");
+}
+
+updateClearButtonLabel();
+updateFishingModeVisibility();
+updateInventionFilterVisibility();
+updateSortButtonLabel();
+render();
+
+ // List of rare components. This is used to apply special styling to these items in the invention tab.
 const rareComponents = new Set([
     "brassican components",
     "knightly components",
@@ -241,91 +346,18 @@ const rareComponents = new Set([
     "ecliptic components"
 ]);
 
+// List of rare Seren spirit items that should be highlighted in the tracker.
 const rareSerenItems = new Set([
     "hazelmere's signet ring",
     "blurberry special",
     "cheese+tom batta"
 ]);
 
-function populateChatSelector() {
-	chatSelector.innerHTML = `<option value="">Select Chat</option>`;
-
-	reader.pos.boxes.forEach((_box, i) => {
-		chatSelector.insertAdjacentHTML("beforeend", `<option value="${i}">Chat ${i}</option>`);
-	});
-
-	chatSelector.addEventListener("change", function () {
-		if (this.value === "") return;
-
-		reader.pos.mainbox = reader.pos.boxes[Number(this.value)];
-		showSelectedChat(reader.pos);
-
-		const data = getSaveData();
-		data.chat = this.value;
-		saveData(data);
-
-		status.innerText = `Using Chat ${this.value}.`;
-	});
-}
-
-function selectSavedChat() {
-	const data = getSaveData();
-	const savedChat = data.chat || "0";
-
-	reader.pos.mainbox = reader.pos.boxes[Number(savedChat)] || reader.pos.boxes[0];
-	chatSelector.value = savedChat;
-
-	data.chat = savedChat;
-	saveData(data);
-}
-
-function readChatbox() {
-	const opts = reader.read() || [];
-
-	const chatArr = processChat(opts);
-
-	for (const line of chatArr) {
-		const chatLine = line.trim();
-		if (!chatLine) continue;
-
-		 if (isInHistory(chatLine)) continue;
-
-		updateChatHistory(chatLine);
-		processHarvestLine(chatLine);
-	}
-}
-
-function processChat(opts: any[]) {
-	let chatStr = "";
-
-	if (opts.length !== 0) {
-		for (const line in opts) {
-			if (!opts[line].text.match(timestampRegex) && line === "0") {
-				continue;
-			}
-
-			if (opts[line].text.match(timestampRegex)) {
-				if (Number(line) > 0) chatStr += "\n";
-				chatStr += opts[line].text + " ";
-				continue;
-			}
-
-			chatStr += opts[line].text;
-		}
-	}
-
-	if (chatStr.trim() === "") return [];
-
-	return chatStr
-		.replace(/(\d) x x/g, "$1 x")
-		.trim()
-		.split("\n")
-		.map((line) => line.trim());
-}
-
+// Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine: string) {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
-
+	
+	// Check for Seren spirit harvests
 	const serenMatch = cleanLine.match(
 		/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i
 	);
@@ -345,19 +377,26 @@ function processHarvestLine(chatLine: string) {
 		return;
 	}
 
+	// Check for invention material harvests
 	const materialsMatch = cleanLine.match(
 		/Materials gained:\s*(.+)$/i
 	);
 
+	// If the line contains "Materials gained:"
+	// we will attempt to parse it for invention materials. 
 	if (materialsMatch) {
-	const materialText = materialsMatch[1];
+		const materialText = materialsMatch[1];
 
+	// If the material text ends with a comma, it likely means the line was cut off
 		if (materialText.endsWith(",")) {
 			console.warn("CUT OFF MATERIALS:", materialText);
 		}
 
+	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
 
+	// If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
+	// This way we can still track the complete materials listed before the cutoff.
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
 		let trackedAnyMaterial = false;
@@ -398,6 +437,7 @@ function processHarvestLine(chatLine: string) {
 		if (trackedAnyMaterial) return;
 	}
 
+	// Check for item transports
 	const transportMatch = cleanLine.match(
 		/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i
 	);
@@ -428,6 +468,7 @@ function processHarvestLine(chatLine: string) {
 		return;
 	}
 
+	// Some transport lines use "sent it to your" instead of "You transport to your"
 	const perkSendMatch = cleanLine.match(
 		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i
 	);
@@ -454,6 +495,7 @@ function processHarvestLine(chatLine: string) {
 		return;
 	}
 
+	// Check for mining, woodcutting, fishing, and archaeology harvests
 	const skillPatterns: Array<{
 		pattern: RegExp;
 		skill: SkillType;
@@ -497,6 +539,7 @@ function getSkillForItem(item: string): InternalSkillType {
 	return "other";
 }
 
+// Normalize item names by converting to lowercase
 function normalizeItemName(item: string) {
 	return item
 		.toLowerCase()
@@ -534,10 +577,12 @@ function getSaveData(): SaveData {
 	}
 }
 
+// Save the current state of the tracker to localStorage
 function saveData(data: SaveData) {
 	localStorage.setItem(appName, JSON.stringify(data));
 }
 
+// Ensure that an item exists in the save data before trying to update it
 function ensureItem(data: SaveData, item: string) {
 	if (!data.items[item]) {
 		data.items[item] = {
@@ -548,6 +593,8 @@ function ensureItem(data: SaveData, item: string) {
 	}
 }
 
+// Increment the count of a tracked item and update its metadata
+// then re-render the tracker to reflect the changes.
 function incrementItem(
 	item: string,
 	amount: number = 1,
@@ -573,20 +620,23 @@ function incrementItem(
 	render(item);
 }
 
+// Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
 let recentLines: string[] = [];
 
 function isInHistory(chatLine: string) {
 	return recentLines.includes(chatLine);
 }
 
+// Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
 function updateChatHistory(chatLine: string) {
 	recentLines.push(chatLine);
 
-	if (recentLines.length > 100) {
-		recentLines = recentLines.slice(-100);
+	if (recentLines.length > 50) {
+		recentLines = recentLines.slice(-50);
 	}
 }
 
+// Render the tracker UI based on the current save data
 function render(highlightItem?: string) {
 	const data = getSaveData();
 
@@ -641,6 +691,7 @@ function render(highlightItem?: string) {
 	bindRowEvents();
 }
 
+// Sort items based on the selected sort mode: by recent updates, alphabetically, or by count.
 function sortItems(items: string[], data: SaveData) {
 	if (sortMode === "recent") {
 		items.sort((a, b) =>
@@ -660,6 +711,7 @@ function sortItems(items: string[], data: SaveData) {
 	items.sort();
 }
 
+// Update the label of the sort button to reflect the current sort mode.
 function updateSortButtonLabel() {
 	if (!sortButton) return;
 
@@ -689,6 +741,7 @@ if (sortButton) {
 	});
 }
 
+// Render a group of items under a common header, such as "Rare Components" or "Uncommon Components" in the invention tab.
 function renderItemGroup(
 	label: string,
 	items: string[],
@@ -707,6 +760,7 @@ function renderItemGroup(
 	}
 }
 
+// Render a single item row in the tracker, including its name, count, goal progress, and settings panel.
 function renderItemRow(
 	item: string,
 	itemData: TrackedItem,
@@ -727,7 +781,7 @@ function renderItemRow(
 
 		if (goalReached) {
 			goalHtml = `
-				<div class="goal-complete">★ Goal Reached!  ${overageText}</div>
+				<div class="goal-complete">★ Goal Reached!${overageText}</div>
 	`;
 
 		} else {
@@ -775,7 +829,7 @@ function renderItemRow(
 			<button class="clear-goal" data-item="${escapeAttr(item)}" title="Clear Goal">✖</button>
 			<button class="save-goal" data-item="${escapeAttr(item)}" title="Save Goal">💾</button>
 			<span class="button-separator">•</span>
-			<button class="reset-item" data-item="${escapeAttr(item)}" title="Reset Item">↺</button>
+			<button class="reset-item" data-item="${escapeAttr(item)}" title="Reset Count">↺</button>
 			<button class="delete-item" data-item="${escapeAttr(item)}" title="Delete Item">🗑</button>
 		</div>
 	`;
@@ -787,6 +841,7 @@ function renderItemRow(
 	tracker.appendChild(row);
 }
 
+// Bind event listeners to the buttons in each item row
 function bindRowEvents() {
 	document.querySelectorAll(".cog-btn").forEach((btn) => {
 		btn.addEventListener("click", (e: Event) => {
@@ -824,6 +879,7 @@ function bindRowEvents() {
 	});
 }
 
+// Bind event listeners to the skill tab buttons to switch between different skill views in the tracker.
 document.querySelectorAll(".skill-tab").forEach((tab) => {
 	tab.addEventListener("click", (e: Event) => {
 		const target = e.currentTarget as HTMLElement;
@@ -847,6 +903,7 @@ document.querySelectorAll(".skill-tab").forEach((tab) => {
 	});
 });
 
+// Toggle the settings panel for a specific item when the cog button is clicked.
 function toggleSettings(item: string) {
 	const data = getSaveData();
 	if (!data.items[item]) return;
@@ -856,6 +913,7 @@ function toggleSettings(item: string) {
 	render();
 }
 
+// Clear the goal for a specific item when the clear goal button is clicked.
 function clearGoal(item: string) {
 	const data = getSaveData();
 	if (!data.items[item]) return;
@@ -866,6 +924,7 @@ function clearGoal(item: string) {
 	render();
 }
 
+// Set a new goal for a specific item when the save goal button is clicked
 function setGoal(item: string) {
 	const data = getSaveData();
 	if (!data.items[item]) return;
@@ -890,6 +949,7 @@ function setGoal(item: string) {
 	render();
 }
 
+// Reset the count for a specific item back to zero when the reset button is clicked.
 function resetItem(item: string) {
 	const data = getSaveData();
 	if (!data.items[item]) return;
@@ -899,6 +959,7 @@ function resetItem(item: string) {
 	render();
 }
 
+// Delete a specific item from the tracker when the delete button is clicked.
 function deleteItem(item: string) {
 	const data = getSaveData();
 	delete data.items[item];
@@ -906,6 +967,7 @@ function deleteItem(item: string) {
 	render();
 }
 
+// Clear all items from the current skill tab, or all items if "all" is selected, when the clear button is clicked.
 function clearCurrentTab() {
 	const data = getSaveData();
 
@@ -1019,12 +1081,7 @@ if (fishingPortersInput) {
 	});
 }
 
-updateClearButtonLabel();
-updateFishingModeVisibility();
-updateInventionFilterVisibility();
-updateSortButtonLabel();
-render();
-
+// Bind the history button to show recent chat history in the console for debugging purposes.
 if (historyButton) {
 	historyButton.addEventListener("click", showChatHistory);
 }
