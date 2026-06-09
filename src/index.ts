@@ -537,6 +537,7 @@ function processHarvestLine(chatLine: string): string {
 }
 
 function getSkillForItem(item: string): InternalSkillType {
+	if (item.includes("(damaged)")) return "archaeology";
 	if (item.includes("ore")) return "mining";
 	if (item.includes("logs")) return "woodcutting";
 	if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish")) return "fishing";

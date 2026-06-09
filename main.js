@@ -5614,6 +5614,8 @@ function processHarvestLine(chatLine) {
     }
 }
 function getSkillForItem(item) {
+    if (item.includes("(damaged)"))
+        return "archaeology";
     if (item.includes("ore"))
         return "mining";
     if (item.includes("logs"))
