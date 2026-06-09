@@ -1,5 +1,6 @@
 import * as a1lib from "alt1";
 import ChatboxReader from "alt1/chatbox";
+import * as OCR from "alt1/ocr";
 
 import "./index.html";
 import "./appconfig.json";
@@ -53,6 +54,7 @@ const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
 	// why does this game hate colors so much
+	a1lib.mixColor(205, 205, 205), // Bright green
 	a1lib.mixColor(0, 255, 0), // Bright green
 	a1lib.mixColor(50, 200, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // alt1 hates this color or font for some reason
@@ -65,7 +67,30 @@ reader.readargs.colors.push(
 	a1lib.mixColor(255, 128, 0), // Medium orange
 	a1lib.mixColor(255, 111, 0), // Darker orange
 	a1lib.mixColor(255, 140, 56), // pale orange
+	a1lib.mixColor(245, 124, 1), // orange
+	a1lib.mixColor(238, 118, 0), // orange
 );
+
+(reader as any).forwardnudges.push({
+	name: "material-after-lost-components",
+	match: /Materials gained:.*,\s*components$/i,
+	fn: (ctx: any) => {
+		const data = OCR.readLine(
+			ctx.imgdata,
+			ctx.font,
+			ctx.colors,
+			ctx.rightx,
+			ctx.baseliney,
+			true,
+			false
+		);
+
+		if (data.text) {
+			data.fragments.forEach((f) => ctx.addfrag(f));
+			return true;
+		}
+	}
+});
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
@@ -399,12 +424,16 @@ function processHarvestLine(chatLine: string): string {
 
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
-
+		if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
+			console.warn("LOST ITEM:", finalMaterialText);
+			finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
+		}
 	// If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
 	// This way we can still track the complete materials listed before the cutoff.
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
 		let trackedAnyMaterial = false;
+		const countedMaterials: string[] = [];
 
 		while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
 			const amount = parseInt(materialMatch[1], 10);
@@ -434,12 +463,18 @@ function processHarvestLine(chatLine: string): string {
 					: "invention";
 
 			incrementItem(item, amount, "invention", colorClass, source);
+			
+			countedMaterials.push(`${titleCase(item)} +${amount}`);
+
 			setStatus(`Invention: ${amount} x ${item}`);
 
 			trackedAnyMaterial = true;
 		}	
 
-		if (trackedAnyMaterial) return "[COUNTED: invention materials]";
+		if (countedMaterials.length > 0) {
+			const warning = finalMaterialText !== materialText ? " [LOST ITEM]" : "";
+			return `[COUNTED: ${countedMaterials.join(", ")}]${warning}`;
+		}
 	}
 
 	// Check for item transports
@@ -505,18 +540,17 @@ function processHarvestLine(chatLine: string): string {
 		pattern: RegExp;
 		skill: SkillType;
 	}> = [
-		{ pattern: /You manage to mine some (.+?)\./i, skill: "mining" },
-		{ pattern: /You mine (?:some |an? )?(.+?)\./i, skill: "mining" },
+		{ pattern: /You manage to mine some\s+(.+?)[!.]/i, skill: "mining" },
+		{ pattern: /You mine (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "mining" },
 
-		{ pattern: /You get some (bamboo |logs|.+? logs)\./i, skill: "woodcutting" },
-		{ pattern: /You cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-		{ pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-		{ pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
+		{ pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
+		{ pattern: /You cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
+		{ pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
+		{ pattern: /You chop (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
 
-		{ pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
-		{ pattern: /You catch some (.+?)\./i, skill: "fishing" },
+		{ pattern: /You catch (?:a|an|some)\s+(.+?)[!.]/i, skill: "fishing" },
 
-		{ pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
+		{ pattern: /You find (?:a|an|some)\s+(.+?)[!.]/i, skill: "archaeology" },
 	];
 
 	for (const entry of skillPatterns) {
@@ -537,6 +571,7 @@ function processHarvestLine(chatLine: string): string {
 }
 
 function getSkillForItem(item: string): InternalSkillType {
+	if (item.includes("bamboo") || item.includes("bird's nest") || item.includes("enchanted bird's nest") || item.includes("eternal magic tree branch")) return "woodcutting";
 	if (item.includes("(damaged)")) return "archaeology";
 	if (item.includes("ore")) return "mining";
 	if (item.includes("logs")) return "woodcutting";

@@ -56,12 +56,6 @@ body {
     overflow: hidden;
 }
 
-.topbar,
-.footer {
-    flex: 0 0 auto;
-	padding-right: 48px;
-}
-
 .title {
     font-size: 14px;
     font-weight: bold;
@@ -240,29 +234,6 @@ body {
     font-size: 11px;
 }
 
-
-.app-cog {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin-bottom: -6px;
-    padding: 3 0px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.sort-button {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin-bottom: -10px;
-    padding: 3 0px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
 .cog-btn {
     flex: 0 0 auto;
 }
@@ -305,21 +276,60 @@ body {
 	user-select: none;
 }
 
-.app-settings {
-    position: absolute;
-    right: 4px;
-    bottom: 2px;
 
-    display: flex;
-    align-items: center;
-    gap: 2px;
+.footer {
+	display: flex;
+	align-items: center;
+	gap: 0px;
+	min-width: 0;
+}
+
+.status {
+	flex: 1 1 auto;
+	min-width: 0;
+
+	color: #7a7a7a;
+	font-size: 10px;
+	line-height: 1;
+
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.app-settings {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 0px;
+	position: relative;
+}
+
+.sort-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 3 0px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.app-cog {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 3 0px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .app-settings-panel {
-    display: none;
-    position: absolute;
-    right: 0;
-    bottom: 12px;
+	display: none;
+	position: absolute;
+	right: 0;
+	bottom: 18px;
     background: #2c2c2c;
     border: 1px solid #555;
     border-radius: 6px;
@@ -395,21 +405,6 @@ button,
 	font-size: 10px;
 	padding: 2px 6px;
 	margin-bottom: 2px;
-}
-
-.footer {
-    color: #888888;
-    font-size: 10px;
-    line-height: 1;
-}
-
-.status {
-    color: #7a7a7a;
-    font-size: 10px;
-	display: block;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 }
 
 .uncommon-component {
@@ -5194,11 +5189,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alt1/chatbox */ "../node_modules/alt1/dist/chatbox/index.js");
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.html */ "./index.html");
-/* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
-/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
-/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
+/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! alt1/ocr */ "../node_modules/alt1/dist/ocr/index.js");
+/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(alt1_ocr__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./index.html */ "./index.html");
+/* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
+/* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
+/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 var _a;
+
 
 
 
@@ -5215,6 +5213,7 @@ var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // why does this game hate colors so much
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(205, 205, 205), // Bright green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // alt1 hates this color or font for some reason
@@ -5224,7 +5223,20 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as en
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56));
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
+reader.forwardnudges.push({
+    name: "material-after-lost-components",
+    match: /Materials gained:.*,\s*components$/i,
+    fn: function (ctx) {
+        var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, ctx.rightx, ctx.baseliney, true, false);
+        if (data.text) {
+            data.fragments.forEach(function (f) { return ctx.addfrag(f); });
+            return true;
+        }
+    }
+});
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
@@ -5504,11 +5516,16 @@ function processHarvestLine(chatLine) {
         }
         // We will attempt to parse whatever material information we have.
         var finalMaterialText = materialText;
+        if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
+            console.warn("LOST ITEM:", finalMaterialText);
+            finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
+        }
         // If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
         // This way we can still track the complete materials listed before the cutoff.
         var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
         var materialMatch = void 0;
         var trackedAnyMaterial = false;
+        var countedMaterials = [];
         while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
             var amount = parseInt(materialMatch[1], 10);
             var item = normalizeItemName(materialMatch[2]);
@@ -5532,11 +5549,14 @@ function processHarvestLine(chatLine) {
                     ? "uncommon-components"
                     : "invention";
             incrementItem(item, amount, "invention", colorClass, source);
+            countedMaterials.push("".concat(titleCase(item), " +").concat(amount));
             setStatus("Invention: ".concat(amount, " x ").concat(item));
             trackedAnyMaterial = true;
         }
-        if (trackedAnyMaterial)
-            return "[COUNTED: invention materials]";
+        if (countedMaterials.length > 0) {
+            var warning = finalMaterialText !== materialText ? " [LOST ITEM]" : "";
+            return "[COUNTED: ".concat(countedMaterials.join(", "), "]").concat(warning);
+        }
     }
     // Check for item transports
     var transportMatch = cleanLine.match(/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i);
@@ -5587,15 +5607,14 @@ function processHarvestLine(chatLine) {
     }
     // Check for mining, woodcutting, fishing, and archaeology harvests
     var skillPatterns = [
-        { pattern: /You manage to mine some (.+?)\./i, skill: "mining" },
-        { pattern: /You mine (?:some |an? )?(.+?)\./i, skill: "mining" },
-        { pattern: /You get some (bamboo |logs|.+? logs)\./i, skill: "woodcutting" },
-        { pattern: /You cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You successfully cut (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You chop (?:some |an? )?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You catch a[n]? (.+?)\./i, skill: "fishing" },
-        { pattern: /You catch some (.+?)\./i, skill: "fishing" },
-        { pattern: /You find (?:a|an|some) (.+?)\./i, skill: "archaeology" },
+        { pattern: /You manage to mine some\s+(.+?)[!.]/i, skill: "mining" },
+        { pattern: /You mine (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "mining" },
+        { pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
+        { pattern: /You cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
+        { pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
+        { pattern: /You chop (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
+        { pattern: /You catch (?:a|an|some)\s+(.+?)[!.]/i, skill: "fishing" },
+        { pattern: /You find (?:a|an|some)\s+(.+?)[!.]/i, skill: "archaeology" },
     ];
     for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
         var entry = skillPatterns_1[_i];
@@ -5614,6 +5633,8 @@ function processHarvestLine(chatLine) {
     }
 }
 function getSkillForItem(item) {
+    if (item.includes("bamboo") || item.includes("bird's nest") || item.includes("enchanted bird's nest") || item.includes("eternal magic tree branch"))
+        return "woodcutting";
     if (item.includes("(damaged)"))
         return "archaeology";
     if (item.includes("ore"))

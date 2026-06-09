@@ -23,12 +23,6 @@ body {
     overflow: hidden;
 }
 
-.topbar,
-.footer {
-    flex: 0 0 auto;
-	padding-right: 48px;
-}
-
 .title {
     font-size: 14px;
     font-weight: bold;
@@ -207,29 +201,6 @@ body {
     font-size: 11px;
 }
 
-
-.app-cog {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin-bottom: -6px;
-    padding: 3 0px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.sort-button {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin-bottom: -10px;
-    padding: 3 0px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
 .cog-btn {
     flex: 0 0 auto;
 }
@@ -272,21 +243,60 @@ body {
 	user-select: none;
 }
 
-.app-settings {
-    position: absolute;
-    right: 4px;
-    bottom: 2px;
 
-    display: flex;
-    align-items: center;
-    gap: 2px;
+.footer {
+	display: flex;
+	align-items: center;
+	gap: 0px;
+	min-width: 0;
+}
+
+.status {
+	flex: 1 1 auto;
+	min-width: 0;
+
+	color: #7a7a7a;
+	font-size: 10px;
+	line-height: 1;
+
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.app-settings {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 0px;
+	position: relative;
+}
+
+.sort-button {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 3 0px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.app-cog {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 3 0px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .app-settings-panel {
-    display: none;
-    position: absolute;
-    right: 0;
-    bottom: 12px;
+	display: none;
+	position: absolute;
+	right: 0;
+	bottom: 18px;
     background: #2c2c2c;
     border: 1px solid #555;
     border-radius: 6px;
@@ -362,21 +372,6 @@ button,
 	font-size: 10px;
 	padding: 2px 6px;
 	margin-bottom: 2px;
-}
-
-.footer {
-    color: #888888;
-    font-size: 10px;
-    line-height: 1;
-}
-
-.status {
-    color: #7a7a7a;
-    font-size: 10px;
-	display: block;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
 }
 
 .uncommon-component {
