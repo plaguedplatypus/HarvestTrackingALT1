@@ -5209,6 +5209,7 @@ var sortMode = "recent";
 var fishingUsePorters = true;
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
+var maxRecentHistory = 50;
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
@@ -5234,23 +5235,32 @@ function addTextBridgeNudge(name, color, match) {
         match: match,
         fn: function (ctx) {
             var startx = ctx.rightx;
-            var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-            if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
-                return;
-            var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
-            if (/^1\s*x\s+/i.test(data.text)) {
-                data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+            for (var _i = 0, _a = [
+                0,
+                ctx.font.spacewidth,
+                ctx.font.spacewidth * 2,
+                ctx.font.spacewidth * 3,
+                1, 2, 3, 4, 5, 6,
+            ]; _i < _a.length; _i++) {
+                var offset = _a[_i];
+                var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + offset, ctx.baseliney, false, true);
+                if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
+                    continue;
+                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
+                if (/^1\s*x\s+/i.test(data.text)) {
+                    data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                    return true;
+                }
+                var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+                ctx.addfrag({
+                    color: color,
+                    index: -1,
+                    text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
+                    xstart: startx,
+                    xend: one.x + one.basechar.width,
+                });
                 return true;
             }
-            var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            ctx.addfrag({
-                color: color,
-                index: -1,
-                text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
-                xstart: startx,
-                xend: one.x + one.basechar.width,
-            });
-            return true;
         },
     });
 }
@@ -5292,8 +5302,9 @@ function addMaterialContinuationNudge() {
                 return true;
             };
             var candidateStarts = ctx.text.endsWith(" ")
-                ? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
-                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
+                ? [ctx.rightx - ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth, ctx.rightx]
+                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx + ctx.font.spacewidth * 2,
+                    ctx.rightx + ctx.font.spacewidth * 3, ctx.rightx + ctx.font.spacewidth * 4];
             for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
                 var x = candidateStarts_1[_i];
                 var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
@@ -5302,8 +5313,8 @@ function addMaterialContinuationNudge() {
                 }
                 return addContinuation(x, data.fragments);
             }
-            var scanStart = ctx.rightx - ctx.font.spacewidth;
-            var scanEnd = ctx.rightx + ctx.font.spacewidth * 4;
+            var scanStart = ctx.rightx - ctx.font.spacewidth * 2;
+            var scanEnd = ctx.rightx + ctx.font.spacewidth * 8;
             for (var x = scanStart; x <= scanEnd; x++) {
                 for (var _a = 0, _b = ctx.colors; _a < _b.length; _a++) {
                     var color = _b[_a];
@@ -5329,6 +5340,7 @@ var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
 var tracker = document.querySelector(".tracker");
+// The status element is used to display messages to the user in the footer
 var status = document.querySelector(".status");
 var historyButton = document.querySelector(".history-button");
 var exportButton = document.querySelector(".export");
@@ -5590,7 +5602,7 @@ function processHarvestLine(chatLine) {
     if (serenMatch) {
         var amount = parseInt(serenMatch[1], 10);
         var normalizedItem = normalizeItemName(serenMatch[2]);
-        var item = normalizedItem + " ﴾♦﴿";
+        var item = "﴾♦﴿ " + normalizedItem;
         if (!item || isNaN(amount))
             return;
         var colorClass = rareSerenItems.has(normalizedItem)
@@ -5606,8 +5618,16 @@ function processHarvestLine(chatLine) {
     // we will attempt to parse it for invention materials. 
     if (materialsMatch) {
         var materialText = materialsMatch[1];
+        // If the material text ends with a comma, it likely means the line was cut off
+        if (materialText.endsWith(",")) {
+            console.warn("CUT OFF MATERIALS:", materialText);
+        }
         // We will attempt to parse whatever material information we have.
         var finalMaterialText = materialText;
+        // Repair truncated OCR words first
+        finalMaterialText = finalMaterialText.replace(/\bcom\./gi, "components");
+        finalMaterialText = finalMaterialText.replace(/\bpart\./gi, "parts");
+        // Then remove orphan comma tails
         if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
             console.warn("CUT OFF ITEM:", finalMaterialText);
             finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
@@ -5721,7 +5741,7 @@ function processHarvestLine(chatLine) {
     }
 }
 function getSkillForItem(item) {
-    if (item.includes("bamboo"))
+    if (item.includes("bamboo") || item.includes("eternal magic tree branch"))
         return "woodcutting";
     if (item.includes("(damaged)"))
         return "archaeology";
@@ -5758,7 +5778,7 @@ function getSaveData() {
             fishingUsePorters: (_a = data.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
             sortMode: data.sortMode || "recent",
             items: data.items || {},
-            history: data.history || [],
+            history: Array.isArray(data.history) ? data.history : [],
         };
     }
     catch (_b) {
@@ -5821,9 +5841,33 @@ function incrementItem(item, amount, skill, colorClass, source) {
         }], item);
 }
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
-var recentLines = [];
+var recentLines = savedData.history.slice(-maxRecentHistory);
 var recentLineKeys = [];
 var recentLineSet = new Set();
+function getHistoryKey(historyLine) {
+    return historyLine.replace(/\s+\[(?:COUNTED:[\s\S]*|IGNORED)\](?:\s+\[[^\]]+\])?$/, "");
+}
+function rebuildRecentLineKeys() {
+    recentLineKeys = recentLines.map(getHistoryKey);
+    recentLineSet.clear();
+    for (var _i = 0, recentLineKeys_1 = recentLineKeys; _i < recentLineKeys_1.length; _i++) {
+        var line = recentLineKeys_1[_i];
+        recentLineSet.add(line);
+    }
+}
+function syncRecentHistory() {
+    var data = getSaveData();
+    data.history = recentLines.slice(-maxRecentHistory);
+    saveData(data);
+}
+function loadRecentHistory(history) {
+    recentLines = history.slice(-maxRecentHistory);
+    rebuildRecentLineKeys();
+}
+function clearRecentHistory() {
+    recentLines = [];
+    rebuildRecentLineKeys();
+}
 function isInHistory(chatLine) {
     return recentLineSet.has(chatLine);
 }
@@ -5834,14 +5878,16 @@ function updateChatHistory(chatLine, debugStatus) {
     recentLines.push(debugLine);
     recentLineKeys.push(chatLine);
     recentLineSet.add(chatLine);
-    if (recentLines.length > 50) {
+    if (recentLines.length > maxRecentHistory) {
         recentLines.shift();
         var oldKey = recentLineKeys.shift();
         if (oldKey) {
             recentLineSet.delete(oldKey);
         }
     }
+    syncRecentHistory();
 }
+rebuildRecentLineKeys();
 // Render the tracker UI based on the current save data
 function render(highlightItem, data) {
     if (data === void 0) { data = getSaveData(); }
@@ -6065,6 +6111,7 @@ function clearCurrentTab() {
     if (activeSkillTab === "all") {
         data.items = {};
         data.history = [];
+        clearRecentHistory();
         saveData(data);
         render();
         status.innerText = "All items cleared.";
@@ -6082,6 +6129,7 @@ function clearCurrentTab() {
 }
 function exportData() {
     var data = getSaveData();
+    data.history = recentLines.slice(-maxRecentHistory);
     var blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
     });
@@ -6104,9 +6152,10 @@ function importData(file) {
                 fishingUsePorters: (_a = imported.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
                 sortMode: imported.sortMode || "recent",
                 items: imported.items || {},
-                history: imported.history || [],
+                history: Array.isArray(imported.history) ? imported.history : [],
             };
             saveData(data);
+            loadRecentHistory(data.history);
             render();
             status.innerText = "Save imported.";
         }

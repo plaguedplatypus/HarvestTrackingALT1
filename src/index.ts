@@ -57,6 +57,7 @@ type SaveData = {
 
 const appName = "ResourceTracker";
 const appColor = a1lib.mixColor(0, 255, 0);
+const maxRecentHistory = 50;
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 const reader = new ChatboxReader();
@@ -94,52 +95,60 @@ function addTextBridgeNudge(
 		fn: (ctx) => {
 			const startx = ctx.rightx;
 
-			const one = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				color,
-				startx + ctx.font.spacewidth,
-				ctx.baseliney,
-				false,
-				true
-			);
+			for (const offset of [
+				0,
+				ctx.font.spacewidth,
+				ctx.font.spacewidth * 2,
+				ctx.font.spacewidth * 3,
+				1, 2, 3, 4, 5, 6,
+			]) {
+				const one = OCR.readChar(
+					ctx.imgdata,
+					ctx.font,
+					color,
+					startx + offset,
+					ctx.baseliney,
+					false,
+					true
+				);
 
-			if (one?.chr !== "1") return;
+				if (one?.chr !== "1") continue;
 
-			const data = OCR.readLine(
-				ctx.imgdata,
-				ctx.font,
-				color,
-				one.x,
-				ctx.baseliney,
-				true,
-				false
-			);
+				const data = OCR.readLine(
+					ctx.imgdata,
+					ctx.font,
+					color,
+					one.x,
+					ctx.baseliney,
+					true,
+					false
+				);
 
-			if (/^1\s*x\s+/i.test(data.text)) {
-				data.fragments.forEach((frag) => ctx.addfrag(frag));
+				if (/^1\s*x\s+/i.test(data.text)) {
+					data.fragments.forEach((frag) => ctx.addfrag(frag));
+					return true;
+				}
+
+				const x = OCR.readChar(
+					ctx.imgdata,
+					ctx.font,
+					color,
+					one.x + one.basechar.width + ctx.font.spacewidth,
+					ctx.baseliney,
+					false,
+					true
+				);
+
+				ctx.addfrag({
+					color,
+					index: -1,
+					text: x?.chr === "x" ? "1 x" : "1",
+					xstart: startx,
+					xend: one.x + one.basechar.width,
+				});
+
 				return true;
 			}
-
-			const x = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				color,
-				one.x + one.basechar.width + ctx.font.spacewidth,
-				ctx.baseliney,
-				false,
-				true
-			);
-
-			ctx.addfrag({
-				color,
-				index: -1,
-				text: x?.chr === "x" ? "1 x" : "1",
-				xstart: startx,
-				xend: one.x + one.basechar.width,
-			});
-
-			return true;
 		},
 	});
 }
@@ -195,8 +204,9 @@ function addMaterialContinuationNudge() {
 			};
 
 			const candidateStarts = ctx.text.endsWith(" ")
-				? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
-				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
+				? [ctx.rightx - ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth, ctx.rightx]
+				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx + ctx.font.spacewidth * 2, 
+				ctx.rightx + ctx.font.spacewidth * 3, ctx.rightx + ctx.font.spacewidth * 4];
 
 			for (const x of candidateStarts) {
 				const data = OCR.readLine(
@@ -216,8 +226,8 @@ function addMaterialContinuationNudge() {
 				return addContinuation(x, data.fragments);
 			}
 
-			const scanStart = ctx.rightx - ctx.font.spacewidth;
-			const scanEnd = ctx.rightx + ctx.font.spacewidth * 4;
+			const scanStart = ctx.rightx - ctx.font.spacewidth * 2;
+			const scanEnd = ctx.rightx + ctx.font.spacewidth * 8;
 
 			for (let x = scanStart; x <= scanEnd; x++) {
 				for (const color of ctx.colors) {
@@ -265,6 +275,7 @@ const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLEl
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
 
+// The status element is used to display messages to the user in the footer
 const status = document.querySelector(".status") as HTMLElement;
 
 const historyButton = document.querySelector(".history-button") as HTMLElement;
@@ -575,7 +586,7 @@ function processHarvestLine(chatLine: string): string {
 	if (serenMatch) {
 		const amount = parseInt(serenMatch[1], 10);
 		const normalizedItem = normalizeItemName(serenMatch[2]);
-		const item = normalizedItem +" ﴾♦﴿";
+		const item = "﴾♦﴿ " + normalizedItem;
 
 		if (!item || isNaN(amount)) return;
 
@@ -598,8 +609,19 @@ function processHarvestLine(chatLine: string): string {
 	if (materialsMatch) {
 		const materialText = materialsMatch[1];
 
+	// If the material text ends with a comma, it likely means the line was cut off
+		if (materialText.endsWith(",")) {
+			console.warn("CUT OFF MATERIALS:", materialText);
+		}
+
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
+	
+			// Repair truncated OCR words first
+			finalMaterialText = finalMaterialText.replace(/\bcom\./gi, "components");
+			finalMaterialText = finalMaterialText.replace(/\bpart\./gi,	"parts");
+
+		// Then remove orphan comma tails
 		if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
 			console.warn("CUT OFF ITEM:", finalMaterialText);
 			finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
@@ -736,7 +758,7 @@ function processHarvestLine(chatLine: string): string {
 }
 
 function getSkillForItem(item: string): InternalSkillType {
-	if (item.includes("bamboo")) return "woodcutting";
+	if (item.includes("bamboo") || item.includes("eternal magic tree branch")) return "woodcutting";
 	if (item.includes("(damaged)")) return "archaeology";
 	if (item.includes("ore")) return "mining";
 	if (item.includes("logs")) return "woodcutting";
@@ -772,7 +794,7 @@ function getSaveData(): SaveData {
 			fishingUsePorters: data.fishingUsePorters ?? true,
 			sortMode: data.sortMode || "recent",
 			items: data.items || {},
-			history: data.history || [],
+			history: Array.isArray(data.history) ? data.history : [],
 		};
 	} catch {
 		return {
@@ -848,9 +870,38 @@ function incrementItem(
 }
 
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
-let recentLines: string[] = [];
+let recentLines: string[] = savedData.history.slice(-maxRecentHistory);
 let recentLineKeys: string[] = [];
 const recentLineSet = new Set<string>();
+
+function getHistoryKey(historyLine: string) {
+	return historyLine.replace(/\s+\[(?:COUNTED:[\s\S]*|IGNORED)\](?:\s+\[[^\]]+\])?$/, "");
+}
+
+function rebuildRecentLineKeys() {
+	recentLineKeys = recentLines.map(getHistoryKey);
+	recentLineSet.clear();
+
+	for (const line of recentLineKeys) {
+		recentLineSet.add(line);
+	}
+}
+
+function syncRecentHistory() {
+	const data = getSaveData();
+	data.history = recentLines.slice(-maxRecentHistory);
+	saveData(data);
+}
+
+function loadRecentHistory(history: string[]) {
+	recentLines = history.slice(-maxRecentHistory);
+	rebuildRecentLineKeys();
+}
+
+function clearRecentHistory() {
+	recentLines = [];
+	rebuildRecentLineKeys();
+}
 
 function isInHistory(chatLine: string) {
 	return recentLineSet.has(chatLine);
@@ -864,7 +915,7 @@ function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
 	recentLineKeys.push(chatLine);
 	recentLineSet.add(chatLine);
 
-	if (recentLines.length > 50) {
+	if (recentLines.length > maxRecentHistory) {
 		recentLines.shift();
 		const oldKey = recentLineKeys.shift();
 
@@ -872,7 +923,11 @@ function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
 			recentLineSet.delete(oldKey);
 		}
 	}
+
+	syncRecentHistory();
 }
+
+rebuildRecentLineKeys();
 
 // Render the tracker UI based on the current save data
 function render(highlightItem?: string, data = getSaveData()) {
@@ -1191,6 +1246,7 @@ function clearCurrentTab() {
 	if (activeSkillTab === "all") {
 		data.items = {};
 		data.history = [];
+		clearRecentHistory();
 
 		saveData(data);
 		render();
@@ -1213,6 +1269,8 @@ function clearCurrentTab() {
 
 function exportData() {
 	const data = getSaveData();
+	data.history = recentLines.slice(-maxRecentHistory);
+
 	const blob = new Blob([JSON.stringify(data, null, 2)], {
 		type: "application/json",
 	});
@@ -1237,10 +1295,11 @@ function importData(file: File) {
 				fishingUsePorters: imported.fishingUsePorters ?? true,
 				sortMode: imported.sortMode || "recent",
 				items: imported.items || {},
-				history: imported.history || [],
+				history: Array.isArray(imported.history) ? imported.history : [],
 			};
 
 			saveData(data);
+			loadRecentHistory(data.history);
 			render();
 			status.innerText = "Save imported.";
 		} catch {
