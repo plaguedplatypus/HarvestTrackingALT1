@@ -54,10 +54,9 @@ const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
 	// why does this game hate colors so much
-	a1lib.mixColor(205, 205, 205), // Bright green
 	a1lib.mixColor(0, 255, 0), // Bright green
 	a1lib.mixColor(50, 200, 20), // Carpet dust green
-	a1lib.mixColor(59, 181, 30), // alt1 hates this color or font for some reason
+	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(232, 47, 47), // You missed that seren spirit btw...
 
 	a1lib.mixColor(161, 53, 235), // what's this?
@@ -71,48 +70,87 @@ reader.readargs.colors.push(
 	a1lib.mixColor(238, 118, 0), // orange
 );
 
+const materialNudgeColors: OCR.ColortTriplet[] = [
+	[255, 128, 0],
+	[255, 111, 0],
+	[255, 140, 56],
+	[255, 153, 0],
+	[232, 47, 47],
+	[67, 188, 188],
+];
+
 (reader as any).forwardnudges.push({
-	name: "continue-materials-after-orphan-component-strong",
-	match: /Materials gained:.*,\s*(components|parts|junk)$/i,
+	name: "material-white-comma",
+	match: /Materials gained:.*(parts|components|Junk)$/i,
 	fn: (ctx: any) => {
-		for (const offset of [0, 1, 2, 3, 4, 5, 6, 8, 10]) {
-			// Try normal multi-color read first
-			let data = OCR.readLine(
-				ctx.imgdata,
-				ctx.font,
-				ctx.colors,
-				ctx.rightx + offset,
-				ctx.baseliney,
-				true,
-				false
-			);
+		const comma = OCR.readChar(
+			ctx.imgdata,
+			ctx.font,
+			[255, 255, 255],
+			ctx.rightx,
+			ctx.baseliney,
+			false,
+			true
+		);
 
-			if (data.text) {
-				data.fragments.forEach((fragment) => ctx.addfrag(fragment));
-				return true;
-			}
+		if (comma?.chr !== ",") return false;
 
-			// Then try each known color individually
-			for (const color of ctx.colors) {
-				data = OCR.readLine(
+		ctx.addfrag({
+			color: [255, 255, 255],
+			index: -1,
+			text: ", ",
+			xstart: ctx.rightx,
+			xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
+		});
+
+		return true;
+	},
+});
+
+(reader as any).forwardnudges.push({
+	name: "material-missing-one",
+	match: /Materials gained:.*(parts|components|Junk|,\s*)$/i,
+	fn: (ctx: any) => {
+		for (const color of materialNudgeColors) {
+			for (const offset of [0, ctx.font.spacewidth, ctx.font.spacewidth * 2, ctx.font.spacewidth * 3, 1, 2, 3, 4]) {
+				const one = OCR.readChar(
 					ctx.imgdata,
 					ctx.font,
 					color,
 					ctx.rightx + offset,
 					ctx.baseliney,
-					true,
-					false
+					false,
+					true
 				);
 
-				if (data.text) {
-					data.fragments.forEach((fragment) => ctx.addfrag(fragment));
-					return true;
-				}
+				if (one?.chr !== "1") continue;
+
+				const x = one.x + one.basechar.width + ctx.font.spacewidth;
+
+				const maybeX = OCR.readChar(
+					ctx.imgdata,
+					ctx.font,
+					color,
+					x,
+					ctx.baseliney,
+					false,
+					true
+				);
+
+				ctx.addfrag({
+					color,
+					index: -1,
+					text: maybeX?.chr === "x" ? "1 " : "1 x ",
+					xstart: ctx.rightx,
+					xend: x,
+				});
+
+				return true;
 			}
 		}
 
 		return false;
-	}
+	},
 });
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;

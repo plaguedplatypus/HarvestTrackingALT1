@@ -5213,10 +5213,9 @@ var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // why does this game hate colors so much
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(205, 205, 205), // Bright green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // alt1 hates this color or font for some reason
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // You missed that seren spirit btw...
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
@@ -5226,30 +5225,56 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
+var materialNudgeColors = [
+    [255, 128, 0],
+    [255, 111, 0],
+    [255, 140, 56],
+    [255, 153, 0],
+    [232, 47, 47],
+    [67, 188, 188],
+];
 reader.forwardnudges.push({
-    name: "continue-materials-after-orphan-component-strong",
-    match: /Materials gained:.*,\s*(components|parts|junk)$/i,
+    name: "material-white-comma",
+    match: /Materials gained:.*(parts|components|Junk)$/i,
     fn: function (ctx) {
-        for (var _i = 0, _a = [0, 1, 2, 3, 4, 5, 6, 8, 10]; _i < _a.length; _i++) {
-            var offset = _a[_i];
-            // Try normal multi-color read first
-            var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, ctx.rightx + offset, ctx.baseliney, true, false);
-            if (data.text) {
-                data.fragments.forEach(function (fragment) { return ctx.addfrag(fragment); });
+        var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
+        if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
+            return false;
+        ctx.addfrag({
+            color: [255, 255, 255],
+            index: -1,
+            text: ", ",
+            xstart: ctx.rightx,
+            xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
+        });
+        return true;
+    },
+});
+reader.forwardnudges.push({
+    name: "material-missing-one",
+    match: /Materials gained:.*(parts|components|Junk|,\s*)$/i,
+    fn: function (ctx) {
+        for (var _i = 0, materialNudgeColors_1 = materialNudgeColors; _i < materialNudgeColors_1.length; _i++) {
+            var color = materialNudgeColors_1[_i];
+            for (var _a = 0, _b = [0, ctx.font.spacewidth, ctx.font.spacewidth * 2, ctx.font.spacewidth * 3, 1, 2, 3, 4]; _a < _b.length; _a++) {
+                var offset = _b[_a];
+                var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, false, true);
+                if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
+                    continue;
+                var x = one.x + one.basechar.width + ctx.font.spacewidth;
+                var maybeX = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, x, ctx.baseliney, false, true);
+                ctx.addfrag({
+                    color: color,
+                    index: -1,
+                    text: (maybeX === null || maybeX === void 0 ? void 0 : maybeX.chr) === "x" ? "1 " : "1 x ",
+                    xstart: ctx.rightx,
+                    xend: x,
+                });
                 return true;
-            }
-            // Then try each known color individually
-            for (var _b = 0, _c = ctx.colors; _b < _c.length; _b++) {
-                var color = _c[_b];
-                data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, true, false);
-                if (data.text) {
-                    data.fragments.forEach(function (fragment) { return ctx.addfrag(fragment); });
-                    return true;
-                }
             }
         }
         return false;
-    }
+    },
 });
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
