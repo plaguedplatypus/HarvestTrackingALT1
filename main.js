@@ -5237,13 +5237,18 @@ function addTextBridgeNudge(name, color, match) {
             var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
                 return;
+            var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
+            if (/^1\s*x\s+/i.test(data.text)) {
+                data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                return true;
+            }
             var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             ctx.addfrag({
                 color: color,
                 index: -1,
-                text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? " 1" : " 1 x",
+                text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
                 xstart: startx,
-                xend: startx + one.basechar.width + ctx.font.spacewidth,
+                xend: one.x + one.basechar.width,
             });
             return true;
         },
@@ -5274,8 +5279,8 @@ function addMaterialContinuationNudge() {
         match: /Materials gained:[\s\S]*,\s*$/i,
         fn: function (ctx) {
             var candidateStarts = ctx.text.endsWith(" ")
-                ? [ctx.rightx, ctx.rightx - ctx.font.spacewidth]
-                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx];
+                ? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
+                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
             for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
                 var x = candidateStarts_1[_i];
                 var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);

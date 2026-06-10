@@ -106,6 +106,21 @@ function addTextBridgeNudge(
 
 			if (one?.chr !== "1") return;
 
+			const data = OCR.readLine(
+				ctx.imgdata,
+				ctx.font,
+				color,
+				one.x,
+				ctx.baseliney,
+				true,
+				false
+			);
+
+			if (/^1\s*x\s+/i.test(data.text)) {
+				data.fragments.forEach((frag) => ctx.addfrag(frag));
+				return true;
+			}
+
 			const x = OCR.readChar(
 				ctx.imgdata,
 				ctx.font,
@@ -119,9 +134,9 @@ function addTextBridgeNudge(
 			ctx.addfrag({
 				color,
 				index: -1,
-				text: x?.chr === "x" ? " 1" : " 1 x",
+				text: x?.chr === "x" ? "1 x" : "1",
 				xstart: startx,
-				xend: startx + one.basechar.width + ctx.font.spacewidth,
+				xend: one.x + one.basechar.width,
 			});
 
 			return true;
@@ -165,8 +180,8 @@ function addMaterialContinuationNudge() {
 		match: /Materials gained:[\s\S]*,\s*$/i,
 		fn: (ctx) => {
 			const candidateStarts = ctx.text.endsWith(" ")
-				? [ctx.rightx, ctx.rightx - ctx.font.spacewidth]
-				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx];
+				? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
+				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
 
 			for (const x of candidateStarts) {
 				const data = OCR.readLine(
