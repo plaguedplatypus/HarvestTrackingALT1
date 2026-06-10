@@ -52,7 +52,7 @@ const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
 
-reader.readargs = {colors:[
+reader.readargs.colors.push(
 	// anti aliasing sucks
 	a1lib.mixColor(50, 200, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // hate this color
@@ -72,8 +72,7 @@ reader.readargs = {colors:[
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(245, 124, 1), // orange
 	a1lib.mixColor(238, 118, 0), // orange
-	],
-};
+);
 
 function addTextBridgeNudge(
 	name: string,
