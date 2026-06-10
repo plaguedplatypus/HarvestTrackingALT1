@@ -581,7 +581,7 @@ function processHarvestLine(chatLine: string): string | null {
 
 	// cleanup what is actually processed
 		const ignoredPrefixes = [
-			"News:", "❆N",
+			"News:", "❆News:", "❆N-", "❆",
 			"Grand Exchange:"
 		];
 

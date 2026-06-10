@@ -5601,7 +5601,7 @@ function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
     // cleanup what is actually processed
     var ignoredPrefixes = [
-        "News:", "❆N",
+        "News:", "❆News:", "❆N-", "❆",
         "Grand Exchange:"
     ];
     var ignoredSuffixes = [
