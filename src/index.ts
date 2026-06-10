@@ -253,14 +253,14 @@ function readChatbox() {
 
 	const chatArr = processChat(opts);
 
-	for (const line of chatArr) {
-		const chatLine = line.trim();
-		if (!chatLine) continue;
+	for (const chatLine of chatArr) {
+		const historyKey = chatLine.trim();
+		if (!historyKey) continue;
 
-		if (isInHistory(chatLine)) continue;
+		if (isInHistory(historyKey)) continue;
 
 		const debugStatus = processHarvestLine(chatLine);
-		updateChatHistory(chatLine, debugStatus);
+		updateChatHistory(historyKey, debugStatus);
 	}
 }
 
@@ -288,9 +288,7 @@ function processChat(opts: any[]) {
 
 	return chatStr
 		.replace(/(\d) x x/g, "$1 x")
-		.trim()
-		.split("\n")
-		.map((line) => line.trim());
+		.split("\n");
 }
 
 function getTimeStamp() {

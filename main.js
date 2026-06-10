@@ -5352,14 +5352,14 @@ function readChatbox() {
     var opts = reader.read() || [];
     var chatArr = processChat(opts);
     for (var _i = 0, chatArr_1 = chatArr; _i < chatArr_1.length; _i++) {
-        var line = chatArr_1[_i];
-        var chatLine = line.trim();
-        if (!chatLine)
+        var chatLine = chatArr_1[_i];
+        var historyKey = chatLine.trim();
+        if (!historyKey)
             continue;
-        if (isInHistory(chatLine))
+        if (isInHistory(historyKey))
             continue;
         var debugStatus = processHarvestLine(chatLine);
-        updateChatHistory(chatLine, debugStatus);
+        updateChatHistory(historyKey, debugStatus);
     }
 }
 // Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
@@ -5383,9 +5383,7 @@ function processChat(opts) {
         return [];
     return chatStr
         .replace(/(\d) x x/g, "$1 x")
-        .trim()
-        .split("\n")
-        .map(function (line) { return line.trim(); });
+        .split("\n");
 }
 function getTimeStamp() {
     return new Date().toLocaleTimeString("en-US", {
