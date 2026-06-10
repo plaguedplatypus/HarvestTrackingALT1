@@ -53,19 +53,20 @@ const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
 
 reader.readargs = {colors:[
-	// why does this game hate colors so much
+	// anti aliasing sucks
 	a1lib.mixColor(50, 200, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // hate this color
-	a1lib.mixColor(232, 47, 47), // You missed that seren spirit btw...
+	a1lib.mixColor(232, 47, 47), // Red (You missed...)
+	a1lib.mixColor(255, 111, 0), // orange item effects
+	a1lib.mixColor(255, 140, 56), // orange news broadcasts
+	a1lib.mixColor(253, 127, 0), // uncommon components
 
-	a1lib.mixColor(161, 53, 235), // what's this?
+	a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
+	a1lib.mixColor(255, 0, 0), // red broadcasts/components
 	
 	a1lib.mixColor(255, 153, 0), // Bright orange
-	a1lib.mixColor(255, 128, 0), // Medium orange
-	a1lib.mixColor(255, 111, 0), // Darker orange
-	a1lib.mixColor(255, 140, 56), // pale orange
 	a1lib.mixColor(245, 124, 1), // orange
 	a1lib.mixColor(238, 118, 0), // orange
 	],
@@ -102,9 +103,9 @@ reader.forwardnudges.push({
 				true,
 			);
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+				ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
 			} else {
-				ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+				ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
 			}
 			return true;
 		}
@@ -627,17 +628,17 @@ function processHarvestLine(chatLine: string): string {
 		pattern: RegExp;
 		skill: SkillType;
 	}> = [
-		{ pattern: /You manage to mine some\s+(.+?)[!.]/i, skill: "mining" },
-		{ pattern: /You mine (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "mining" },
+		{ pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
+		{ pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
 
 		{ pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
-		{ pattern: /You cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
-		{ pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
-		{ pattern: /You chop (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
+		{ pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+		{ pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+		{ pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
 
-		{ pattern: /You catch (?:a|an|some)\s+(.+?)[!.]/i, skill: "fishing" },
+		{ pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
 
-		{ pattern: /You find (?:a|an|some)\s+(.+?)[!.]/i, skill: "archaeology" },
+		{ pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
 	];
 
 	for (const entry of skillPatterns) {

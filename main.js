@@ -5212,17 +5212,18 @@ var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs = { colors: [
-        // why does this game hate colors so much
+        // anti aliasing sucks
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // You missed that seren spirit btw...
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // Red (You missed...)
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // orange item effects
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // orange news broadcasts
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 127, 0), // uncommon components
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0), // red broadcasts/components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0), // orange
     ],
@@ -5249,10 +5250,10 @@ reader.forwardnudges.push({
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+                ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
             }
             else {
-                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+                ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
             }
             return true;
         }
@@ -5672,14 +5673,14 @@ function processHarvestLine(chatLine) {
     }
     // Check for mining, woodcutting, fishing, and archaeology
     var skillPatterns = [
-        { pattern: /You manage to mine some\s+(.+?)[!.]/i, skill: "mining" },
-        { pattern: /You mine (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "mining" },
+        { pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
+        { pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
         { pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
-        { pattern: /You cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
-        { pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
-        { pattern: /You chop (?:(?:some|an?)\s+)?(.+?)[!.]/i, skill: "woodcutting" },
-        { pattern: /You catch (?:a|an|some)\s+(.+?)[!.]/i, skill: "fishing" },
-        { pattern: /You find (?:a|an|some)\s+(.+?)[!.]/i, skill: "archaeology" },
+        { pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+        { pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+        { pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+        { pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
+        { pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
     ];
     for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
         var entry = skillPatterns_1[_i];
