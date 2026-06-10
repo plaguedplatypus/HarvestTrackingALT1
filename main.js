@@ -5253,11 +5253,10 @@ reader.forwardnudges.push({
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth
-                });
+                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
             }
             else {
-                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
             }
             return true;
         }
@@ -5272,11 +5271,11 @@ reader.forwardnudges.push({
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-                return true;
+                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
             }
-            ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-            return true;
+            else {
+                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
+            }
         }
     },
 });
@@ -5289,11 +5288,11 @@ reader.forwardnudges.push({
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-                return true;
+                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
             }
-            ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-            return true;
+            else {
+                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
+            }
         }
     },
 });

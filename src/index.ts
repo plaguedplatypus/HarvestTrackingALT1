@@ -131,10 +131,9 @@ reader.readargs.colors.push(
 			);
 
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({color: [255, 128, 0],index: -1,text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth
-				});
+				ctx.addfrag({color: [255, 128, 0],index: -1,text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
 			} else {
-				ctx.addfrag({color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth});
+				ctx.addfrag({color: [255, 128, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
 			}
 
 			return true;
@@ -159,12 +158,12 @@ reader.readargs.colors.push(
 				false,
 				true,
 			);
+
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-				return true;
+				ctx.addfrag({color: [255, 0, 0],index: -1,text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
+			} else {
+				ctx.addfrag({color: [255, 0, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
 			}
-			ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-			return true;
 		}
 	},
 });
@@ -186,12 +185,12 @@ reader.readargs.colors.push(
 				false,
 				true,
 			);
+
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-				return true;
+				ctx.addfrag({color: [67, 188, 188],index: -1,text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
+			} else {
+				ctx.addfrag({color: [67, 188, 188], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
 			}
-			ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-			return true;
 		}
 	},
 });
