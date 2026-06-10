@@ -5210,6 +5210,7 @@ var fishingUsePorters = true;
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
+var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
@@ -5267,7 +5268,37 @@ function addCommaNudge() {
         },
     });
 }
+function addMaterialContinuationNudge() {
+    reader.forwardnudges.push({
+        name: "material-color-continuation",
+        match: /Materials gained:[\s\S]*,\s*$/i,
+        fn: function (ctx) {
+            var candidateStarts = ctx.text.endsWith(" ")
+                ? [ctx.rightx, ctx.rightx - ctx.font.spacewidth]
+                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx];
+            for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
+                var x = candidateStarts_1[_i];
+                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
+                if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
+                    continue;
+                }
+                if (!ctx.text.endsWith(" ")) {
+                    ctx.addfrag({
+                        color: [255, 255, 255],
+                        index: -1,
+                        text: " ",
+                        xstart: ctx.rightx,
+                        xend: x,
+                    });
+                }
+                data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                return true;
+            }
+        },
+    });
+}
 addCommaNudge();
+addMaterialContinuationNudge();
 addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
 addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
 addTextBridgeNudge("ancient-component-bridge", [67, 188, 188], /Materials gained|parts|components|Junk/i);
@@ -5275,7 +5306,6 @@ var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
 var tracker = document.querySelector(".tracker");
-// The status element is used to display messages to the user in the footer
 var status = document.querySelector(".status");
 var historyButton = document.querySelector(".history-button");
 var exportButton = document.querySelector(".export");
@@ -5362,19 +5392,19 @@ function readChatbox() {
 // Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
 function processChat(opts) {
     var chatStr = "";
-    if (opts.length !== 0) {
-        for (var line in opts) {
-            if (!opts[line].text.match(timestampRegex) && line === "0") {
-                continue;
-            }
-            if (opts[line].text.match(timestampRegex)) {
-                if (Number(line) > 0)
-                    chatStr += "\n";
-                chatStr += opts[line].text + " ";
-                continue;
-            }
-            chatStr += opts[line].text;
+    for (var index = 0; index < opts.length; index++) {
+        var text = opts[index].text;
+        var hasTimestamp = timestampLineRegex.test(text);
+        if (!hasTimestamp && index === 0) {
+            continue;
         }
+        if (hasTimestamp) {
+            if (index > 0)
+                chatStr += "\n";
+            chatStr += text + " ";
+            continue;
+        }
+        chatStr += text;
     }
     if (chatStr.trim() === "")
         return [];
@@ -5519,6 +5549,16 @@ var rareSerenItems = new Set([
     "blurberry special",
     "cheese+tom batta"
 ]);
+var skillPatterns = [
+    { pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
+    { pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
+    { pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
+    { pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+    { pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+    { pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+    { pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
+    { pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
+];
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
@@ -5526,25 +5566,16 @@ function processHarvestLine(chatLine) {
     var serenMatch = cleanLine.match(/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i);
     if (serenMatch) {
         var amount = parseInt(serenMatch[1], 10);
-        var item = normalizeItemName(serenMatch[2]) + " ﴾♦﴿";
+        var normalizedItem = normalizeItemName(serenMatch[2]);
+        var item = normalizedItem + " ﴾♦﴿";
         if (!item || isNaN(amount))
             return;
-        var colorClass = rareSerenItems.has(item)
+        var colorClass = rareSerenItems.has(normalizedItem)
             ? "seren-item-red"
             : "seren-item";
         incrementItem(item, amount, "seren", colorClass, "seren-spirit");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
-    }
-    var birdNestMatch = cleanLine.match(/You find (?:a|an)?\s+(.+?)[!.]\s+You pick it up and place it in your wood box\./i);
-    // Check for bird's nests
-    if (birdNestMatch) {
-        var item = normalizeItemName(birdNestMatch[1]);
-        if (!item)
-            return "[IGNORED]";
-        incrementItem(item, 1, "woodcutting");
-        setStatus("Tracked: ".concat(item));
-        return "[COUNTED: ".concat(titleCase(item), " +1]");
     }
     // Check for invention materials
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
@@ -5552,22 +5583,18 @@ function processHarvestLine(chatLine) {
     // we will attempt to parse it for invention materials. 
     if (materialsMatch) {
         var materialText = materialsMatch[1];
-        // If the material text ends with a comma, it likely means the line was cut off
-        if (materialText.endsWith(",")) {
-            console.warn("CUT OFF MATERIALS:", materialText);
-        }
         // We will attempt to parse whatever material information we have.
         var finalMaterialText = materialText;
         if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
-            console.warn("LOST ITEM:", finalMaterialText);
+            console.warn("CUT OFF ITEM:", finalMaterialText);
             finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
         }
         // If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
         // This way we can still track the complete materials listed before the cutoff.
         var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
         var materialMatch = void 0;
-        var trackedAnyMaterial = false;
         var countedMaterials = [];
+        var materialUpdates = [];
         while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
             var amount = parseInt(materialMatch[1], 10);
             var item = normalizeItemName(materialMatch[2]);
@@ -5590,12 +5617,18 @@ function processHarvestLine(chatLine) {
                 : isUncommonComponent
                     ? "uncommon-components"
                     : "invention";
-            incrementItem(item, amount, "invention", colorClass, source);
+            materialUpdates.push({
+                item: item,
+                amount: amount,
+                skill: "invention",
+                colorClass: colorClass,
+                source: source,
+            });
             countedMaterials.push("".concat(titleCase(item), " +").concat(amount));
             setStatus("Invention: ".concat(amount, " x ").concat(item));
-            trackedAnyMaterial = true;
         }
         if (countedMaterials.length > 0) {
+            incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
             var warning = finalMaterialText !== materialText ? " [LOST ITEM]" : "";
             return "[COUNTED: ".concat(countedMaterials.join(", "), "]").concat(warning);
         }
@@ -5648,16 +5681,6 @@ function processHarvestLine(chatLine) {
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
     // Check for mining, woodcutting, fishing, and archaeology
-    var skillPatterns = [
-        { pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
-        { pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
-        { pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
-        { pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-        { pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
-        { pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
-    ];
     for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
         var entry = skillPatterns_1[_i];
         var match = cleanLine.match(entry.pattern);
@@ -5671,11 +5694,11 @@ function processHarvestLine(chatLine) {
             return;
         incrementItem(item, 1, entry.skill);
         setStatus("Tracked: ".concat(item));
-        return "[IGNORED]";
+        return "[COUNTED: ".concat(item, " +1]");
     }
 }
 function getSkillForItem(item) {
-    if (item.includes("bamboo") || item.includes("eternal magic tree branch"))
+    if (item.includes("bamboo"))
         return "woodcutting";
     if (item.includes("(damaged)"))
         return "archaeology";
@@ -5737,42 +5760,68 @@ function ensureItem(data, item) {
         };
     }
 }
+function applyItemUpdate(data, update, timestamp) {
+    ensureItem(data, update.item);
+    data.items[update.item].count += update.amount;
+    data.items[update.item].skill = update.skill;
+    data.items[update.item].lastUpdated = timestamp;
+    if (update.colorClass) {
+        data.items[update.item].colorClass = update.colorClass;
+    }
+    if (update.source) {
+        data.items[update.item].source = update.source;
+    }
+}
+function incrementItems(updates, highlightItem) {
+    if (updates.length === 0)
+        return;
+    var data = getSaveData();
+    var timestamp = Date.now();
+    for (var _i = 0, updates_1 = updates; _i < updates_1.length; _i++) {
+        var update = updates_1[_i];
+        applyItemUpdate(data, update, timestamp);
+    }
+    saveData(data);
+    render(highlightItem || updates[updates.length - 1].item, data);
+}
 // Increment the count of a tracked item and update its metadata
 // then re-render the tracker to reflect the changes.
 function incrementItem(item, amount, skill, colorClass, source) {
     if (amount === void 0) { amount = 1; }
     if (skill === void 0) { skill = "other"; }
-    var data = getSaveData();
-    ensureItem(data, item);
-    data.items[item].count += amount;
-    data.items[item].skill = skill;
-    data.items[item].lastUpdated = Date.now();
-    if (colorClass) {
-        data.items[item].colorClass = colorClass;
-    }
-    if (source) {
-        data.items[item].source = source;
-    }
-    saveData(data);
-    render(item);
+    incrementItems([{
+            item: item,
+            amount: amount,
+            skill: skill,
+            colorClass: colorClass,
+            source: source,
+        }], item);
 }
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
 var recentLines = [];
+var recentLineKeys = [];
+var recentLineSet = new Set();
 function isInHistory(chatLine) {
-    return recentLines.some(function (line) { return line.includes(chatLine); });
+    return recentLineSet.has(chatLine);
 }
 // Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
 function updateChatHistory(chatLine, debugStatus) {
     if (debugStatus === void 0) { debugStatus = "[IGNORED]"; }
     var debugLine = "".concat(chatLine, " ").concat(debugStatus);
     recentLines.push(debugLine);
+    recentLineKeys.push(chatLine);
+    recentLineSet.add(chatLine);
     if (recentLines.length > 50) {
-        recentLines = recentLines.slice(-50);
+        recentLines.shift();
+        var oldKey = recentLineKeys.shift();
+        if (oldKey) {
+            recentLineSet.delete(oldKey);
+        }
     }
 }
 // Render the tracker UI based on the current save data
-function render(highlightItem) {
-    var data = getSaveData();
+function render(highlightItem, data) {
+    if (data === void 0) { data = getSaveData(); }
     var items = Object.keys(data.items)
         .filter(function (item) {
         if (activeSkillTab === "all")
@@ -5798,14 +5847,12 @@ function render(highlightItem) {
         if (inventionFilter === "all" || inventionFilter === "common") {
             renderItemGroup("Common Components", commonItems, data, highlightItem);
         }
-        bindRowEvents();
         return;
     }
     for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
         var item = items_1[_i];
         renderItemRow(item, data.items[item], highlightItem);
     }
-    bindRowEvents();
 }
 // Sort items based on the selected sort mode: by recent updates, alphabetically, or by count.
 function sortItems(items, data) {
@@ -5892,37 +5939,29 @@ function renderItemRow(item, itemData, highlightItem) {
 }
 // Bind event listeners to the buttons in each item row
 function bindRowEvents() {
-    document.querySelectorAll(".cog-btn").forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            var target = e.currentTarget;
-            toggleSettings(target.dataset.item || "");
-        });
-    });
-    document.querySelectorAll(".clear-goal").forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            var target = e.currentTarget;
-            clearGoal(target.dataset.item || "");
-        });
-    });
-    document.querySelectorAll(".save-goal").forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            var target = e.currentTarget;
-            setGoal(target.dataset.item || "");
-        });
-    });
-    document.querySelectorAll(".reset-item").forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            var target = e.currentTarget;
-            resetItem(target.dataset.item || "");
-        });
-    });
-    document.querySelectorAll(".delete-item").forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            var target = e.currentTarget;
-            deleteItem(target.dataset.item || "");
-        });
+    tracker.addEventListener("click", function (e) {
+        var target = e.target.closest("button[data-item]");
+        if (!target)
+            return;
+        var item = target.dataset.item || "";
+        if (target.classList.contains("cog-btn")) {
+            toggleSettings(item);
+        }
+        else if (target.classList.contains("clear-goal")) {
+            clearGoal(item);
+        }
+        else if (target.classList.contains("save-goal")) {
+            setGoal(item);
+        }
+        else if (target.classList.contains("reset-item")) {
+            resetItem(item);
+        }
+        else if (target.classList.contains("delete-item")) {
+            deleteItem(item);
+        }
     });
 }
+bindRowEvents();
 // Bind event listeners to the skill tab buttons to switch between different skill views in the tracker.
 document.querySelectorAll(".skill-tab").forEach(function (tab) {
     tab.addEventListener("click", function (e) {

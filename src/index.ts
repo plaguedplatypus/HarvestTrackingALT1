@@ -28,6 +28,14 @@ type TrackedItem = {
     lastUpdated?: number;
 };
 
+type ItemUpdate = {
+	item: string;
+	amount: number;
+	skill: InternalSkillType;
+	colorClass?: string;
+	source?: string;
+};
+
 type InventionFilter = "all" | "rare" | "uncommon" | "common";
 let inventionFilter: InventionFilter = "all";
 
@@ -50,6 +58,7 @@ type SaveData = {
 const appName = "ResourceTracker";
 const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
+const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
@@ -150,7 +159,49 @@ function addCommaNudge() {
 	});
 }
 
+function addMaterialContinuationNudge() {
+	reader.forwardnudges.push({
+		name: "material-color-continuation",
+		match: /Materials gained:[\s\S]*,\s*$/i,
+		fn: (ctx) => {
+			const candidateStarts = ctx.text.endsWith(" ")
+				? [ctx.rightx, ctx.rightx - ctx.font.spacewidth]
+				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx];
+
+			for (const x of candidateStarts) {
+				const data = OCR.readLine(
+					ctx.imgdata,
+					ctx.font,
+					ctx.colors,
+					x,
+					ctx.baseliney,
+					true,
+					false
+				);
+
+				if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
+					continue;
+				}
+
+				if (!ctx.text.endsWith(" ")) {
+					ctx.addfrag({
+						color: [255, 255, 255],
+						index: -1,
+						text: " ",
+						xstart: ctx.rightx,
+						xend: x,
+					});
+				}
+
+				data.fragments.forEach((frag) => ctx.addfrag(frag));
+				return true;
+			}
+		},
+	});
+}
+
 addCommaNudge();
+addMaterialContinuationNudge();
 addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
 addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
 addTextBridgeNudge("ancient-component-bridge", [67, 188, 188], /Materials gained|parts|components|Junk/i);
@@ -160,7 +211,6 @@ const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLEl
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
 
-// The status element is used to display messages to the user in the footer
 const status = document.querySelector(".status") as HTMLElement;
 
 const historyButton = document.querySelector(".history-button") as HTMLElement;
@@ -264,23 +314,24 @@ function readChatbox() {
 }
 
 // Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
-function processChat(opts: any[]) {
+function processChat(opts: Array<{ text: string }>) {
 	let chatStr = "";
 
-	if (opts.length !== 0) {
-		for (const line in opts) {
-			if (!opts[line].text.match(timestampRegex) && line === "0") {
-				continue;
-			}
+	for (let index = 0; index < opts.length; index++) {
+		const text = opts[index].text;
+		const hasTimestamp = timestampLineRegex.test(text);
 
-			if (opts[line].text.match(timestampRegex)) {
-				if (Number(line) > 0) chatStr += "\n";
-				chatStr += opts[line].text + " ";
-				continue;
-			}
-
-			chatStr += opts[line].text;
+		if (!hasTimestamp && index === 0) {
+			continue;
 		}
+
+		if (hasTimestamp) {
+			if (index > 0) chatStr += "\n";
+			chatStr += text + " ";
+			continue;
+		}
+
+		chatStr += text;
 	}
 
 	if (chatStr.trim() === "") return [];
@@ -444,6 +495,20 @@ const rareSerenItems = new Set([
     "cheese+tom batta"
 ]);
 
+const skillPatterns: Array<{
+	pattern: RegExp;
+	skill: SkillType;
+}> = [
+	{ pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
+	{ pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
+	{ pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
+	{ pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+	{ pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+	{ pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
+	{ pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
+	{ pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
+];
+
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine: string): string {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
@@ -455,33 +520,18 @@ function processHarvestLine(chatLine: string): string {
 
 	if (serenMatch) {
 		const amount = parseInt(serenMatch[1], 10);
-		const item = normalizeItemName(serenMatch[2]) + " ﴾♦﴿";
+		const normalizedItem = normalizeItemName(serenMatch[2]);
+		const item = normalizedItem +" ﴾♦﴿";
 
 		if (!item || isNaN(amount)) return;
 
-		const colorClass = rareSerenItems.has(item)
+		const colorClass = rareSerenItems.has(normalizedItem)
     		? "seren-item-red"
     		: "seren-item";
 
 		incrementItem(item, amount, "seren", colorClass, "seren-spirit");
 		setStatus(`Seren Spirit: ${amount} x ${item}`);
 		return `[COUNTED: ${item} +${amount}]`;
-	}
-
-	const birdNestMatch = cleanLine.match(
-		/You find (?:a|an)?\s+(.+?)[!.]\s+You pick it up and place it in your wood box\./i
-	);
-
-	// Check for bird's nests
-	if (birdNestMatch) {
-		const item = normalizeItemName(birdNestMatch[1]);
-
-		if (!item) return "[IGNORED]";
-
-		incrementItem(item, 1, "woodcutting");
-		setStatus(`Tracked: ${item}`);
-
-		return `[COUNTED: ${titleCase(item)} +1]`;
 	}
 
 	// Check for invention materials
@@ -494,23 +544,18 @@ function processHarvestLine(chatLine: string): string {
 	if (materialsMatch) {
 		const materialText = materialsMatch[1];
 
-	// If the material text ends with a comma, it likely means the line was cut off
-		if (materialText.endsWith(",")) {
-			console.warn("CUT OFF MATERIALS:", materialText);
-		}
-
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
 		if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
-			console.warn("LOST ITEM:", finalMaterialText);
+			console.warn("CUT OFF ITEM:", finalMaterialText);
 			finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
 		}
 	// If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
 	// This way we can still track the complete materials listed before the cutoff.
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
-		let trackedAnyMaterial = false;
 		const countedMaterials: string[] = [];
+		const materialUpdates: ItemUpdate[] = [];
 
 		while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
 			const amount = parseInt(materialMatch[1], 10);
@@ -539,16 +584,22 @@ function processHarvestLine(chatLine: string): string {
 					? "uncommon-components"
 					: "invention";
 
-			incrementItem(item, amount, "invention", colorClass, source);
+			materialUpdates.push({
+				item,
+				amount,
+				skill: "invention",
+				colorClass,
+				source,
+			});
 			
 			countedMaterials.push(`${titleCase(item)} +${amount}`);
 
 			setStatus(`Invention: ${amount} x ${item}`);
-
-			trackedAnyMaterial = true;
 		}	
 
 		if (countedMaterials.length > 0) {
+			incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
+
 			const warning = finalMaterialText !== materialText ? " [LOST ITEM]" : "";
 			return `[COUNTED: ${countedMaterials.join(", ")}]${warning}`;
 		}
@@ -613,23 +664,6 @@ function processHarvestLine(chatLine: string): string {
 	}
 
 	// Check for mining, woodcutting, fishing, and archaeology
-	const skillPatterns: Array<{
-		pattern: RegExp;
-		skill: SkillType;
-	}> = [
-		{ pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
-		{ pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
-
-		{ pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
-		{ pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-		{ pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-		{ pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-
-		{ pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
-
-		{ pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
-	];
-
 	for (const entry of skillPatterns) {
 		const match = cleanLine.match(entry.pattern);
 		if (!match) continue;
@@ -643,12 +677,12 @@ function processHarvestLine(chatLine: string): string {
 
 		incrementItem(item, 1, entry.skill);
 		setStatus(`Tracked: ${item}`);
-		return "[IGNORED]";
+		return `[COUNTED: ${item} +1]`;
 	}
 }
 
 function getSkillForItem(item: string): InternalSkillType {
-	if (item.includes("bamboo") || item.includes("eternal magic tree branch")) return "woodcutting";
+	if (item.includes("bamboo")) return "woodcutting";
 	if (item.includes("(damaged)")) return "archaeology";
 	if (item.includes("ore")) return "mining";
 	if (item.includes("logs")) return "woodcutting";
@@ -711,6 +745,36 @@ function ensureItem(data: SaveData, item: string) {
 	}
 }
 
+function applyItemUpdate(data: SaveData, update: ItemUpdate, timestamp: number) {
+	ensureItem(data, update.item);
+
+	data.items[update.item].count += update.amount;
+	data.items[update.item].skill = update.skill;
+	data.items[update.item].lastUpdated = timestamp;
+
+	if (update.colorClass) {
+		data.items[update.item].colorClass = update.colorClass;
+	}
+
+	if (update.source) {
+		data.items[update.item].source = update.source;
+	}
+}
+
+function incrementItems(updates: ItemUpdate[], highlightItem?: string) {
+	if (updates.length === 0) return;
+
+	const data = getSaveData();
+	const timestamp = Date.now();
+
+	for (const update of updates) {
+		applyItemUpdate(data, update, timestamp);
+	}
+
+	saveData(data);
+	render(highlightItem || updates[updates.length - 1].item, data);
+}
+
 // Increment the count of a tracked item and update its metadata
 // then re-render the tracker to reflect the changes.
 function incrementItem(
@@ -720,29 +784,22 @@ function incrementItem(
 	colorClass?: string,
 	source?: string
 ) {
-	const data = getSaveData();
-	ensureItem(data, item);
-	data.items[item].count += amount;
-	data.items[item].skill = skill;
-	data.items[item].lastUpdated = Date.now();
-
-	if (colorClass) {
-		data.items[item].colorClass = colorClass;
-	}
-
-	if (source) {
-		data.items[item].source = source;
-	}
-
-	saveData(data);
-	render(item);
+	incrementItems([{
+		item,
+		amount,
+		skill,
+		colorClass,
+		source,
+	}], item);
 }
 
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
 let recentLines: string[] = [];
+let recentLineKeys: string[] = [];
+const recentLineSet = new Set<string>();
 
 function isInHistory(chatLine: string) {
-	return recentLines.some((line) => line.includes(chatLine));
+	return recentLineSet.has(chatLine);
 }
 
 // Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
@@ -750,16 +807,21 @@ function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
 	const debugLine = `${chatLine} ${debugStatus}`;
 
 	recentLines.push(debugLine);
+	recentLineKeys.push(chatLine);
+	recentLineSet.add(chatLine);
 
 	if (recentLines.length > 50) {
-		recentLines = recentLines.slice(-50);
+		recentLines.shift();
+		const oldKey = recentLineKeys.shift();
+
+		if (oldKey) {
+			recentLineSet.delete(oldKey);
+		}
 	}
 }
 
 // Render the tracker UI based on the current save data
-function render(highlightItem?: string) {
-	const data = getSaveData();
-
+function render(highlightItem?: string, data = getSaveData()) {
 	const items = Object.keys(data.items)
 		.filter((item) => {
 			if (activeSkillTab === "all") return true;
@@ -799,16 +861,12 @@ function render(highlightItem?: string) {
 		if (inventionFilter === "all" || inventionFilter === "common") {
 			renderItemGroup("Common Components", commonItems, data, highlightItem);
 		}
-
-		bindRowEvents();
 		return;
 	}
 
 	for (const item of items) {
 		renderItemRow(item, data.items[item], highlightItem);
 	}
-
-	bindRowEvents();
 }
 
 // Sort items based on the selected sort mode: by recent updates, alphabetically, or by count.
@@ -963,41 +1021,27 @@ function renderItemRow(
 
 // Bind event listeners to the buttons in each item row
 function bindRowEvents() {
-	document.querySelectorAll(".cog-btn").forEach((btn) => {
-		btn.addEventListener("click", (e: Event) => {
-			const target = e.currentTarget as HTMLElement;
-			toggleSettings(target.dataset.item || "");
-		});
-	});
+	tracker.addEventListener("click", (e: Event) => {
+		const target = (e.target as HTMLElement).closest("button[data-item]") as HTMLElement | null;
+		if (!target) return;
 
-	document.querySelectorAll(".clear-goal").forEach((btn) => {
-		btn.addEventListener("click", (e: Event) => {
-			const target = e.currentTarget as HTMLElement;
-			clearGoal(target.dataset.item || "");
-		});
-	});
+		const item = target.dataset.item || "";
 
-	document.querySelectorAll(".save-goal").forEach((btn) => {
-		btn.addEventListener("click", (e: Event) => {
-			const target = e.currentTarget as HTMLElement;
-			setGoal(target.dataset.item || "");
-		});
-	});
-
-	document.querySelectorAll(".reset-item").forEach((btn) => {
-		btn.addEventListener("click", (e: Event) => {
-			const target = e.currentTarget as HTMLElement;
-			resetItem(target.dataset.item || "");
-		});
-	});
-
-	document.querySelectorAll(".delete-item").forEach((btn) => {
-		btn.addEventListener("click", (e: Event) => {
-			const target = e.currentTarget as HTMLElement;
-			deleteItem(target.dataset.item || "");
-		});
+		if (target.classList.contains("cog-btn")) {
+			toggleSettings(item);
+		} else if (target.classList.contains("clear-goal")) {
+			clearGoal(item);
+		} else if (target.classList.contains("save-goal")) {
+			setGoal(item);
+		} else if (target.classList.contains("reset-item")) {
+			resetItem(item);
+		} else if (target.classList.contains("delete-item")) {
+			deleteItem(item);
+		}
 	});
 }
+
+bindRowEvents();
 
 // Bind event listeners to the skill tab buttons to switch between different skill views in the tracker.
 document.querySelectorAll(".skill-tab").forEach((tab) => {
