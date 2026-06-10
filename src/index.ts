@@ -205,9 +205,18 @@ function addMaterialContinuationNudge() {
 			};
 
 			const candidateStarts = ctx.text.endsWith(" ")
-				? [ctx.rightx - ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth, ctx.rightx]
-				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx + ctx.font.spacewidth * 2, 
-				ctx.rightx + ctx.font.spacewidth * 3, ctx.rightx + ctx.font.spacewidth * 4];
+				? [
+				ctx.rightx - ctx.font.spacewidth * 4,
+				ctx.rightx - ctx.font.spacewidth * 3,
+				ctx.rightx - ctx.font.spacewidth * 2,
+				ctx.rightx - ctx.font.spacewidth,
+				ctx.rightx,
+				] : [
+				ctx.rightx + ctx.font.spacewidth,
+				ctx.rightx + ctx.font.spacewidth * 2,
+				ctx.rightx + ctx.font.spacewidth * 3,
+				ctx.rightx + ctx.font.spacewidth * 4,
+				];
 
 			for (const x of candidateStarts) {
 				const data = OCR.readLine(
@@ -227,8 +236,8 @@ function addMaterialContinuationNudge() {
 				return addContinuation(x, data.fragments);
 			}
 
-			const scanStart = ctx.rightx - ctx.font.spacewidth;
-			const scanEnd = ctx.rightx + ctx.font.spacewidth * 8;
+			const scanStart = ctx.rightx - ctx.font.spacewidth * 4;
+			const scanEnd = ctx.rightx + ctx.font.spacewidth * 12;
 
 			for (let x = scanStart; x <= scanEnd; x++) {
 				for (const color of ctx.colors) {

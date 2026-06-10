@@ -5321,9 +5321,18 @@ function addMaterialContinuationNudge() {
                 return true;
             };
             var candidateStarts = ctx.text.endsWith(" ")
-                ? [ctx.rightx - ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth, ctx.rightx]
-                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx + ctx.font.spacewidth * 2,
-                    ctx.rightx + ctx.font.spacewidth * 3, ctx.rightx + ctx.font.spacewidth * 4];
+                ? [
+                    ctx.rightx - ctx.font.spacewidth * 4,
+                    ctx.rightx - ctx.font.spacewidth * 3,
+                    ctx.rightx - ctx.font.spacewidth * 2,
+                    ctx.rightx - ctx.font.spacewidth,
+                    ctx.rightx,
+                ] : [
+                ctx.rightx + ctx.font.spacewidth,
+                ctx.rightx + ctx.font.spacewidth * 2,
+                ctx.rightx + ctx.font.spacewidth * 3,
+                ctx.rightx + ctx.font.spacewidth * 4,
+            ];
             for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
                 var x = candidateStarts_1[_i];
                 var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
@@ -5332,8 +5341,8 @@ function addMaterialContinuationNudge() {
                 }
                 return addContinuation(x, data.fragments);
             }
-            var scanStart = ctx.rightx - ctx.font.spacewidth;
-            var scanEnd = ctx.rightx + ctx.font.spacewidth * 8;
+            var scanStart = ctx.rightx - ctx.font.spacewidth * 4;
+            var scanEnd = ctx.rightx + ctx.font.spacewidth * 12;
             for (var x = scanStart; x <= scanEnd; x++) {
                 for (var _a = 0, _b = ctx.colors; _a < _b.length; _a++) {
                     var color = _b[_a];
