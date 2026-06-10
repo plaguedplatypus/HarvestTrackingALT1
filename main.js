@@ -5682,7 +5682,9 @@ function processHarvestLine(chatLine) {
         var materialText = materialsMatch[1];
         // We will attempt to parse whatever material information we have.
         var finalMaterialText = materialText;
-        // OCR repairs
+        // Clean badly chopped "components" endings
+        finalMaterialText = finalMaterialText.replace(/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi, "$1");
+        // Component name repair block
         finalMaterialText = finalMaterialText.replace(/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi, function (match, prefix, brokenName) {
             var repaired = repairComponentName(brokenName, rareComponents) ||
                 repairComponentName(brokenName, uncommonComponents);

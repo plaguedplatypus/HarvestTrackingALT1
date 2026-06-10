@@ -686,8 +686,14 @@ function processHarvestLine(chatLine: string): string | null {
 
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
+	
+		// Clean badly chopped "components" endings
+		finalMaterialText = finalMaterialText.replace(
+			/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi,
+			"$1"
+		);
 
-			// OCR repairs
+			// Component name repair block
 			finalMaterialText = finalMaterialText.replace(
 				/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi,
 				(match, prefix, brokenName) => {
