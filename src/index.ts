@@ -72,23 +72,46 @@ reader.readargs.colors.push(
 );
 
 (reader as any).forwardnudges.push({
-	name: "material-after-lost-components",
-	match: /Materials gained:.*,\s*components$/i,
+	name: "continue-materials-after-orphan-component-strong",
+	match: /Materials gained:.*,\s*(components|parts|junk)$/i,
 	fn: (ctx: any) => {
-		const data = OCR.readLine(
-			ctx.imgdata,
-			ctx.font,
-			ctx.colors,
-			ctx.rightx,
-			ctx.baseliney,
-			true,
-			false
-		);
+		for (const offset of [0, 1, 2, 3, 4, 5, 6, 8, 10]) {
+			// Try normal multi-color read first
+			let data = OCR.readLine(
+				ctx.imgdata,
+				ctx.font,
+				ctx.colors,
+				ctx.rightx + offset,
+				ctx.baseliney,
+				true,
+				false
+			);
 
-		if (data.text) {
-			data.fragments.forEach((f) => ctx.addfrag(f));
-			return true;
+			if (data.text) {
+				data.fragments.forEach((fragment) => ctx.addfrag(fragment));
+				return true;
+			}
+
+			// Then try each known color individually
+			for (const color of ctx.colors) {
+				data = OCR.readLine(
+					ctx.imgdata,
+					ctx.font,
+					color,
+					ctx.rightx + offset,
+					ctx.baseliney,
+					true,
+					false
+				);
+
+				if (data.text) {
+					data.fragments.forEach((fragment) => ctx.addfrag(fragment));
+					return true;
+				}
+			}
 		}
+
+		return false;
 	}
 });
 
@@ -394,7 +417,7 @@ function processHarvestLine(chatLine: string): string {
 
 	if (serenMatch) {
 		const amount = parseInt(serenMatch[1], 10);
-		const item = normalizeItemName(serenMatch[2]);
+		const item = normalizeItemName(serenMatch[2]) + " ﴾♦﴿";
 
 		if (!item || isNaN(amount)) return;
 

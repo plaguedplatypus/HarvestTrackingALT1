@@ -5227,14 +5227,28 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
 reader.forwardnudges.push({
-    name: "material-after-lost-components",
-    match: /Materials gained:.*,\s*components$/i,
+    name: "continue-materials-after-orphan-component-strong",
+    match: /Materials gained:.*,\s*(components|parts|junk)$/i,
     fn: function (ctx) {
-        var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, ctx.rightx, ctx.baseliney, true, false);
-        if (data.text) {
-            data.fragments.forEach(function (f) { return ctx.addfrag(f); });
-            return true;
+        for (var _i = 0, _a = [0, 1, 2, 3, 4, 5, 6, 8, 10]; _i < _a.length; _i++) {
+            var offset = _a[_i];
+            // Try normal multi-color read first
+            var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, ctx.rightx + offset, ctx.baseliney, true, false);
+            if (data.text) {
+                data.fragments.forEach(function (fragment) { return ctx.addfrag(fragment); });
+                return true;
+            }
+            // Then try each known color individually
+            for (var _b = 0, _c = ctx.colors; _b < _c.length; _b++) {
+                var color = _c[_b];
+                data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, true, false);
+                if (data.text) {
+                    data.fragments.forEach(function (fragment) { return ctx.addfrag(fragment); });
+                    return true;
+                }
+            }
         }
+        return false;
     }
 });
 var appCog = document.querySelector(".app-cog");
@@ -5494,7 +5508,7 @@ function processHarvestLine(chatLine) {
     var serenMatch = cleanLine.match(/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i);
     if (serenMatch) {
         var amount = parseInt(serenMatch[1], 10);
-        var item = normalizeItemName(serenMatch[2]);
+        var item = normalizeItemName(serenMatch[2]) + " ﴾♦﴿";
         if (!item || isNaN(amount))
             return;
         var colorClass = rareSerenItems.has(item)
