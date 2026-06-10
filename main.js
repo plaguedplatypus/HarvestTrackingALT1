@@ -5213,6 +5213,7 @@ var maxRecentHistory = 50;
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
+var DEBUG_UNKNOWN_LINES = false;
 reader.readargs.colors.push(
 // anti aliasing sucks
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
@@ -5421,9 +5422,13 @@ function readChatbox() {
         if (isInHistory(historyKey))
             continue;
         var debugStatus = processHarvestLine(chatLine);
-        if (debugStatus === null)
+        if (debugStatus === null) {
+            if (DEBUG_UNKNOWN_LINES) {
+                updateChatHistory(chatLine, "[UNKNOWN]");
+            }
             continue;
-        updateChatHistory(chatLine, debugStatus);
+        }
+        updateChatHistory(historyKey, debugStatus);
     }
 }
 // Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
@@ -5749,7 +5754,7 @@ function processHarvestLine(chatLine) {
         var amount = parseInt(transportMatch[2], 10);
         var item = normalizeItemName(transportMatch[3]);
         if (!item || isNaN(amount))
-            return;
+            return "[IGNORED]";
         var skill = "other";
         if (destination.includes("metal bank")) {
             skill = "mining";
@@ -5774,7 +5779,7 @@ function processHarvestLine(chatLine) {
         var amount = parseInt(perkSendMatch[2], 10);
         var item = normalizeItemName(perkSendMatch[3]);
         if (!item || isNaN(amount))
-            return;
+            return "[IGNORED]";
         var skill = "other";
         if (destination.includes("metal bank")) {
             skill = "mining";
@@ -5800,11 +5805,12 @@ function processHarvestLine(chatLine) {
         }
         var item = normalizeItemName(match[1]);
         if (!item)
-            return;
+            return "[IGNORED]";
         incrementItem(item, 1, entry.skill);
         setStatus("Tracked: ".concat(item));
         return "[COUNTED: ".concat(item, " +1]");
     }
+    return null;
 }
 function getSkillForItem(item) {
     if (item.includes("bamboo") || item.includes("eternal magic tree branch"))

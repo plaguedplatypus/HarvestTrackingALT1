@@ -61,6 +61,7 @@ const maxRecentHistory = 50;
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 const reader = new ChatboxReader();
+const DEBUG_UNKNOWN_LINES = false;
 
 reader.readargs.colors.push(
 	// anti aliasing sucks
@@ -374,8 +375,13 @@ function readChatbox() {
 		if (isInHistory(historyKey)) continue;
 
 		const debugStatus = processHarvestLine(chatLine);
-		if (debugStatus === null) continue;
-		updateChatHistory(chatLine, debugStatus);
+		if (debugStatus === null) {
+			if (DEBUG_UNKNOWN_LINES) {
+				updateChatHistory(chatLine, "[UNKNOWN]");
+			}
+			continue;
+		}
+		updateChatHistory(historyKey, debugStatus);
 	}
 }
 
@@ -686,7 +692,7 @@ function processHarvestLine(chatLine: string): string | null {
 
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
-	
+
 		// Clean badly chopped "components" endings
 		finalMaterialText = finalMaterialText.replace(
 			/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi,
@@ -777,7 +783,7 @@ function processHarvestLine(chatLine: string): string | null {
 		const amount = parseInt(transportMatch[2], 10);
 		const item = normalizeItemName(transportMatch[3]);
 
-		if (!item || isNaN(amount)) return;
+		if (!item || isNaN(amount)) return "[IGNORED]";
 
 		let skill: InternalSkillType = "other";
 
@@ -808,7 +814,7 @@ function processHarvestLine(chatLine: string): string | null {
 		const amount = parseInt(perkSendMatch[2], 10);
 		const item = normalizeItemName(perkSendMatch[3]);
 
-		if (!item || isNaN(amount)) return;
+		if (!item || isNaN(amount)) return "[IGNORED]";
 
 		let skill: InternalSkillType = "other";
 
@@ -835,12 +841,14 @@ function processHarvestLine(chatLine: string): string | null {
 		}
 
 		const item = normalizeItemName(match[1]);
-		if (!item) return;
+		if (!item) return "[IGNORED]";
 
 		incrementItem(item, 1, entry.skill);
 		setStatus(`Tracked: ${item}`);
 		return `[COUNTED: ${item} +1]`;
 	}
+	
+	return null;
 }
 
 function getSkillForItem(item: string): InternalSkillType {
