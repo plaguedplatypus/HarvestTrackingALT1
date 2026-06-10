@@ -650,13 +650,13 @@ function processHarvestLine(chatLine: string): string {
 			const item = normalizeItemName(materialMatch[2]);
 
 			if (!item || isNaN(amount)) continue;
+			if (item === "junk") continue; // No need to track junk
 
 			const isRareComponent = rareComponents.has(item);
 			const isUncommonComponent = item.includes("components");
 			const isInventionMaterial =
 				isUncommonComponent ||
-				item.includes("parts") ||
-				item === "junk";
+				item.includes("parts");
 
 			if (!isInventionMaterial) continue;
 

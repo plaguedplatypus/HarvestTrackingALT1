@@ -5651,11 +5651,12 @@ function processHarvestLine(chatLine) {
             var item = normalizeItemName(materialMatch[2]);
             if (!item || isNaN(amount))
                 continue;
+            if (item === "junk")
+                continue; // No need to track junk
             var isRareComponent = rareComponents.has(item);
             var isUncommonComponent = item.includes("components");
             var isInventionMaterial = isUncommonComponent ||
-                item.includes("parts") ||
-                item === "junk";
+                item.includes("parts");
             if (!isInventionMaterial)
                 continue;
             var colorClass = isRareComponent
