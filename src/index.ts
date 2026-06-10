@@ -85,7 +85,6 @@ reader.forwardnudges.push({
 	},
 });
 
-// Check for "1" in different colors.  Potentially adds a second "x" to string, this is adjusted in the processChat function
 reader.forwardnudges.push({
 	match: /Materials gained:|parts|components|Junk/,
 	name: "uncommon_1",
@@ -758,10 +757,7 @@ function isInHistory(chatLine: string) {
 
 // Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
 function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
-	const debugLine = chatLine.replace(
-		timestampRegex,
-		(match) => `${match} ${debugStatus}`
-	);
+	const debugLine = `${chatLine} ${debugStatus}`;
 
 	recentLines.push(debugLine);
 

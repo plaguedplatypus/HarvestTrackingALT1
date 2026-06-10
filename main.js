@@ -5240,7 +5240,6 @@ reader.forwardnudges.push({
         }
     },
 });
-// Check for "1" in different colors.  Potentially adds a second "x" to string, this is adjusted in the processChat function
 reader.forwardnudges.push({
     match: /Materials gained:|parts|components|Junk/,
     name: "uncommon_1",
@@ -5788,7 +5787,7 @@ function isInHistory(chatLine) {
 // Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
 function updateChatHistory(chatLine, debugStatus) {
     if (debugStatus === void 0) { debugStatus = "[IGNORED]"; }
-    var debugLine = chatLine.replace(timestampRegex, function (match) { return "".concat(match, " ").concat(debugStatus); });
+    var debugLine = "".concat(chatLine, " ").concat(debugStatus);
     recentLines.push(debugLine);
     if (recentLines.length > 50) {
         recentLines = recentLines.slice(-50);
