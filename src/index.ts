@@ -60,6 +60,8 @@ reader.readargs = {colors:[
 	a1lib.mixColor(255, 111, 0), // orange item effects
 	a1lib.mixColor(255, 140, 56), // orange news broadcasts
 	a1lib.mixColor(253, 127, 0), // uncommon components
+	a1lib.mixColor(0, 255, 255), // seren spirits
+
 
 	a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
