@@ -379,7 +379,7 @@ function readChatbox() {
 		const debugStatus = processHarvestLine(chatLine);
 		if (debugStatus === null) {
 			if (debugUnknownLines) {
-				updateChatHistory(historyKey, "[UNKNOWN]");
+				updateChatHistory(historyKey, "[IGNORED]");
 			}
 			continue;
 		}

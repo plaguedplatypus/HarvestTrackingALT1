@@ -5444,7 +5444,7 @@ function readChatbox() {
         var debugStatus = processHarvestLine(chatLine);
         if (debugStatus === null) {
             if (debugUnknownLines) {
-                updateChatHistory(historyKey, "[UNKNOWN]");
+                updateChatHistory(historyKey, "[IGNORED]");
             }
             continue;
         }
