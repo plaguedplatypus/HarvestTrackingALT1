@@ -609,11 +609,6 @@ function processHarvestLine(chatLine: string): string {
 	if (materialsMatch) {
 		const materialText = materialsMatch[1];
 
-	// If the material text ends with a comma, it likely means the line was cut off
-		if (materialText.endsWith(",")) {
-			console.warn("CUT OFF MATERIALS:", materialText);
-		}
-
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
 	
@@ -676,7 +671,7 @@ function processHarvestLine(chatLine: string): string {
 		if (countedMaterials.length > 0) {
 			incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
 
-			const warning = finalMaterialText !== materialText ? " [LOST ITEM]" : "";
+			const warning = finalMaterialText !== materialText ? " [PARTIAL READ]" : "";
 			return `[COUNTED: ${countedMaterials.join(", ")}]${warning}`;
 		}
 	}
@@ -907,7 +902,7 @@ function isInHistory(chatLine: string) {
 	return recentLineSet.has(chatLine);
 }
 
-// Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
+// Add a new chat line to the history
 function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
 	const debugLine = `${chatLine} ${debugStatus}`;
 

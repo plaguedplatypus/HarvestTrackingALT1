@@ -5618,10 +5618,6 @@ function processHarvestLine(chatLine) {
     // we will attempt to parse it for invention materials. 
     if (materialsMatch) {
         var materialText = materialsMatch[1];
-        // If the material text ends with a comma, it likely means the line was cut off
-        if (materialText.endsWith(",")) {
-            console.warn("CUT OFF MATERIALS:", materialText);
-        }
         // We will attempt to parse whatever material information we have.
         var finalMaterialText = materialText;
         // Repair truncated OCR words first
@@ -5672,7 +5668,7 @@ function processHarvestLine(chatLine) {
         }
         if (countedMaterials.length > 0) {
             incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
-            var warning = finalMaterialText !== materialText ? " [LOST ITEM]" : "";
+            var warning = finalMaterialText !== materialText ? " [PARTIAL READ]" : "";
             return "[COUNTED: ".concat(countedMaterials.join(", "), "]").concat(warning);
         }
     }
@@ -5871,7 +5867,7 @@ function clearRecentHistory() {
 function isInHistory(chatLine) {
     return recentLineSet.has(chatLine);
 }
-// Add a new chat line to the history, keeping only the most recent 50 lines to prevent memory bloat.
+// Add a new chat line to the history
 function updateChatHistory(chatLine, debugStatus) {
     if (debugStatus === void 0) { debugStatus = "[IGNORED]"; }
     var debugLine = "".concat(chatLine, " ").concat(debugStatus);
