@@ -5597,6 +5597,18 @@ var skillPatterns = [
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
+    // cleanup what is actually processed
+    var ignoredPrefixes = [
+        "News:", "❆N",
+        "Grand Exchange:"
+    ];
+    var ignoredSuffixes = [
+        "money pouch."
+    ];
+    if (ignoredPrefixes.some(function (prefix) { return cleanLine.startsWith(prefix); }) ||
+        ignoredSuffixes.some(function (suffix) { return cleanLine.toLowerCase().endsWith(suffix); })) {
+        return null;
+    }
     // Check for Seren spirit's
     var serenMatch = cleanLine.match(/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i);
     if (serenMatch) {

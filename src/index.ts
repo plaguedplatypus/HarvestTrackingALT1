@@ -577,6 +577,23 @@ const skillPatterns: Array<{
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine: string): string {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
+
+	// cleanup what is actually processed
+		const ignoredPrefixes = [
+			"News:", "❆N",
+			"Grand Exchange:"
+		];
+
+		const ignoredSuffixes = [
+			"money pouch."
+		];
+
+		if (
+			ignoredPrefixes.some(prefix => cleanLine.startsWith(prefix)) ||
+			ignoredSuffixes.some(suffix => cleanLine.toLowerCase().endsWith(suffix))
+		) {
+			return null;
+		}
 	
 	// Check for Seren spirit's
 	const serenMatch = cleanLine.match(
