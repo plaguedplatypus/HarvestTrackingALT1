@@ -5421,7 +5421,9 @@ function readChatbox() {
         if (isInHistory(historyKey))
             continue;
         var debugStatus = processHarvestLine(chatLine);
-        updateChatHistory(historyKey, debugStatus);
+        if (debugStatus === null)
+            continue;
+        updateChatHistory(chatLine, debugStatus);
     }
 }
 // Process the raw chatbox output to extract clean chat lines, removing timestamps and handling line breaks appropriately.
@@ -5652,7 +5654,7 @@ function processHarvestLine(chatLine) {
             if (!item || isNaN(amount))
                 continue;
             if (item === "junk")
-                continue; // No need to track junk
+                continue; // No need to track junk, it causes problems
             var isRareComponent = rareComponents.has(item);
             var isUncommonComponent = item.includes("components");
             var isInventionMaterial = isUncommonComponent ||

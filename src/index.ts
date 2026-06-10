@@ -374,7 +374,8 @@ function readChatbox() {
 		if (isInHistory(historyKey)) continue;
 
 		const debugStatus = processHarvestLine(chatLine);
-		updateChatHistory(historyKey, debugStatus);
+		if (debugStatus === null) continue;
+		updateChatHistory(chatLine, debugStatus);
 	}
 }
 
@@ -575,7 +576,7 @@ const skillPatterns: Array<{
 ];
 
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
-function processHarvestLine(chatLine: string): string {
+function processHarvestLine(chatLine: string): string | null {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 
 	// cleanup what is actually processed
@@ -650,7 +651,7 @@ function processHarvestLine(chatLine: string): string {
 			const item = normalizeItemName(materialMatch[2]);
 
 			if (!item || isNaN(amount)) continue;
-			if (item === "junk") continue; // No need to track junk
+			if (item === "junk") continue; // No need to track junk, it causes problems
 
 			const isRareComponent = rareComponents.has(item);
 			const isUncommonComponent = item.includes("components");
