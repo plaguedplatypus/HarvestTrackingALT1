@@ -5628,6 +5628,8 @@ var skillPatterns = [
 function repairComponentName(text, componentSet) {
     var normalized = text
         .toLowerCase()
+        .replace(/-/g, "e")
+        .replace(/\./g, "p")
         .replace(/[^a-z]/g, "");
     for (var _i = 0, _a = Array.from(componentSet); _i < _a.length; _i++) {
         var component = _a[_i];

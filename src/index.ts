@@ -608,6 +608,8 @@ const skillPatterns: Array<{
 function repairComponentName(text: string, componentSet: Set<string>): string | null {
 	const normalized = text
 		.toLowerCase()
+		.replace(/-/g, "e")
+		.replace(/\./g, "p")
 		.replace(/[^a-z]/g, "");
 
 	for (const component of Array.from(componentSet)) {
