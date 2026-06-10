@@ -5219,24 +5219,19 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // You missed that seren spirit btw...
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0), // red bananas
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
-var materialNudgeColors = [
-    [255, 128, 0],
-    [255, 111, 0],
-    [255, 140, 56],
-    [255, 153, 0],
-    [232, 47, 47],
-    [67, 188, 188],
-];
 reader.forwardnudges.push({
+    match: /Materials gained:/i,
     name: "material-white-comma",
-    match: /Materials gained:.*(parts|components|Junk)$/i,
     fn: function (ctx) {
+        console.log("NUDGE FIRED: comma", ctx);
         var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
         if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
             return false;
@@ -5251,29 +5246,59 @@ reader.forwardnudges.push({
     },
 });
 reader.forwardnudges.push({
-    name: "material-missing-one",
-    match: /Materials gained:.*(parts|components|Junk|,\s*)$/i,
+    match: /Materials gained:/i,
+    name: "uncommon",
     fn: function (ctx) {
-        for (var _i = 0, materialNudgeColors_1 = materialNudgeColors; _i < materialNudgeColors_1.length; _i++) {
-            var color = materialNudgeColors_1[_i];
-            for (var _a = 0, _b = [0, ctx.font.spacewidth, ctx.font.spacewidth * 2, ctx.font.spacewidth * 3, 1, 2, 3, 4]; _a < _b.length; _a++) {
-                var offset = _b[_a];
-                var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, false, true);
-                if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
-                    continue;
-                var x = one.x + one.basechar.width + ctx.font.spacewidth;
-                var maybeX = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, x, ctx.baseliney, false, true);
-                ctx.addfrag({
-                    color: color,
-                    index: -1,
-                    text: (maybeX === null || maybeX === void 0 ? void 0 : maybeX.chr) === "x" ? "1 " : "1 x ",
-                    xstart: ctx.rightx,
-                    xend: x,
+        console.log("NUDGE FIRED: uncommon", ctx);
+        var startx = ctx.rightx;
+        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
+            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
+                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth
                 });
+            }
+            else {
+                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+            }
+            return true;
+        }
+    }
+});
+reader.forwardnudges.push({
+    match: /Materials gained:/i,
+    name: "rare",
+    fn: function (ctx) {
+        console.log("NUDGE FIRED: rare", ctx);
+        var startx = ctx.rightx;
+        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
+            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
+                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
                 return true;
             }
+            ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+            return true;
         }
-        return false;
+    },
+});
+reader.forwardnudges.push({
+    match: /Materials gained:/i,
+    name: "ancient",
+    fn: function (ctx) {
+        console.log("NUDGE FIRED: ancient", ctx);
+        var startx = ctx.rightx;
+        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
+            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
+                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+                return true;
+            }
+            ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+            return true;
+        }
     },
 });
 var appCog = document.querySelector(".app-cog");

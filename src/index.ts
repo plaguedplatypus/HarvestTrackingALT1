@@ -61,6 +61,9 @@ reader.readargs.colors.push(
 
 	a1lib.mixColor(161, 53, 235), // what's this?
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
+	a1lib.mixColor(67, 188, 188), // Cotton candy?
+
+	a1lib.mixColor(255, 0, 0), // red bananas
 
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange
@@ -70,19 +73,13 @@ reader.readargs.colors.push(
 	a1lib.mixColor(238, 118, 0), // orange
 );
 
-const materialNudgeColors: OCR.ColortTriplet[] = [
-	[255, 128, 0],
-	[255, 111, 0],
-	[255, 140, 56],
-	[255, 153, 0],
-	[232, 47, 47],
-	[67, 188, 188],
-];
-
 (reader as any).forwardnudges.push({
+	match: /Materials gained:/i,
 	name: "material-white-comma",
-	match: /Materials gained:.*(parts|components|Junk)$/i,
 	fn: (ctx: any) => {
+
+		console.log("NUDGE FIRED: comma", ctx);
+
 		const comma = OCR.readChar(
 			ctx.imgdata,
 			ctx.font,
@@ -108,48 +105,102 @@ const materialNudgeColors: OCR.ColortTriplet[] = [
 });
 
 (reader as any).forwardnudges.push({
-	name: "material-missing-one",
-	match: /Materials gained:.*(parts|components|Junk|,\s*)$/i,
-	fn: (ctx: any) => {
-		for (const color of materialNudgeColors) {
-			for (const offset of [0, ctx.font.spacewidth, ctx.font.spacewidth * 2, ctx.font.spacewidth * 3, 1, 2, 3, 4]) {
-				const one = OCR.readChar(
-					ctx.imgdata,
-					ctx.font,
-					color,
-					ctx.rightx + offset,
-					ctx.baseliney,
-					false,
-					true
-				);
+	match: /Materials gained:/i,
+	name: "uncommon",
+	fn: (ctx) => {
 
-				if (one?.chr !== "1") continue;
+		console.log("NUDGE FIRED: uncommon", ctx);
 
-				const x = one.x + one.basechar.width + ctx.font.spacewidth;
+		let startx = ctx.rightx;
 
-				const maybeX = OCR.readChar(
-					ctx.imgdata,
-					ctx.font,
-					color,
-					x,
-					ctx.baseliney,
-					false,
-					true
-				);
+		let maybe_one = OCR.readChar(
+			ctx.imgdata,
+			ctx.font,
+			[255, 128, 0],
+			startx + ctx.font.spacewidth,
+			ctx.baseliney,
+			false,
+			true
+		);
 
-				ctx.addfrag({
-					color,
-					index: -1,
-					text: maybeX?.chr === "x" ? "1 " : "1 x ",
-					xstart: ctx.rightx,
-					xend: x,
+		if (maybe_one?.chr == "1") {
+			let maybe_x = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				[255, 128, 0],
+				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true
+			);
+
+			if (maybe_x?.chr == "x") {
+				ctx.addfrag({color: [255, 128, 0],index: -1,text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth
 				});
+			} else {
+				ctx.addfrag({color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth});
+			}
 
+			return true;
+		}
+	}
+});
+
+(reader as any).forwardnudges.push({
+	match: /Materials gained:/i,
+	name: "rare",
+	fn: (ctx) => {
+
+		console.log("NUDGE FIRED: rare", ctx);
+
+		let startx = ctx.rightx;
+		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+		if (maybe_one?.chr == "1") {
+			let maybe_x = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				[255, 0, 0],
+				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true,
+			);
+			if (maybe_x?.chr == "x") {
+				ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
 				return true;
 			}
+			ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+			return true;
 		}
+	},
+});
 
-		return false;
+(reader as any).forwardnudges.push({
+	match: /Materials gained:/i,
+	name: "ancient",
+	fn: (ctx) => {
+
+		console.log("NUDGE FIRED: ancient", ctx);
+
+		let startx = ctx.rightx;
+		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+		if (maybe_one?.chr == "1") {
+			let maybe_x = OCR.readChar(
+				ctx.imgdata,
+				ctx.font,
+				[67, 188, 188],
+				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
+				ctx.baseliney,
+				false,
+				true,
+			);
+			if (maybe_x?.chr == "x") {
+				ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+				return true;
+			}
+			ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+			return true;
+		}
 	},
 });
 
