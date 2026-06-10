@@ -52,9 +52,8 @@ const appColor = a1lib.mixColor(0, 255, 0);
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const reader = new ChatboxReader();
 
-reader.readargs.colors.push(
+reader.readargs = {colors:[
 	// why does this game hate colors so much
-	a1lib.mixColor(0, 255, 0), // Bright green
 	a1lib.mixColor(50, 200, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(232, 47, 47), // You missed that seren spirit btw...
@@ -62,63 +61,37 @@ reader.readargs.colors.push(
 	a1lib.mixColor(161, 53, 235), // what's this?
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
-
-	a1lib.mixColor(255, 0, 0), // red bananas
-
+	
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(255, 128, 0), // Medium orange
 	a1lib.mixColor(255, 111, 0), // Darker orange
 	a1lib.mixColor(255, 140, 56), // pale orange
 	a1lib.mixColor(245, 124, 1), // orange
 	a1lib.mixColor(238, 118, 0), // orange
-);
+	],
+};
 
-(reader as any).forwardnudges.push({
-	match: /Materials gained:.*(parts|components|Junk)$/i,
-	name: "material-white-comma",
-	fn: (ctx: any) => {
-
-		const comma = OCR.readChar(
-			ctx.imgdata,
-			ctx.font,
-			[255, 255, 255],
-			ctx.rightx,
-			ctx.baseliney,
-			false,
-			true
-		);
-
-		if (comma?.chr !== ",") return false;
-
-		ctx.addfrag({
-			color: [255, 255, 255],
-			index: -1,
-			text: ", ",
-			xstart: ctx.rightx,
-			xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
-		});
-
-		return true;
+reader.forwardnudges.push({
+	match: /./,
+	name: "comma",
+	fn: (ctx) => {
+		let startx = ctx.rightx;
+		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
+		if (maybe_one?.chr == ",") {
+			let maybe_x = OCR.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
+			ctx.addfrag({ color: [255, 255, 255], index: -1, text: ", ", xstart: startx, xend: startx + maybe_x.basechar.width + ctx.font.spacewidth });
+			return true;
+		}
 	},
 });
 
-(reader as any).forwardnudges.push({
-	match: /Materials gained:.*,\s*$/i,
-	name: "uncommon",
+// Check for "1" in different colors.  Potentially adds a second "x" to string, this is adjusted in the processChat function
+reader.forwardnudges.push({
+	match: /Materials gained:|parts|components|Junk/,
+	name: "uncommon_1",
 	fn: (ctx) => {
-
 		let startx = ctx.rightx;
-
-		let maybe_one = OCR.readChar(
-			ctx.imgdata,
-			ctx.font,
-			[255, 128, 0],
-			startx + ctx.font.spacewidth,
-			ctx.baseliney,
-			false,
-			true
-		);
-
+		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
 		if (maybe_one?.chr == "1") {
 			let maybe_x = OCR.readChar(
 				ctx.imgdata,
@@ -127,25 +100,22 @@ reader.readargs.colors.push(
 				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
 				ctx.baseliney,
 				false,
-				true
+				true,
 			);
-
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({color: [255, 128, 0],index: -1,text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
+				ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
 			} else {
-				ctx.addfrag({color: [255, 128, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
+				ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
 			}
-
 			return true;
 		}
-	}
+	},
 });
 
-(reader as any).forwardnudges.push({
-	match: /Materials gained:.*,\s*$/i,
-	name: "rare",
+reader.forwardnudges.push({
+	match: /Materials gained:|parts|components|Junk/,
+	name: "rare_1",
 	fn: (ctx) => {
-
 		let startx = ctx.rightx;
 		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
 		if (maybe_one?.chr == "1") {
@@ -158,21 +128,20 @@ reader.readargs.colors.push(
 				false,
 				true,
 			);
-
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({color: [255, 0, 0],index: -1,text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
-			} else {
-				ctx.addfrag({color: [255, 0, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
+				ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+				return true;
 			}
+			ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+			return true;
 		}
 	},
 });
 
-(reader as any).forwardnudges.push({
-	match: /Materials gained:.*,\s*$/i,
-	name: "ancient",
+reader.forwardnudges.push({
+	match: /Materials gained:|parts|components|Junk/,
+	name: "ancient_1",
 	fn: (ctx) => {
-
 		let startx = ctx.rightx;
 		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
 		if (maybe_one?.chr == "1") {
@@ -185,12 +154,12 @@ reader.readargs.colors.push(
 				false,
 				true,
 			);
-
 			if (maybe_x?.chr == "x") {
-				ctx.addfrag({color: [67, 188, 188],index: -1,text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
-			} else {
-				ctx.addfrag({color: [67, 188, 188], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3});
+				ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+				return true;
 			}
+			ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+			return true;
 		}
 	},
 });

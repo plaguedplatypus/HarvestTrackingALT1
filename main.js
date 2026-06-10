@@ -5211,88 +5211,85 @@ var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
-reader.readargs.colors.push(
-// why does this game hate colors so much
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0), // Bright green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // You missed that seren spirit btw...
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0), // red bananas
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
+reader.readargs = { colors: [
+        // why does this game hate colors so much
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // You missed that seren spirit btw...
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this?
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), // Medium orange
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // Darker orange
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0), // orange
+    ],
+};
 reader.forwardnudges.push({
-    match: /Materials gained:.*(parts|components|Junk)$/i,
-    name: "material-white-comma",
+    match: /./,
+    name: "comma",
     fn: function (ctx) {
-        var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
-        if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
-            return false;
-        ctx.addfrag({
-            color: [255, 255, 255],
-            index: -1,
-            text: ", ",
-            xstart: ctx.rightx,
-            xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
-        });
-        return true;
+        var startx = ctx.rightx;
+        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
+        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == ",") {
+            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
+            ctx.addfrag({ color: [255, 255, 255], index: -1, text: ", ", xstart: startx, xend: startx + maybe_x.basechar.width + ctx.font.spacewidth });
+            return true;
+        }
     },
 });
+// Check for "1" in different colors.  Potentially adds a second "x" to string, this is adjusted in the processChat function
 reader.forwardnudges.push({
-    match: /Materials gained:.*,\s*$/i,
-    name: "uncommon",
+    match: /Materials gained:|parts|components|Junk/,
+    name: "uncommon_1",
     fn: function (ctx) {
         var startx = ctx.rightx;
         var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
+                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
             }
             else {
-                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
+                ctx.addfrag({ color: [255, 128, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
             }
             return true;
         }
-    }
+    },
 });
 reader.forwardnudges.push({
-    match: /Materials gained:.*,\s*$/i,
-    name: "rare",
+    match: /Materials gained:|parts|components|Junk/,
+    name: "rare_1",
     fn: function (ctx) {
         var startx = ctx.rightx;
         var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
+                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+                return true;
             }
-            else {
-                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
-            }
+            ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+            return true;
         }
     },
 });
 reader.forwardnudges.push({
-    match: /Materials gained:.*,\s*$/i,
-    name: "ancient",
+    match: /Materials gained:|parts|components|Junk/,
+    name: "ancient_1",
     fn: function (ctx) {
         var startx = ctx.rightx;
         var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
             var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
             if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
+                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+                return true;
             }
-            else {
-                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 ", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth * 3 });
-            }
+            ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+            return true;
         }
     },
 });
