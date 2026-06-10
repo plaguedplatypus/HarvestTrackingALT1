@@ -74,11 +74,9 @@ reader.readargs.colors.push(
 );
 
 (reader as any).forwardnudges.push({
-	match: /Materials gained:/i,
+	match: /Materials gained:.*(parts|components|Junk)$/i,
 	name: "material-white-comma",
 	fn: (ctx: any) => {
-
-		console.log("NUDGE FIRED: comma", ctx);
 
 		const comma = OCR.readChar(
 			ctx.imgdata,
@@ -105,11 +103,9 @@ reader.readargs.colors.push(
 });
 
 (reader as any).forwardnudges.push({
-	match: /Materials gained:/i,
+	match: /Materials gained:.*,\s*$/i,
 	name: "uncommon",
 	fn: (ctx) => {
-
-		console.log("NUDGE FIRED: uncommon", ctx);
 
 		let startx = ctx.rightx;
 
@@ -147,11 +143,9 @@ reader.readargs.colors.push(
 });
 
 (reader as any).forwardnudges.push({
-	match: /Materials gained:/i,
+	match: /Materials gained:.*,\s*$/i,
 	name: "rare",
 	fn: (ctx) => {
-
-		console.log("NUDGE FIRED: rare", ctx);
 
 		let startx = ctx.rightx;
 		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
@@ -176,11 +170,9 @@ reader.readargs.colors.push(
 });
 
 (reader as any).forwardnudges.push({
-	match: /Materials gained:/i,
+	match: /Materials gained:.*,\s*$/i,
 	name: "ancient",
 	fn: (ctx) => {
-
-		console.log("NUDGE FIRED: ancient", ctx);
 
 		let startx = ctx.rightx;
 		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);

@@ -5228,10 +5228,9 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // pale orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
 reader.forwardnudges.push({
-    match: /Materials gained:/i,
+    match: /Materials gained:.*(parts|components|Junk)$/i,
     name: "material-white-comma",
     fn: function (ctx) {
-        console.log("NUDGE FIRED: comma", ctx);
         var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
         if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
             return false;
@@ -5246,10 +5245,9 @@ reader.forwardnudges.push({
     },
 });
 reader.forwardnudges.push({
-    match: /Materials gained:/i,
+    match: /Materials gained:.*,\s*$/i,
     name: "uncommon",
     fn: function (ctx) {
-        console.log("NUDGE FIRED: uncommon", ctx);
         var startx = ctx.rightx;
         var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
@@ -5266,10 +5264,9 @@ reader.forwardnudges.push({
     }
 });
 reader.forwardnudges.push({
-    match: /Materials gained:/i,
+    match: /Materials gained:.*,\s*$/i,
     name: "rare",
     fn: function (ctx) {
-        console.log("NUDGE FIRED: rare", ctx);
         var startx = ctx.rightx;
         var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
@@ -5284,10 +5281,9 @@ reader.forwardnudges.push({
     },
 });
 reader.forwardnudges.push({
-    match: /Materials gained:/i,
+    match: /Materials gained:.*,\s*$/i,
     name: "ancient",
     fn: function (ctx) {
-        console.log("NUDGE FIRED: ancient", ctx);
         var startx = ctx.rightx;
         var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
         if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
