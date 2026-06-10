@@ -5217,83 +5217,63 @@ reader.readargs = { colors: [
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // Red (You missed...)
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // orange item effects
-        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // orange news broadcasts
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 140, 56), // orange news broadcasts
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 127, 0), // uncommon components
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255), // seren spirits
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0), // red broadcasts/components
+        alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(180, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(160, 0, 0),
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
         alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0), // orange
     ],
 };
-reader.forwardnudges.push({
-    match: /./,
-    name: "comma",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
-        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == ",") {
-            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
-            ctx.addfrag({ color: [255, 255, 255], index: -1, text: ", ", xstart: startx, xend: startx + maybe_x.basechar.width + ctx.font.spacewidth });
+function addTextBridgeNudge(name, color, match) {
+    reader.forwardnudges.push({
+        name: name,
+        match: match,
+        fn: function (ctx) {
+            var startx = ctx.rightx;
+            var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + ctx.font.spacewidth, ctx.baseliney, false, true);
+            if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
+                return;
+            var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+            ctx.addfrag({
+                color: color,
+                index: -1,
+                text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? " 1" : " 1 x",
+                xstart: startx,
+                xend: startx + one.basechar.width + ctx.font.spacewidth,
+            });
             return true;
-        }
-    },
-});
-reader.forwardnudges.push({
-    match: /Materials gained:|parts|components|Junk/,
-    name: "uncommon_1",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
-            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 128, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-            }
-            else {
-                ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-            }
+        },
+    });
+}
+function addCommaNudge() {
+    reader.forwardnudges.push({
+        name: "material-comma",
+        match: /Materials gained|parts|components|Junk/i,
+        fn: function (ctx) {
+            var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
+            if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
+                return;
+            ctx.addfrag({
+                color: [255, 255, 255],
+                index: -1,
+                text: ", ",
+                xstart: ctx.rightx,
+                xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
+            });
             return true;
-        }
-    },
-});
-reader.forwardnudges.push({
-    match: /Materials gained:|parts|components|Junk/,
-    name: "rare_1",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
-            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 0, 0], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-                return true;
-            }
-            ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-            return true;
-        }
-    },
-});
-reader.forwardnudges.push({
-    match: /Materials gained:|parts|components|Junk/,
-    name: "ancient_1",
-    fn: function (ctx) {
-        var startx = ctx.rightx;
-        var maybe_one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-        if ((maybe_one === null || maybe_one === void 0 ? void 0 : maybe_one.chr) == "1") {
-            var maybe_x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [67, 188, 188], maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-            if ((maybe_x === null || maybe_x === void 0 ? void 0 : maybe_x.chr) == "x") {
-                ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-                return true;
-            }
-            ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-            return true;
-        }
-    },
-});
+        },
+    });
+}
+addCommaNudge();
+addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("ancient-component-bridge", [67, 188, 188], /Materials gained|parts|components|Junk/i);
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");

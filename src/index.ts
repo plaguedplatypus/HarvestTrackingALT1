@@ -58,7 +58,7 @@ reader.readargs = {colors:[
 	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(232, 47, 47), // Red (You missed...)
 	a1lib.mixColor(255, 111, 0), // orange item effects
-	a1lib.mixColor(255, 140, 56), // orange news broadcasts
+	a1lib.mixColor(253, 140, 56), // orange news broadcasts
 	a1lib.mixColor(253, 127, 0), // uncommon components
 	a1lib.mixColor(0, 255, 255), // seren spirits
 
@@ -67,6 +67,7 @@ reader.readargs = {colors:[
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
 	a1lib.mixColor(255, 0, 0), // red broadcasts/components
+	a1lib.mixColor(220, 0, 0), a1lib.mixColor(200, 0, 0), a1lib.mixColor(180, 0, 0), a1lib.mixColor(160, 0, 0),
 	
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(245, 124, 1), // orange
@@ -74,97 +75,86 @@ reader.readargs = {colors:[
 	],
 };
 
-reader.forwardnudges.push({
-	match: /./,
-	name: "comma",
-	fn: (ctx) => {
-		let startx = ctx.rightx;
-		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
-		if (maybe_one?.chr == ",") {
-			let maybe_x = OCR.readChar(ctx.imgdata, ctx.font, [255, 255, 255], startx, ctx.baseliney, false, true);
-			ctx.addfrag({ color: [255, 255, 255], index: -1, text: ", ", xstart: startx, xend: startx + maybe_x.basechar.width + ctx.font.spacewidth });
-			return true;
-		}
-	},
-});
+function addTextBridgeNudge(
+	name: string,
+	color: [number, number, number],
+	match: RegExp
+) {
+	reader.forwardnudges.push({
+		name,
+		match,
+		fn: (ctx) => {
+			const startx = ctx.rightx;
 
-reader.forwardnudges.push({
-	match: /Materials gained:|parts|components|Junk/,
-	name: "uncommon_1",
-	fn: (ctx) => {
-		let startx = ctx.rightx;
-		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 128, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-		if (maybe_one?.chr == "1") {
-			let maybe_x = OCR.readChar(
+			const one = OCR.readChar(
 				ctx.imgdata,
 				ctx.font,
-				[255, 128, 0],
-				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
+				color,
+				startx + ctx.font.spacewidth,
 				ctx.baseliney,
 				false,
-				true,
+				true
 			);
-			if (maybe_x?.chr == "x") {
-				ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-			} else {
-				ctx.addfrag({ color: [253, 127, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-			}
-			return true;
-		}
-	},
-});
 
-reader.forwardnudges.push({
-	match: /Materials gained:|parts|components|Junk/,
-	name: "rare_1",
-	fn: (ctx) => {
-		let startx = ctx.rightx;
-		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [255, 0, 0], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-		if (maybe_one?.chr == "1") {
-			let maybe_x = OCR.readChar(
+			if (one?.chr !== "1") return;
+
+			const x = OCR.readChar(
 				ctx.imgdata,
 				ctx.font,
-				[255, 0, 0],
-				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
+				color,
+				one.x + one.basechar.width + ctx.font.spacewidth,
 				ctx.baseliney,
 				false,
-				true,
+				true
 			);
-			if (maybe_x?.chr == "x") {
-				ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-				return true;
-			}
-			ctx.addfrag({ color: [255, 0, 0], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-			return true;
-		}
-	},
-});
 
-reader.forwardnudges.push({
-	match: /Materials gained:|parts|components|Junk/,
-	name: "ancient_1",
-	fn: (ctx) => {
-		let startx = ctx.rightx;
-		let maybe_one = OCR.readChar(ctx.imgdata, ctx.font, [67, 188, 188], startx + ctx.font.spacewidth, ctx.baseliney, false, true);
-		if (maybe_one?.chr == "1") {
-			let maybe_x = OCR.readChar(
+			ctx.addfrag({
+				color,
+				index: -1,
+				text: x?.chr === "x" ? " 1" : " 1 x",
+				xstart: startx,
+				xend: startx + one.basechar.width + ctx.font.spacewidth,
+			});
+
+			return true;
+		},
+	});
+}
+
+function addCommaNudge() {
+	reader.forwardnudges.push({
+		name: "material-comma",
+		match: /Materials gained|parts|components|Junk/i,
+		fn: (ctx) => {
+			const comma = OCR.readChar(
 				ctx.imgdata,
 				ctx.font,
-				[67, 188, 188],
-				maybe_one.x + maybe_one.basechar.width + ctx.font.spacewidth,
+				[255, 255, 255],
+				ctx.rightx,
 				ctx.baseliney,
 				false,
-				true,
+				true
 			);
-			if (maybe_x?.chr == "x") {
-				ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
-				return true;
-			}
-			ctx.addfrag({ color: [67, 188, 188], index: -1, text: " 1 x", xstart: startx, xend: startx + maybe_one.basechar.width + ctx.font.spacewidth });
+
+			if (comma?.chr !== ",") return;
+
+			ctx.addfrag({
+				color: [255, 255, 255],
+				index: -1,
+				text: ", ",
+				xstart: ctx.rightx,
+				xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
+			});
+
 			return true;
-		}
-	},
-});
+		},
+	});
+}
+
+addCommaNudge();
+addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("ancient-component-bridge", [67, 188, 188], /Materials gained|parts|components|Junk/i);
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
