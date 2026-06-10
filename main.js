@@ -5278,15 +5278,7 @@ function addMaterialContinuationNudge() {
         name: "material-color-continuation",
         match: /Materials gained:[\s\S]*,\s*$/i,
         fn: function (ctx) {
-            var candidateStarts = ctx.text.endsWith(" ")
-                ? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
-                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
-            for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
-                var x = candidateStarts_1[_i];
-                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
-                if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
-                    continue;
-                }
+            var addContinuation = function (x, fragments) {
                 if (!ctx.text.endsWith(" ")) {
                     ctx.addfrag({
                         color: [255, 255, 255],
@@ -5296,8 +5288,34 @@ function addMaterialContinuationNudge() {
                         xend: x,
                     });
                 }
-                data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                fragments.forEach(function (frag) { return ctx.addfrag(frag); });
                 return true;
+            };
+            var candidateStarts = ctx.text.endsWith(" ")
+                ? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
+                : [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
+            for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
+                var x = candidateStarts_1[_i];
+                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
+                if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
+                    continue;
+                }
+                return addContinuation(x, data.fragments);
+            }
+            var scanStart = ctx.rightx - ctx.font.spacewidth;
+            var scanEnd = ctx.rightx + ctx.font.spacewidth * 4;
+            for (var x = scanStart; x <= scanEnd; x++) {
+                for (var _a = 0, _b = ctx.colors; _a < _b.length; _a++) {
+                    var color = _b[_a];
+                    var digit = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, x, ctx.baseliney, false, true);
+                    if (!digit || !/^\d$/.test(digit.chr)) {
+                        continue;
+                    }
+                    var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, digit.x, ctx.baseliney, true, false);
+                    if (/^\d+\s*x\s+/i.test(data.text)) {
+                        return addContinuation(digit.x, data.fragments);
+                    }
+                }
             }
         },
     });

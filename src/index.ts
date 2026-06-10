@@ -179,6 +179,21 @@ function addMaterialContinuationNudge() {
 		name: "material-color-continuation",
 		match: /Materials gained:[\s\S]*,\s*$/i,
 		fn: (ctx) => {
+			const addContinuation = (x: number, fragments: OCR.TextFragment[]) => {
+				if (!ctx.text.endsWith(" ")) {
+					ctx.addfrag({
+						color: [255, 255, 255],
+						index: -1,
+						text: " ",
+						xstart: ctx.rightx,
+						xend: x,
+					});
+				}
+
+				fragments.forEach((frag) => ctx.addfrag(frag));
+				return true;
+			};
+
 			const candidateStarts = ctx.text.endsWith(" ")
 				? [ctx.rightx, ctx.rightx + ctx.font.spacewidth, ctx.rightx - ctx.font.spacewidth]
 				: [ctx.rightx + ctx.font.spacewidth, ctx.rightx, ctx.rightx + ctx.font.spacewidth * 2];
@@ -198,18 +213,42 @@ function addMaterialContinuationNudge() {
 					continue;
 				}
 
-				if (!ctx.text.endsWith(" ")) {
-					ctx.addfrag({
-						color: [255, 255, 255],
-						index: -1,
-						text: " ",
-						xstart: ctx.rightx,
-						xend: x,
-					});
-				}
+				return addContinuation(x, data.fragments);
+			}
 
-				data.fragments.forEach((frag) => ctx.addfrag(frag));
-				return true;
+			const scanStart = ctx.rightx - ctx.font.spacewidth;
+			const scanEnd = ctx.rightx + ctx.font.spacewidth * 4;
+
+			for (let x = scanStart; x <= scanEnd; x++) {
+				for (const color of ctx.colors) {
+					const digit = OCR.readChar(
+						ctx.imgdata,
+						ctx.font,
+						color,
+						x,
+						ctx.baseliney,
+						false,
+						true
+					);
+
+					if (!digit || !/^\d$/.test(digit.chr)) {
+						continue;
+					}
+
+					const data = OCR.readLine(
+						ctx.imgdata,
+						ctx.font,
+						color,
+						digit.x,
+						ctx.baseliney,
+						true,
+						false
+					);
+
+					if (/^\d+\s*x\s+/i.test(data.text)) {
+						return addContinuation(digit.x, data.fragments);
+					}
+				}
 			}
 		},
 	});
