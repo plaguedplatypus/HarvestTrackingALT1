@@ -226,7 +226,7 @@ function addMaterialContinuationNudge() {
 				return addContinuation(x, data.fragments);
 			}
 
-			const scanStart = ctx.rightx - ctx.font.spacewidth * 2;
+			const scanStart = ctx.rightx - ctx.font.spacewidth;
 			const scanEnd = ctx.rightx + ctx.font.spacewidth * 8;
 
 			for (let x = scanStart; x <= scanEnd; x++) {
@@ -519,39 +519,69 @@ render();
 
  // List of rare components. This is used to apply special styling to these items in the invention tab.
 const rareComponents = new Set([
-    "brassican components",
-    "knightly components",
-    "dragonfire components",
-    "fungal components",
-    "explosive components",
-    "corporeal components",
     "armadyl components",
-    "bandos components",
-    "saradomin components",
-    "seren components",
-    "zamorak components",
-    "zaros components",
-    "resilient components",
-    "silent components",
-    "noxious components",
-    "rumbling components",
-    "pestiferous components",
-    "third-age components",
-    "culinary components",
-    "shifting components",
-    "harnessed components",
-    "oceanic components",
-    "ascended components",
-    "undead components",
-    "avernic components",
-    "shadow components",
-    "ilujankan components",
-    "cywir components",
-    "faceted components",
-    "clockwork components",
-    "fortunate components",
-    "manufactured components",
-    "ecliptic components"
+	"ascended components",
+	"avernic components",
+	"bandos components",
+	"brassican components",
+	"clockwork components",
+	"corporeal components",
+	"culinary components",
+	"cywir components",
+	"dragonfire components",
+	"ecliptic components",
+	"explosive components",
+	"faceted components",
+	"fortunate components",
+	"fungal components",
+	"harnessed components",
+	"ilujankan components",
+	"hnightly components",
+	"manufactured components",
+	"noxious components",
+	"oceanic components",
+	"pestiferous components",
+	"resilient components",
+	"rumbling components",
+	"saradomin components",
+	"seren components",
+	"shadow components",
+	"shifting components",
+	"silent components",
+	"third-age components",
+	"undead components",
+	"zamorak components",
+	"zaros components",
+	"classic components",
+	"historic components",
+	"timeworn components",
+	"vintage components"
+]);
+
+const uncommonComponents = new Set([
+	"dextrous components",
+	"direct components",
+	"enhancing components",
+	"ethereal components",
+	"evasive components",
+	"healthy components",
+	"heavy components",
+	"imbued components",
+	"light components",
+	"living components",
+	"offcut components",
+	"pious components",
+	"powerful components",
+	"precious components",
+	"precise components",
+	"protective components",
+	"refined components",
+	"sharp components",
+	"strong components",
+	"stunning components",
+	"subtle components",
+	"swift components",
+	"variable components"
 ]);
 
 // List of rare Seren spirit items that should be highlighted in the tracker.
@@ -575,6 +605,29 @@ const skillPatterns: Array<{
 	{ pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
 ];
 
+function repairComponentName(text: string, componentSet: Set<string>): string | null {
+	const normalized = text
+		.toLowerCase()
+		.replace(/[^a-z]/g, "");
+
+	for (const component of Array.from(componentSet)) {
+		const componentNormalized = component
+			.toLowerCase()
+			.replace(/[^a-z]/g, "");
+
+		const componentBase = componentNormalized.replace(/components$/, "");
+
+		if (
+			normalized.length >= 4 &&
+			componentBase.startsWith(normalized)
+		) {
+			return component;
+		}
+	}
+
+	return null;
+}
+
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine: string): string | null {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
@@ -596,26 +649,28 @@ function processHarvestLine(chatLine: string): string | null {
 			return null;
 		}
 	
-	// Check for Seren spirit's
-	const serenMatch = cleanLine.match(
-		/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i
-	);
+		// Check for Seren spirit's
+		const serenMatch = cleanLine.match(
+			/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i
+		);
 
-	if (serenMatch) {
-		const amount = parseInt(serenMatch[1], 10);
-		const normalizedItem = normalizeItemName(serenMatch[2]);
-		const item = "﴾♦﴿ " + normalizedItem;
+		if (serenMatch) {
+			const amount = parseInt(serenMatch[1], 10);
+			const normalizedItem = normalizeItemName(serenMatch[2]);
 
-		if (!item || isNaN(amount)) return;
+			if (!normalizedItem || isNaN(amount)) return "[IGNORED]";
 
-		const colorClass = rareSerenItems.has(normalizedItem)
-    		? "seren-item-red"
-    		: "seren-item";
+			const item = "﴾♦﴿ " + normalizedItem;
 
-		incrementItem(item, amount, "seren", colorClass, "seren-spirit");
-		setStatus(`Seren Spirit: ${amount} x ${item}`);
-		return `[COUNTED: ${item} +${amount}]`;
-	}
+			const colorClass = rareSerenItems.has(normalizedItem)
+				? "seren-item-red"
+				: "seren-item";
+
+			incrementItem(item, amount, "seren", colorClass, "seren-spirit");
+			setStatus(`Seren Spirit: ${amount} x ${item}`);
+
+			return `[COUNTED: ${item} +${amount}]`;
+		}
 
 	// Check for invention materials
 	const materialsMatch = cleanLine.match(
@@ -629,10 +684,20 @@ function processHarvestLine(chatLine: string): string | null {
 
 	// We will attempt to parse whatever material information we have.
 	let finalMaterialText = materialText;
-	
-			// Repair truncated OCR words first
-			finalMaterialText = finalMaterialText.replace(/\bcom\./gi, "components");
-			finalMaterialText = finalMaterialText.replace(/\bpart\./gi,	"parts");
+
+			// OCR repairs
+			finalMaterialText = finalMaterialText.replace(
+				/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi,
+				(match, prefix, brokenName) => {
+					const repaired =
+						repairComponentName(brokenName, rareComponents) ||
+						repairComponentName(brokenName, uncommonComponents);
+
+					return repaired
+						? `${prefix}${repaired}`
+						: match;
+				}
+			);
 
 		// Then remove orphan comma tails
 		if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
