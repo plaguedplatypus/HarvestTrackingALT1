@@ -273,6 +273,25 @@ body {
 	position: relative;
 }
 
+.history-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 100%;
+}
+
+.history-row .history-button {
+	flex: 1;
+}
+
+.debug-toggle {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
 .sort-button,
 .app-cog {
 	display: flex;

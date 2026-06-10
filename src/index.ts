@@ -51,6 +51,7 @@ type SaveData = {
     activeTab?: InternalSkillType;
     fishingUsePorters?: boolean;
     sortMode?: SortMode;
+	debugUnknownLines?: boolean;
     items: Record<string, TrackedItem>;
     history: string[];
 };
@@ -61,7 +62,6 @@ const maxRecentHistory = 50;
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 const reader = new ChatboxReader();
-const DEBUG_UNKNOWN_LINES = false;
 
 reader.readargs.colors.push(
 	// anti aliasing sucks
@@ -280,7 +280,7 @@ const tracker = document.querySelector(".tracker") as HTMLElement;
 const status = document.querySelector(".status") as HTMLElement;
 
 const historyButton = document.querySelector(".history-button") as HTMLElement;
-const exportButton = document.querySelector(".export") as HTMLElement;
+const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
 
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
@@ -291,6 +291,8 @@ const sortButton = document.querySelector(".sort-button") as HTMLElement;
 const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
 const inventionFilterButton = document.querySelector(".invention-filter-cycle") as HTMLElement;
 const savedData = getSaveData();
+
+let debugUnknownLines = savedData.debugUnknownLines ?? false;
 
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
@@ -376,8 +378,8 @@ function readChatbox() {
 
 		const debugStatus = processHarvestLine(chatLine);
 		if (debugStatus === null) {
-			if (DEBUG_UNKNOWN_LINES) {
-				updateChatHistory(chatLine, "[UNKNOWN]");
+			if (debugUnknownLines) {
+				updateChatHistory(historyKey, "[UNKNOWN]");
 			}
 			continue;
 		}
@@ -432,6 +434,18 @@ activeSkillTab =
 		: ((savedData.activeTab || "all") as SkillType);
 fishingUsePorters = savedData.fishingUsePorters ?? true;
 sortMode = savedData.sortMode || "recent";
+
+if (debugUnknownInput) {
+	debugUnknownInput.checked = debugUnknownLines;
+
+	debugUnknownInput.addEventListener("change", function () {
+		debugUnknownLines = this.checked;
+
+		const data = getSaveData();
+		data.debugUnknownLines = debugUnknownLines;
+		saveData(data);
+	});
+}
 
 // Set initial state of fishing porters checkbox based on saved data
 if (fishingPortersInput) {
@@ -887,12 +901,14 @@ function getSaveData(): SaveData {
 			activeTab: data.activeTab || "all",
 			fishingUsePorters: data.fishingUsePorters ?? true,
 			sortMode: data.sortMode || "recent",
+			debugUnknownLines: data.debugUnknownLines ?? false,
 			items: data.items || {},
 			history: Array.isArray(data.history) ? data.history : [],
 		};
 	} catch {
 		return {
 			sortMode: "recent",
+			debugUnknownLines: false,
 			items: {},
 			history: [],
 		};
@@ -1388,11 +1404,19 @@ function importData(file: File) {
 				activeTab: imported.activeTab || "all",
 				fishingUsePorters: imported.fishingUsePorters ?? true,
 				sortMode: imported.sortMode || "recent",
+				debugUnknownLines: imported.debugUnknownLines ?? false,
 				items: imported.items || {},
 				history: Array.isArray(imported.history) ? imported.history : [],
 			};
 
 			saveData(data);
+
+			debugUnknownLines = data.debugUnknownLines ?? false;
+
+			if (debugUnknownInput) {
+				debugUnknownInput.checked = debugUnknownLines;
+			}
+
 			loadRecentHistory(data.history);
 			render();
 			status.innerText = "Save imported.";

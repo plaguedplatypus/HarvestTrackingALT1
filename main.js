@@ -306,6 +306,25 @@ body {
 	position: relative;
 }
 
+.history-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 100%;
+}
+
+.history-row .history-button {
+	flex: 1;
+}
+
+.debug-toggle {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
 .sort-button,
 .app-cog {
 	display: flex;
@@ -5195,7 +5214,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
-var _a;
+var _a, _b;
 
 
 
@@ -5213,7 +5232,6 @@ var maxRecentHistory = 50;
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
-var DEBUG_UNKNOWN_LINES = false;
 reader.readargs.colors.push(
 // anti aliasing sucks
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
@@ -5344,6 +5362,7 @@ var tracker = document.querySelector(".tracker");
 // The status element is used to display messages to the user in the footer
 var status = document.querySelector(".status");
 var historyButton = document.querySelector(".history-button");
+var debugUnknownInput = document.querySelector(".debug-unknown-lines");
 var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
 var fishingMode = document.querySelector(".fishing-mode");
@@ -5353,6 +5372,7 @@ var sortButton = document.querySelector(".sort-button");
 var inventionFilters = document.querySelector(".invention-filters");
 var inventionFilterButton = document.querySelector(".invention-filter-cycle");
 var savedData = getSaveData();
+var debugUnknownLines = (_a = savedData.debugUnknownLines) !== null && _a !== void 0 ? _a : false;
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
     if (!window.alt1) {
@@ -5423,8 +5443,8 @@ function readChatbox() {
             continue;
         var debugStatus = processHarvestLine(chatLine);
         if (debugStatus === null) {
-            if (DEBUG_UNKNOWN_LINES) {
-                updateChatHistory(chatLine, "[UNKNOWN]");
+            if (debugUnknownLines) {
+                updateChatHistory(historyKey, "[UNKNOWN]");
             }
             continue;
         }
@@ -5469,8 +5489,17 @@ activeSkillTab =
     savedActiveTab === "other"
         ? "all"
         : (savedData.activeTab || "all");
-fishingUsePorters = (_a = savedData.fishingUsePorters) !== null && _a !== void 0 ? _a : true;
+fishingUsePorters = (_b = savedData.fishingUsePorters) !== null && _b !== void 0 ? _b : true;
 sortMode = savedData.sortMode || "recent";
+if (debugUnknownInput) {
+    debugUnknownInput.checked = debugUnknownLines;
+    debugUnknownInput.addEventListener("change", function () {
+        debugUnknownLines = this.checked;
+        var data = getSaveData();
+        data.debugUnknownLines = debugUnknownLines;
+        saveData(data);
+    });
+}
 // Set initial state of fishing porters checkbox based on saved data
 if (fishingPortersInput) {
     fishingPortersInput.checked = fishingUsePorters;
@@ -5833,7 +5862,7 @@ function normalizeItemName(item) {
         .trim();
 }
 function getSaveData() {
-    var _a;
+    var _a, _b;
     var raw = localStorage.getItem(appName);
     if (!raw) {
         return {
@@ -5849,13 +5878,15 @@ function getSaveData() {
             activeTab: data.activeTab || "all",
             fishingUsePorters: (_a = data.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
             sortMode: data.sortMode || "recent",
+            debugUnknownLines: (_b = data.debugUnknownLines) !== null && _b !== void 0 ? _b : false,
             items: data.items || {},
             history: Array.isArray(data.history) ? data.history : [],
         };
     }
-    catch (_b) {
+    catch (_c) {
         return {
             sortMode: "recent",
+            debugUnknownLines: false,
             items: {},
             history: [],
         };
@@ -6215,7 +6246,7 @@ function exportData() {
 function importData(file) {
     var reader = new FileReader();
     reader.onload = function () {
-        var _a;
+        var _a, _b, _c;
         try {
             var imported = JSON.parse(reader.result);
             var data = {
@@ -6223,15 +6254,20 @@ function importData(file) {
                 activeTab: imported.activeTab || "all",
                 fishingUsePorters: (_a = imported.fishingUsePorters) !== null && _a !== void 0 ? _a : true,
                 sortMode: imported.sortMode || "recent",
+                debugUnknownLines: (_b = imported.debugUnknownLines) !== null && _b !== void 0 ? _b : false,
                 items: imported.items || {},
                 history: Array.isArray(imported.history) ? imported.history : [],
             };
             saveData(data);
+            debugUnknownLines = (_c = data.debugUnknownLines) !== null && _c !== void 0 ? _c : false;
+            if (debugUnknownInput) {
+                debugUnknownInput.checked = debugUnknownLines;
+            }
             loadRecentHistory(data.history);
             render();
             status.innerText = "Save imported.";
         }
-        catch (_b) {
+        catch (_d) {
             status.innerText = "Import failed.";
         }
     };
