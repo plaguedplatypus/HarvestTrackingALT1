@@ -471,6 +471,11 @@ function updateHistoryWindow() {
 
 	const doc = historyWindow.document;
 
+	if (!doc.body) {
+		setTimeout(updateHistoryWindow, 50);
+		return;
+	}
+
 	if (!doc.body.dataset.initialized) {
 		doc.title = "Resource Tracker History";
 
@@ -481,7 +486,7 @@ function updateHistoryWindow() {
 
 		historyPre = doc.createElement("pre");
 		historyPre.style.margin = "0";
-		historyPre.style.padding = "2px";
+		historyPre.style.padding = "3px";
 		historyPre.style.whiteSpace = "pre-wrap";
 		historyPre.style.overflowY = "auto";
 		historyPre.style.height = "100vh";
@@ -509,7 +514,7 @@ function showChatHistory() {
 		historyPre = null;
 	}
 
-	updateHistoryWindow();
+	setTimeout(updateHistoryWindow, 50);
 }
 
 // Show/hide fishing mode based on active tab

@@ -5532,6 +5532,10 @@ function updateHistoryWindow() {
     if (!historyWindow || historyWindow.closed)
         return;
     var doc = historyWindow.document;
+    if (!doc.body) {
+        setTimeout(updateHistoryWindow, 50);
+        return;
+    }
     if (!doc.body.dataset.initialized) {
         doc.title = "Resource Tracker History";
         doc.body.style.margin = "0";
@@ -5540,7 +5544,7 @@ function updateHistoryWindow() {
         doc.body.style.fontFamily = "Consolas, monospace";
         historyPre = doc.createElement("pre");
         historyPre.style.margin = "0";
-        historyPre.style.padding = "2px";
+        historyPre.style.padding = "3px";
         historyPre.style.whiteSpace = "pre-wrap";
         historyPre.style.overflowY = "auto";
         historyPre.style.height = "100vh";
@@ -5559,7 +5563,7 @@ function showChatHistory() {
         historyWindow = window.open("", "historyWindow", "width=350,height=450");
         historyPre = null;
     }
-    updateHistoryWindow();
+    setTimeout(updateHistoryWindow, 50);
 }
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {
