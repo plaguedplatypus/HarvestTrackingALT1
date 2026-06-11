@@ -5248,47 +5248,48 @@ reader.readargs.colors.push(
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 190, 20), // Carpet dust green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 45, 45), // Red (You missed...)
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // orange item effects
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 140, 56), // orange news broadcasts
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 125, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(225, 115, 0), // uncommon components
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255), // seren spirits
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(180, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(160, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(180, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(160, 0, 0), // 50 shades of red
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(250, 175, 0), // orange
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55));
-function addTextBridgeNudge(name, color, match) {
+function addTextBridgeNudge(name, match) {
     reader.forwardnudges.push({
         name: name,
         match: match,
         fn: function (ctx) {
             var startx = ctx.rightx;
-            for (var _i = 0, _a = [
-                0,
-                ctx.font.spacewidth,
-                ctx.font.spacewidth * 2,
-                ctx.font.spacewidth * 3,
-                1, 2, 3, 4, 5, 6,
-            ]; _i < _a.length; _i++) {
-                var offset = _a[_i];
-                var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + offset, ctx.baseliney, false, true);
-                if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
-                    continue;
-                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
-                if (/^1\s*x\s+/i.test(data.text)) {
-                    data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+            for (var _i = 0, _a = ctx.colors; _i < _a.length; _i++) {
+                var color = _a[_i];
+                for (var _b = 0, _c = [
+                    0,
+                    ctx.font.spacewidth,
+                    ctx.font.spacewidth * 2,
+                    ctx.font.spacewidth * 3,
+                    1, 2, 3, 4, 5, 6,
+                ]; _b < _c.length; _b++) {
+                    var offset = _c[_b];
+                    var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + offset, ctx.baseliney, false, true);
+                    if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
+                        continue;
+                    var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
+                    if (/^1\s*x\s+/i.test(data.text)) {
+                        data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                        return true;
+                    }
+                    var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+                    ctx.addfrag({
+                        color: color,
+                        index: -1,
+                        text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
+                        xstart: startx,
+                        xend: one.x + one.basechar.width,
+                    });
                     return true;
                 }
-                var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-                ctx.addfrag({
-                    color: color,
-                    index: -1,
-                    text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
-                    xstart: startx,
-                    xend: one.x + one.basechar.width,
-                });
-                return true;
             }
         },
     });
@@ -5296,19 +5297,25 @@ function addTextBridgeNudge(name, color, match) {
 function addCommaNudge() {
     reader.forwardnudges.push({
         name: "material-comma",
-        match: /Materials gained|parts|components|Junk/i,
+        match: /Materials gained:[\s\S]*(parts|components|Junk)$/i,
         fn: function (ctx) {
-            var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, [255, 255, 255], ctx.rightx, ctx.baseliney, false, true);
-            if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
-                return;
-            ctx.addfrag({
-                color: [255, 255, 255],
-                index: -1,
-                text: ", ",
-                xstart: ctx.rightx,
-                xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
-            });
-            return true;
+            for (var _i = 0, _a = [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]; _i < _a.length; _i++) {
+                var offset = _a[_i];
+                for (var _b = 0, _c = ctx.colors; _b < _c.length; _b++) {
+                    var color = _c[_b];
+                    var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, false, true);
+                    if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
+                        continue;
+                    ctx.addfrag({
+                        color: color,
+                        index: -1,
+                        text: ", ",
+                        xstart: ctx.rightx,
+                        xend: comma.x + comma.basechar.width + ctx.font.spacewidth,
+                    });
+                    return true;
+                }
+            }
         },
     });
 }
@@ -5330,14 +5337,12 @@ function addMaterialContinuationNudge() {
                 fragments.forEach(function (frag) { return ctx.addfrag(frag); });
                 return true;
             };
-            var candidateStarts = ctx.text.endsWith(" ")
-                ? [
-                    ctx.rightx - ctx.font.spacewidth * 4,
-                    ctx.rightx - ctx.font.spacewidth * 3,
-                    ctx.rightx - ctx.font.spacewidth * 2,
-                    ctx.rightx - ctx.font.spacewidth,
-                    ctx.rightx,
-                ] : [
+            var candidateStarts = [
+                ctx.rightx - ctx.font.spacewidth * 4,
+                ctx.rightx - ctx.font.spacewidth * 3,
+                ctx.rightx - ctx.font.spacewidth * 2,
+                ctx.rightx - ctx.font.spacewidth,
+                ctx.rightx,
                 ctx.rightx + ctx.font.spacewidth,
                 ctx.rightx + ctx.font.spacewidth * 2,
                 ctx.rightx + ctx.font.spacewidth * 3,
@@ -5371,9 +5376,7 @@ function addMaterialContinuationNudge() {
 }
 addCommaNudge();
 addMaterialContinuationNudge();
-addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
-addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
-addTextBridgeNudge("ancient-component-bridge", [67, 188, 188], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("component-bridge", /Materials gained|parts|components|Junk/i);
 var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
@@ -5383,8 +5386,6 @@ var historyButton = document.querySelector(".history-button");
 var debugUnknownInput = document.querySelector(".debug-unknown-lines");
 var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
-var closeHistoryButton = document.querySelector(".close-history");
-var clearHistoryButton = document.querySelector(".clear-history");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
 var clearButton = document.querySelector(".clear");

@@ -69,85 +69,80 @@ reader.readargs.colors.push(
 	a1lib.mixColor(50, 190, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(230, 45, 45), // Red (You missed...)
-	a1lib.mixColor(255, 111, 0), // orange item effects
-	a1lib.mixColor(253, 140, 56), // orange news broadcasts
 	a1lib.mixColor(255, 125, 0), a1lib.mixColor(225, 115, 0), // uncommon components
-	a1lib.mixColor(0, 255, 255), // seren spirits
 
-	a1lib.mixColor(161, 53, 235), // what's this? Purple
+	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
-	a1lib.mixColor(220, 0, 0), a1lib.mixColor(200, 0, 0), a1lib.mixColor(180, 0, 0), a1lib.mixColor(160, 0, 0),
+	a1lib.mixColor(220, 0, 0), a1lib.mixColor(200, 0, 0), a1lib.mixColor(180, 0, 0), a1lib.mixColor(160, 0, 0), // 50 shades of red
 	
 	a1lib.mixColor(255, 153, 0), // Bright orange
 	a1lib.mixColor(250, 175, 0), // orange
 	a1lib.mixColor(245, 135, 55), // orange
 );
 
-function addTextBridgeNudge(
-	name: string,
-	color: [number, number, number],
-	match: RegExp
-) {
+function addTextBridgeNudge(name: string, match: RegExp) {
 	reader.forwardnudges.push({
 		name,
 		match,
 		fn: (ctx) => {
 			const startx = ctx.rightx;
 
-			for (const offset of [
-				0,
-				ctx.font.spacewidth,
-				ctx.font.spacewidth * 2,
-				ctx.font.spacewidth * 3,
-				1, 2, 3, 4, 5, 6,
-			]) {
-				const one = OCR.readChar(
-					ctx.imgdata,
-					ctx.font,
-					color,
-					startx + offset,
-					ctx.baseliney,
-					false,
-					true
-				);
+			for (const color of ctx.colors) {
+				for (const offset of [
+					0,
+					ctx.font.spacewidth,
+					ctx.font.spacewidth * 2,
+					ctx.font.spacewidth * 3,
+					1, 2, 3, 4, 5, 6,
+				]) {
+					const one = OCR.readChar(
+						ctx.imgdata,
+						ctx.font,
+						color,
+						startx + offset,
+						ctx.baseliney,
+						false,
+						true
+					);
 
-				if (one?.chr !== "1") continue;
+					if (one?.chr !== "1") continue;
 
-				const data = OCR.readLine(
-					ctx.imgdata,
-					ctx.font,
-					color,
-					one.x,
-					ctx.baseliney,
-					true,
-					false
-				);
+					const data = OCR.readLine(
+						ctx.imgdata,
+						ctx.font,
+						color,
+						one.x,
+						ctx.baseliney,
+						true,
+						false
+					);
 
-				if (/^1\s*x\s+/i.test(data.text)) {
-					data.fragments.forEach((frag) => ctx.addfrag(frag));
+					if (/^1\s*x\s+/i.test(data.text)) {
+						data.fragments.forEach((frag) => ctx.addfrag(frag));
+						return true;
+					}
+
+					const x = OCR.readChar(
+						ctx.imgdata,
+						ctx.font,
+						color,
+						one.x + one.basechar.width + ctx.font.spacewidth,
+						ctx.baseliney,
+						false,
+						true
+					);
+
+					ctx.addfrag({
+						color,
+						index: -1,
+						text: x?.chr === "x" ? "1 x" : "1",
+						xstart: startx,
+						xend: one.x + one.basechar.width,
+					});
+
 					return true;
 				}
-
-				const x = OCR.readChar(
-					ctx.imgdata,
-					ctx.font,
-					color,
-					one.x + one.basechar.width + ctx.font.spacewidth,
-					ctx.baseliney,
-					false,
-					true
-				);
-
-				ctx.addfrag({
-					color,
-					index: -1,
-					text: x?.chr === "x" ? "1 x" : "1",
-					xstart: startx,
-					xend: one.x + one.basechar.width,
-				});
-
-				return true;
 			}
 		},
 	});
@@ -156,29 +151,33 @@ function addTextBridgeNudge(
 function addCommaNudge() {
 	reader.forwardnudges.push({
 		name: "material-comma",
-		match: /Materials gained|parts|components|Junk/i,
+		match: /Materials gained:[\s\S]*(parts|components|Junk)$/i,
 		fn: (ctx) => {
-			const comma = OCR.readChar(
-				ctx.imgdata,
-				ctx.font,
-				[255, 255, 255],
-				ctx.rightx,
-				ctx.baseliney,
-				false,
-				true
-			);
+			for (const offset of [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]) {
+				for (const color of ctx.colors) {
+					const comma = OCR.readChar(
+						ctx.imgdata,
+						ctx.font,
+						color,
+						ctx.rightx + offset,
+						ctx.baseliney,
+						false,
+						true
+					);
 
-			if (comma?.chr !== ",") return;
+					if (comma?.chr !== ",") continue;
 
-			ctx.addfrag({
-				color: [255, 255, 255],
-				index: -1,
-				text: ", ",
-				xstart: ctx.rightx,
-				xend: ctx.rightx + comma.basechar.width + ctx.font.spacewidth,
-			});
+					ctx.addfrag({
+						color,
+						index: -1,
+						text: ", ",
+						xstart: ctx.rightx,
+						xend: comma.x + comma.basechar.width + ctx.font.spacewidth,
+					});
 
-			return true;
+					return true;
+				}
+			}
 		},
 	});
 }
@@ -203,18 +202,16 @@ function addMaterialContinuationNudge() {
 				return true;
 			};
 
-			const candidateStarts = ctx.text.endsWith(" ")
-				? [
-				ctx.rightx - ctx.font.spacewidth * 4,
-				ctx.rightx - ctx.font.spacewidth * 3,
-				ctx.rightx - ctx.font.spacewidth * 2,
-				ctx.rightx - ctx.font.spacewidth,
-				ctx.rightx,
-				] : [
-				ctx.rightx + ctx.font.spacewidth,
-				ctx.rightx + ctx.font.spacewidth * 2,
-				ctx.rightx + ctx.font.spacewidth * 3,
-				ctx.rightx + ctx.font.spacewidth * 4,
+				const candidateStarts = [
+					ctx.rightx - ctx.font.spacewidth * 4,
+					ctx.rightx - ctx.font.spacewidth * 3,
+					ctx.rightx - ctx.font.spacewidth * 2,
+					ctx.rightx - ctx.font.spacewidth,
+					ctx.rightx,
+					ctx.rightx + ctx.font.spacewidth,
+					ctx.rightx + ctx.font.spacewidth * 2,
+					ctx.rightx + ctx.font.spacewidth * 3,
+					ctx.rightx + ctx.font.spacewidth * 4,
 				];
 
 			for (const x of candidateStarts) {
@@ -275,9 +272,7 @@ function addMaterialContinuationNudge() {
 
 addCommaNudge();
 addMaterialContinuationNudge();
-addTextBridgeNudge("rare-component-bridge", [255, 0, 0], /Materials gained|parts|components|Junk/i);
-addTextBridgeNudge("uncommon-component-bridge", [255, 128, 0], /Materials gained|parts|components|Junk/i);
-addTextBridgeNudge("ancient-component-bridge", [67, 188, 188], /Materials gained|parts|components|Junk/i);
+addTextBridgeNudge("component-bridge", /Materials gained|parts|components|Junk/i);
 
 const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
@@ -289,8 +284,6 @@ const historyButton = document.querySelector(".history-button") as HTMLElement;
 const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;
 const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
-const closeHistoryButton = document.querySelector(".close-history") as HTMLElement;
-const clearHistoryButton = document.querySelector(".clear-history") as HTMLElement;
 
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
