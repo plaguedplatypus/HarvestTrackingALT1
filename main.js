@@ -5236,6 +5236,7 @@ var activeSkillTab = "all";
 var sortMode = "recent";
 var fishingUsePorters = true;
 var historyWindow = null;
+var historyPre = null;
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
 var maxRecentHistory = 50;
@@ -5530,17 +5531,35 @@ document.querySelectorAll(".skill-tab").forEach(function (btn) {
 function updateHistoryWindow() {
     if (!historyWindow || historyWindow.closed)
         return;
-    historyWindow.document.body.innerHTML = "\n\t<pre style=\"\n\t\twhite-space: pre-wrap;\n\t\tfont-family: Consolas, monospace;\n\t\tfont-size: 12px;\n\t\tbackground: #1e1e1e;\n\t\tcolor: #ddd;\n\t\tpadding: 10px;\n\t\tmargin: 0;\n\t\theight: 100vh;\n\t\toverflow-y: auto;\n\t\tbox-sizing: border-box;\n\t\">".concat(escapeHtml(__spreadArray([], recentLines, true).reverse().join("\n")), "</pre>\n");
+    var doc = historyWindow.document;
+    if (!doc.body.dataset.initialized) {
+        doc.title = "Resource Tracker History";
+        doc.body.style.margin = "0";
+        doc.body.style.background = "#1e1e1e";
+        doc.body.style.color = "#ddd";
+        doc.body.style.fontFamily = "Consolas, monospace";
+        historyPre = doc.createElement("pre");
+        historyPre.style.margin = "0";
+        historyPre.style.padding = "2px";
+        historyPre.style.whiteSpace = "pre-wrap";
+        historyPre.style.overflowY = "auto";
+        historyPre.style.height = "100vh";
+        historyPre.style.boxSizing = "border-box";
+        historyPre.style.fontSize = "10px";
+        doc.body.replaceChildren(historyPre);
+        doc.body.dataset.initialized = "true";
+    }
+    if (!historyPre)
+        return;
+    historyPre.textContent = __spreadArray([], recentLines, true).reverse().join("\n");
 }
 // Debug function to show recent chat history
 function showChatHistory() {
     if (!historyWindow || historyWindow.closed) {
         historyWindow = window.open("", "historyWindow", "width=350,height=450");
-        updateHistoryWindow();
+        historyPre = null;
     }
-    if (!historyWindow)
-        return;
-    historyWindow.document.body.innerHTML = "\n\t\t<pre style=\"\n\t\t\twhite-space: pre-wrap;\n\t\t\tfont-family: Consolas, monospace;\n\t\t\tfont-size: 11px;\n\t\t\tbackground: #1e1e1e;\n\t\t\tcolor: #ddd;\n\t\t\tpadding: 6px;\n\t\t\tmargin: 0;\n\t\t\">".concat(escapeHtml(__spreadArray([], recentLines, true).reverse().join("\n")), "</pre>\n\t");
+    updateHistoryWindow();
 }
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {

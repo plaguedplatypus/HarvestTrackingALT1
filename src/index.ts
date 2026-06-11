@@ -46,6 +46,7 @@ let sortMode: SortMode = "recent";
 
 let fishingUsePorters = true;
 let historyWindow: Window | null = null;
+let historyPre: HTMLPreElement | null = null;
 
 type SaveData = {
     chat?: string;
@@ -468,20 +469,32 @@ document.querySelectorAll(".skill-tab").forEach((btn) => {
 function updateHistoryWindow() {
 	if (!historyWindow || historyWindow.closed) return;
 
-historyWindow.document.body.innerHTML = `
-	<pre style="
-		white-space: pre-wrap;
-		font-family: Consolas, monospace;
-		font-size: 12px;
-		background: #1e1e1e;
-		color: #ddd;
-		padding: 10px;
-		margin: 0;
-		height: 100vh;
-		overflow-y: auto;
-		box-sizing: border-box;
-	">${escapeHtml([...recentLines].reverse().join("\n"))}</pre>
-`;
+	const doc = historyWindow.document;
+
+	if (!doc.body.dataset.initialized) {
+		doc.title = "Resource Tracker History";
+
+		doc.body.style.margin = "0";
+		doc.body.style.background = "#1e1e1e";
+		doc.body.style.color = "#ddd";
+		doc.body.style.fontFamily = "Consolas, monospace";
+
+		historyPre = doc.createElement("pre");
+		historyPre.style.margin = "0";
+		historyPre.style.padding = "2px";
+		historyPre.style.whiteSpace = "pre-wrap";
+		historyPre.style.overflowY = "auto";
+		historyPre.style.height = "100vh";
+		historyPre.style.boxSizing = "border-box";
+		historyPre.style.fontSize = "10px";
+
+		doc.body.replaceChildren(historyPre);
+		doc.body.dataset.initialized = "true";
+	}
+
+	if (!historyPre) return;
+
+	historyPre.textContent = [...recentLines].reverse().join("\n");
 }
 
 // Debug function to show recent chat history
@@ -492,23 +505,11 @@ function showChatHistory() {
 			"historyWindow",
 			"width=350,height=450"
 		);
-		
-	updateHistoryWindow();
+
+		historyPre = null;
 	}
 
-	if (!historyWindow) return;
-
-	historyWindow.document.body.innerHTML = `
-		<pre style="
-			white-space: pre-wrap;
-			font-family: Consolas, monospace;
-			font-size: 11px;
-			background: #1e1e1e;
-			color: #ddd;
-			padding: 6px;
-			margin: 0;
-		">${escapeHtml([...recentLines].reverse().join("\n"))}</pre>
-	`;
+	updateHistoryWindow();
 }
 
 // Show/hide fishing mode based on active tab
