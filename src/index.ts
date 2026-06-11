@@ -151,7 +151,7 @@ function addTextBridgeNudge(name: string, match: RegExp) {
 function addCommaNudge() {
 	reader.forwardnudges.push({
 		name: "material-comma",
-		match: /Materials gained:[\s\S]*(parts|components|Junk)$/i,
+		match: /Materials gained:[\s\S]*(parts|components)$/i,
 		fn: (ctx) => {
 			for (const offset of [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]) {
 				for (const color of ctx.colors) {
@@ -185,7 +185,7 @@ function addCommaNudge() {
 function addMaterialContinuationNudge() {
 	reader.forwardnudges.push({
 		name: "material-color-continuation",
-		match: /Materials gained:[\s\S]*,\s*$/i,
+		match: /Materials gained:[\s\S]*(?:,|\bparts|\bcomponents)\s*$/i,
 		fn: (ctx) => {
 			const addContinuation = (x: number, fragments: OCR.TextFragment[]) => {
 				if (!ctx.text.endsWith(" ")) {

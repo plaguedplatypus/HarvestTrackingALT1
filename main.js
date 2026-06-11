@@ -5297,7 +5297,7 @@ function addTextBridgeNudge(name, match) {
 function addCommaNudge() {
     reader.forwardnudges.push({
         name: "material-comma",
-        match: /Materials gained:[\s\S]*(parts|components|Junk)$/i,
+        match: /Materials gained:[\s\S]*(parts|components)$/i,
         fn: function (ctx) {
             for (var _i = 0, _a = [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]; _i < _a.length; _i++) {
                 var offset = _a[_i];
@@ -5322,7 +5322,7 @@ function addCommaNudge() {
 function addMaterialContinuationNudge() {
     reader.forwardnudges.push({
         name: "material-color-continuation",
-        match: /Materials gained:[\s\S]*,\s*$/i,
+        match: /Materials gained:[\s\S]*(?:,|\bparts|\bcomponents)\s*$/i,
         fn: function (ctx) {
             var addContinuation = function (x, fragments) {
                 if (!ctx.text.endsWith(" ")) {
