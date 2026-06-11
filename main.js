@@ -5245,7 +5245,7 @@ var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 190, 20), // Carpet dust green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(49, 191, 20), // Carpet dust green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 45, 45), // Red (You missed...)
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(186, 16, 7), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(191, 15, 6), // Spirit attraction
