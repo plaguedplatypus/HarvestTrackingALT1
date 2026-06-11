@@ -5227,7 +5227,7 @@ var activeSkillTab = "all";
 var sortMode = "recent";
 var fishingUsePorters = true;
 var appName = "ResourceTracker";
-var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 0);
+var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
 var maxRecentHistory = 50;
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
@@ -6284,8 +6284,7 @@ function importData(file) {
 function showSelectedChat(pos) {
     if (!pos || !pos.mainbox)
         return;
-    var leftMargin = pos.mainbox.leftfound ? 0 : 300;
-    alt1.overLayRect(appColor, pos.mainbox.rect.x - leftMargin, pos.mainbox.rect.y, pos.mainbox.rect.width + leftMargin, pos.mainbox.rect.height, 2000, 3);
+    alt1.overLayRect(appColor, pos.mainbox.rect.x, pos.mainbox.rect.y, pos.mainbox.rect.width, pos.mainbox.rect.height, 2000, 3);
 }
 function escapeHtml(value) {
     return value

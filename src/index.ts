@@ -57,7 +57,7 @@ type SaveData = {
 };
 
 const appName = "ResourceTracker";
-const appColor = a1lib.mixColor(0, 255, 0);
+const appColor = a1lib.mixColor(67, 188, 188);
 const maxRecentHistory = 50;
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
@@ -1438,13 +1438,11 @@ function importData(file: File) {
 function showSelectedChat(pos: any) {
 	if (!pos || !pos.mainbox) return;
 
-	const leftMargin = pos.mainbox.leftfound ? 0 : 300;
-
 	alt1.overLayRect(
 		appColor,
-		pos.mainbox.rect.x - leftMargin,
+		pos.mainbox.rect.x,
 		pos.mainbox.rect.y,
-		pos.mainbox.rect.width + leftMargin,
+		pos.mainbox.rect.width,
 		pos.mainbox.rect.height,
 		2000,
 		3
