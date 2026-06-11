@@ -65,24 +65,22 @@ const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
 	// anti aliasing sucks
-	a1lib.mixColor(50, 200, 20), // Carpet dust green
+	a1lib.mixColor(50, 190, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // hate this color
-	a1lib.mixColor(232, 47, 47), // Red (You missed...)
+	a1lib.mixColor(230, 45, 45), // Red (You missed...)
 	a1lib.mixColor(255, 111, 0), // orange item effects
 	a1lib.mixColor(253, 140, 56), // orange news broadcasts
-	a1lib.mixColor(253, 127, 0), // uncommon components
+	a1lib.mixColor(255, 125, 0), a1lib.mixColor(225, 115, 0), // uncommon components
 	a1lib.mixColor(0, 255, 255), // seren spirits
-
 
 	a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
-	a1lib.mixColor(255, 0, 0), // red broadcasts/components
 	a1lib.mixColor(220, 0, 0), a1lib.mixColor(200, 0, 0), a1lib.mixColor(180, 0, 0), a1lib.mixColor(160, 0, 0),
 	
 	a1lib.mixColor(255, 153, 0), // Bright orange
-	a1lib.mixColor(245, 124, 1), // orange
-	a1lib.mixColor(238, 118, 0), // orange
+	a1lib.mixColor(250, 175, 0), // orange
+	a1lib.mixColor(245, 135, 55), // orange
 );
 
 function addTextBridgeNudge(
@@ -1440,11 +1438,13 @@ function importData(file: File) {
 function showSelectedChat(pos: any) {
 	if (!pos || !pos.mainbox) return;
 
+	const leftMargin = pos.mainbox.leftfound ? 0 : 300;
+
 	alt1.overLayRect(
 		appColor,
-		pos.mainbox.rect.x,
+		pos.mainbox.rect.x - leftMargin,
 		pos.mainbox.rect.y,
-		pos.mainbox.rect.width,
+		pos.mainbox.rect.width + leftMargin,
 		pos.mainbox.rect.height,
 		2000,
 		3

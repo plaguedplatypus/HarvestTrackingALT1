@@ -5234,20 +5234,19 @@ var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 200, 20), // Carpet dust green
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 190, 20), // Carpet dust green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // Red (You missed...)
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 45, 45), // Red (You missed...)
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 111, 0), // orange item effects
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 140, 56), // orange news broadcasts
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 127, 0), // uncommon components
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 125, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(225, 115, 0), // uncommon components
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(0, 255, 255), // seren spirits
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 0), // red broadcasts/components
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(180, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(160, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(238, 118, 0));
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(250, 175, 0), // orange
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55));
 function addTextBridgeNudge(name, color, match) {
     reader.forwardnudges.push({
         name: name,
@@ -6285,7 +6284,8 @@ function importData(file) {
 function showSelectedChat(pos) {
     if (!pos || !pos.mainbox)
         return;
-    alt1.overLayRect(appColor, pos.mainbox.rect.x, pos.mainbox.rect.y, pos.mainbox.rect.width, pos.mainbox.rect.height, 2000, 3);
+    var leftMargin = pos.mainbox.leftfound ? 0 : 300;
+    alt1.overLayRect(appColor, pos.mainbox.rect.x - leftMargin, pos.mainbox.rect.y, pos.mainbox.rect.width + leftMargin, pos.mainbox.rect.height, 2000, 3);
 }
 function escapeHtml(value) {
     return value
