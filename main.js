@@ -5249,8 +5249,8 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(49, 191, 20), // Carpet dust green
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 45, 45), // Red (You missed...)
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(186, 16, 7), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(191, 15, 6), // Spirit attraction
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(235, 130, 53), // News
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 125, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(225, 115, 0), // uncommon components
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), // News
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // uncommon components
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
@@ -5823,10 +5823,12 @@ function processHarvestLine(chatLine) {
         }
     }
     // Check for item transports
-    var transportMatch = cleanLine.match(/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i);
+    var transportMatch = cleanLine.match(/(?:You transport|sent it|transports your items) to your\s+(.+?):\s*(?:(\d+)\s*x\s*)?([\s\S]+?)\.?$/i);
     if (transportMatch) {
         var destination = transportMatch[1].toLowerCase();
-        var amount = parseInt(transportMatch[2], 10);
+        var amount = transportMatch[2]
+            ? parseInt(transportMatch[2], 10)
+            : 1;
         var item = normalizeItemName(transportMatch[3]);
         if (!item || isNaN(amount))
             return "[IGNORED]";
@@ -5841,29 +5843,7 @@ function processHarvestLine(chatLine) {
             skill = getSkillForItem(item);
         }
         if (skill === "fishing" && !fishingUsePorters) {
-            return;
-        }
-        incrementItem(item, amount, skill);
-        setStatus("Tracked: ".concat(amount, " x ").concat(item));
-        return "[COUNTED: ".concat(item, " +").concat(amount, "]");
-    }
-    // Some transport lines use "sent it to your" instead of "You transport to your"
-    var perkSendMatch = cleanLine.match(/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i);
-    if (perkSendMatch) {
-        var destination = perkSendMatch[1].toLowerCase();
-        var amount = parseInt(perkSendMatch[2], 10);
-        var item = normalizeItemName(perkSendMatch[3]);
-        if (!item || isNaN(amount))
-            return "[IGNORED]";
-        var skill = "other";
-        if (destination.includes("metal bank")) {
-            skill = "mining";
-        }
-        else if (destination.includes("material storage")) {
-            skill = "archaeology";
-        }
-        else if (destination.includes("bank")) {
-            skill = getSkillForItem(item);
+            return null;
         }
         incrementItem(item, amount, skill);
         setStatus("Tracked: ".concat(amount, " x ").concat(item));

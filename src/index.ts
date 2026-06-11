@@ -70,8 +70,8 @@ reader.readargs.colors.push(
 	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(230, 45, 45), // Red (You missed...)
 	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
-	a1lib.mixColor(235, 130, 53), // News
-	a1lib.mixColor(255, 125, 0), a1lib.mixColor(225, 115, 0), // uncommon components
+	a1lib.mixColor(245, 135, 55), // News
+	a1lib.mixColor(245, 124, 1), // uncommon components
 
 	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
@@ -829,12 +829,16 @@ function processHarvestLine(chatLine: string): string | null {
 
 	// Check for item transports
 	const transportMatch = cleanLine.match(
-		/You transport to your\s+(.+?):\s*(\d+)\s*x\s*(.+?)\.?$/i
+		/(?:You transport|sent it|transports your items) to your\s+(.+?):\s*(?:(\d+)\s*x\s*)?([\s\S]+?)\.?$/i
 	);
 
 	if (transportMatch) {
 		const destination = transportMatch[1].toLowerCase();
-		const amount = parseInt(transportMatch[2], 10);
+
+		const amount = transportMatch[2]
+			? parseInt(transportMatch[2], 10)
+			: 1;
+
 		const item = normalizeItemName(transportMatch[3]);
 
 		if (!item || isNaN(amount)) return "[IGNORED]";
@@ -850,38 +854,12 @@ function processHarvestLine(chatLine: string): string | null {
 		}
 
 		if (skill === "fishing" && !fishingUsePorters) {
-			return;
+			return null;
 		}
 
 		incrementItem(item, amount, skill);
 		setStatus(`Tracked: ${amount} x ${item}`);
-		return `[COUNTED: ${item} +${amount}]`;
-	}
 
-	// Some transport lines use "sent it to your" instead of "You transport to your"
-	const perkSendMatch = cleanLine.match(
-		/sent it to your\s+(.+?):\s*(\d+)\s*x\s*([\s\S]+?)\.?$/i
-	);
-
-	if (perkSendMatch) {
-		const destination = perkSendMatch[1].toLowerCase();
-		const amount = parseInt(perkSendMatch[2], 10);
-		const item = normalizeItemName(perkSendMatch[3]);
-
-		if (!item || isNaN(amount)) return "[IGNORED]";
-
-		let skill: InternalSkillType = "other";
-
-		if (destination.includes("metal bank")) {
-			skill = "mining";
-		} else if (destination.includes("material storage")) {
-			skill = "archaeology";
-		} else if (destination.includes("bank")) {
-			skill = getSkillForItem(item);
-		}
-
-		incrementItem(item, amount, skill);
-		setStatus(`Tracked: ${amount} x ${item}`);
 		return `[COUNTED: ${item} +${amount}]`;
 	}
 
