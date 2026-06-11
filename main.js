@@ -5246,8 +5246,10 @@ var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(50, 190, 20), // Carpet dust green
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(60, 180, 30), // hate this color
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 45, 45), // Red (You missed...)
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(186, 16, 7), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(190, 15, 6), // Spirit attraction
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(235, 130, 53), // News
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 125, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(225, 115, 0), // uncommon components
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room

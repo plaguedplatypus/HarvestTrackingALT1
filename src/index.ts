@@ -67,8 +67,10 @@ const reader = new ChatboxReader();
 reader.readargs.colors.push(
 	// anti aliasing sucks
 	a1lib.mixColor(50, 190, 20), // Carpet dust green
-	a1lib.mixColor(60, 180, 30), // hate this color
+	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(230, 45, 45), // Red (You missed...)
+	a1lib.mixColor(186, 16, 7), a1lib.mixColor(190, 15, 6), // Spirit attraction
+	a1lib.mixColor(235, 130, 53), // News
 	a1lib.mixColor(255, 125, 0), a1lib.mixColor(225, 115, 0), // uncommon components
 
 	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
