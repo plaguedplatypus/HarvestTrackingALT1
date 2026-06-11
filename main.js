@@ -5214,6 +5214,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
 /* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
+var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var _a, _b;
 
 
@@ -5226,6 +5235,7 @@ var inventionFilter = "all";
 var activeSkillTab = "all";
 var sortMode = "recent";
 var fishingUsePorters = true;
+var historyWindow = null;
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
 var maxRecentHistory = 50;
@@ -5367,12 +5377,13 @@ var appCog = document.querySelector(".app-cog");
 var appSettingsPanel = document.querySelector(".app-settings-panel");
 var chatSelector = document.querySelector(".chat");
 var tracker = document.querySelector(".tracker");
-// The status element is used to display messages to the user in the footer
 var status = document.querySelector(".status");
 var historyButton = document.querySelector(".history-button");
 var debugUnknownInput = document.querySelector(".debug-unknown-lines");
 var exportButton = document.querySelector(".export");
 var importInput = document.querySelector(".import");
+var closeHistoryButton = document.querySelector(".close-history");
+var clearHistoryButton = document.querySelector(".clear-history");
 var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
 var clearButton = document.querySelector(".clear");
@@ -5516,17 +5527,20 @@ if (fishingPortersInput) {
 document.querySelectorAll(".skill-tab").forEach(function (btn) {
     btn.classList.remove("active");
 });
-// Debug function to show recent chat history in console
-// This can be useful for troubleshooting parsing issues or understanding why certain lines are not being tracked correctly. 
-// It will print the last 50 chat lines that were processed by the tracker.
+function updateHistoryWindow() {
+    if (!historyWindow || historyWindow.closed)
+        return;
+    historyWindow.document.body.innerHTML = "\n\t<pre style=\"\n\t\twhite-space: pre-wrap;\n\t\tfont-family: Consolas, monospace;\n\t\tfont-size: 12px;\n\t\tbackground: #1e1e1e;\n\t\tcolor: #ddd;\n\t\tpadding: 10px;\n\t\tmargin: 0;\n\t\theight: 100vh;\n\t\toverflow-y: auto;\n\t\tbox-sizing: border-box;\n\t\">".concat(escapeHtml(__spreadArray([], recentLines, true).reverse().join("\n")), "</pre>\n");
+}
+// Debug function to show recent chat history
 function showChatHistory() {
-    console.log("=== Recent Chat History ===");
-    for (var _i = 0, recentLines_1 = recentLines; _i < recentLines_1.length; _i++) {
-        var line = recentLines_1[_i];
-        console.log(line);
+    if (!historyWindow || historyWindow.closed) {
+        historyWindow = window.open("", "historyWindow", "width=350,height=450");
+        updateHistoryWindow();
     }
-    status.innerText =
-        "History contains ".concat(recentLines.length, " lines. Check console.");
+    if (!historyWindow)
+        return;
+    historyWindow.document.body.innerHTML = "\n\t\t<pre style=\"\n\t\t\twhite-space: pre-wrap;\n\t\t\tfont-family: Consolas, monospace;\n\t\t\tfont-size: 11px;\n\t\t\tbackground: #1e1e1e;\n\t\t\tcolor: #ddd;\n\t\t\tpadding: 6px;\n\t\t\tmargin: 0;\n\t\t\">".concat(escapeHtml(__spreadArray([], recentLines, true).reverse().join("\n")), "</pre>\n\t");
 }
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {
@@ -5876,7 +5890,6 @@ function getSaveData() {
         return {
             sortMode: "recent",
             items: {},
-            history: [],
         };
     }
     try {
@@ -5888,7 +5901,6 @@ function getSaveData() {
             sortMode: data.sortMode || "recent",
             debugUnknownLines: (_b = data.debugUnknownLines) !== null && _b !== void 0 ? _b : false,
             items: data.items || {},
-            history: Array.isArray(data.history) ? data.history : [],
         };
     }
     catch (_c) {
@@ -5896,7 +5908,6 @@ function getSaveData() {
             sortMode: "recent",
             debugUnknownLines: false,
             items: {},
-            history: [],
         };
     }
 }
@@ -5952,32 +5963,13 @@ function incrementItem(item, amount, skill, colorClass, source) {
         }], item);
 }
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
-var recentLines = savedData.history.slice(-maxRecentHistory);
+var recentLines = [];
 var recentLineKeys = [];
 var recentLineSet = new Set();
-function getHistoryKey(historyLine) {
-    return historyLine.replace(/\s+\[(?:COUNTED:[\s\S]*|IGNORED)\](?:\s+\[[^\]]+\])?$/, "");
-}
-function rebuildRecentLineKeys() {
-    recentLineKeys = recentLines.map(getHistoryKey);
-    recentLineSet.clear();
-    for (var _i = 0, recentLineKeys_1 = recentLineKeys; _i < recentLineKeys_1.length; _i++) {
-        var line = recentLineKeys_1[_i];
-        recentLineSet.add(line);
-    }
-}
-function syncRecentHistory() {
-    var data = getSaveData();
-    data.history = recentLines.slice(-maxRecentHistory);
-    saveData(data);
-}
-function loadRecentHistory(history) {
-    recentLines = history.slice(-maxRecentHistory);
-    rebuildRecentLineKeys();
-}
 function clearRecentHistory() {
     recentLines = [];
-    rebuildRecentLineKeys();
+    recentLineKeys = [];
+    recentLineSet.clear();
 }
 function isInHistory(chatLine) {
     return recentLineSet.has(chatLine);
@@ -5996,9 +5988,8 @@ function updateChatHistory(chatLine, debugStatus) {
             recentLineSet.delete(oldKey);
         }
     }
-    syncRecentHistory();
+    updateHistoryWindow();
 }
-rebuildRecentLineKeys();
 // Render the tracker UI based on the current save data
 function render(highlightItem, data) {
     if (data === void 0) { data = getSaveData(); }
@@ -6221,7 +6212,6 @@ function clearCurrentTab() {
     var data = getSaveData();
     if (activeSkillTab === "all") {
         data.items = {};
-        data.history = [];
         clearRecentHistory();
         saveData(data);
         render();
@@ -6240,7 +6230,6 @@ function clearCurrentTab() {
 }
 function exportData() {
     var data = getSaveData();
-    data.history = recentLines.slice(-maxRecentHistory);
     var blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
     });
@@ -6264,14 +6253,12 @@ function importData(file) {
                 sortMode: imported.sortMode || "recent",
                 debugUnknownLines: (_b = imported.debugUnknownLines) !== null && _b !== void 0 ? _b : false,
                 items: imported.items || {},
-                history: Array.isArray(imported.history) ? imported.history : [],
             };
             saveData(data);
             debugUnknownLines = (_c = data.debugUnknownLines) !== null && _c !== void 0 ? _c : false;
             if (debugUnknownInput) {
                 debugUnknownInput.checked = debugUnknownLines;
             }
-            loadRecentHistory(data.history);
             render();
             status.innerText = "Save imported.";
         }
@@ -6300,6 +6287,9 @@ function titleCase(text) {
 function escapeAttr(value) {
     return escapeHtml(value);
 }
+//============================
+// Hey you, listen to this...
+//============================
 appCog.addEventListener("click", function () {
     appSettingsPanel.classList.toggle("open");
 });
@@ -6312,10 +6302,7 @@ if (fishingPortersInput) {
         saveData(data);
     });
 }
-// Bind the history button to show recent chat history in the console for debugging purposes.
-if (historyButton) {
-    historyButton.addEventListener("click", showChatHistory);
-}
+historyButton.addEventListener("click", showChatHistory);
 exportButton.addEventListener("click", exportData);
 importInput.addEventListener("change", function () {
     if (this.files && this.files[0]) {

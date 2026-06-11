@@ -45,6 +45,7 @@ type SortMode = "recent" | "alpha" | "count";
 let sortMode: SortMode = "recent";
 
 let fishingUsePorters = true;
+let historyWindow: Window | null = null;
 
 type SaveData = {
     chat?: string;
@@ -53,7 +54,6 @@ type SaveData = {
     sortMode?: SortMode;
 	debugUnknownLines?: boolean;
     items: Record<string, TrackedItem>;
-    history: string[];
 };
 
 const appName = "ResourceTracker";
@@ -282,13 +282,14 @@ const appCog = document.querySelector(".app-cog") as HTMLElement;
 const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
 const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
 const tracker = document.querySelector(".tracker") as HTMLElement;
-
-// The status element is used to display messages to the user in the footer
 const status = document.querySelector(".status") as HTMLElement;
 
 const historyButton = document.querySelector(".history-button") as HTMLElement;
-const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;const exportButton = document.querySelector(".export") as HTMLElement;
+const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;
+const exportButton = document.querySelector(".export") as HTMLElement;
 const importInput = document.querySelector(".import") as HTMLInputElement;
+const closeHistoryButton = document.querySelector(".close-history") as HTMLElement;
+const clearHistoryButton = document.querySelector(".clear-history") as HTMLElement;
 
 const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
 const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
@@ -464,18 +465,50 @@ document.querySelectorAll(".skill-tab").forEach((btn) => {
 	btn.classList.remove("active");
 });
 
-// Debug function to show recent chat history in console
-// This can be useful for troubleshooting parsing issues or understanding why certain lines are not being tracked correctly. 
-// It will print the last 50 chat lines that were processed by the tracker.
-function showChatHistory() {
-	console.log("=== Recent Chat History ===");
+function updateHistoryWindow() {
+	if (!historyWindow || historyWindow.closed) return;
 
-	for (const line of recentLines) {
-		console.log(line);
+historyWindow.document.body.innerHTML = `
+	<pre style="
+		white-space: pre-wrap;
+		font-family: Consolas, monospace;
+		font-size: 12px;
+		background: #1e1e1e;
+		color: #ddd;
+		padding: 10px;
+		margin: 0;
+		height: 100vh;
+		overflow-y: auto;
+		box-sizing: border-box;
+	">${escapeHtml([...recentLines].reverse().join("\n"))}</pre>
+`;
+}
+
+// Debug function to show recent chat history
+function showChatHistory() {
+	if (!historyWindow || historyWindow.closed) {
+		historyWindow = window.open(
+			"",
+			"historyWindow",
+			"width=350,height=450"
+		);
+		
+	updateHistoryWindow();
 	}
 
-	status.innerText =
-		`History contains ${recentLines.length} lines. Check console.`;
+	if (!historyWindow) return;
+
+	historyWindow.document.body.innerHTML = `
+		<pre style="
+			white-space: pre-wrap;
+			font-family: Consolas, monospace;
+			font-size: 11px;
+			background: #1e1e1e;
+			color: #ddd;
+			padding: 6px;
+			margin: 0;
+		">${escapeHtml([...recentLines].reverse().join("\n"))}</pre>
+	`;
 }
 
 // Show/hide fishing mode based on active tab
@@ -897,7 +930,6 @@ function getSaveData(): SaveData {
 		return {
 			sortMode: "recent",
 			items: {},
-			history: [],
 		};
 	}
 
@@ -910,14 +942,12 @@ function getSaveData(): SaveData {
 			sortMode: data.sortMode || "recent",
 			debugUnknownLines: data.debugUnknownLines ?? false,
 			items: data.items || {},
-			history: Array.isArray(data.history) ? data.history : [],
 		};
 	} catch {
 		return {
 			sortMode: "recent",
 			debugUnknownLines: false,
 			items: {},
-			history: [],
 		};
 	}
 }
@@ -987,37 +1017,14 @@ function incrementItem(
 }
 
 // Keep a history of recent chat lines to prevent processing duplicates and allow for debugging.
-let recentLines: string[] = savedData.history.slice(-maxRecentHistory);
+let recentLines: string[] = [];
 let recentLineKeys: string[] = [];
 const recentLineSet = new Set<string>();
 
-function getHistoryKey(historyLine: string) {
-	return historyLine.replace(/\s+\[(?:COUNTED:[\s\S]*|IGNORED)\](?:\s+\[[^\]]+\])?$/, "");
-}
-
-function rebuildRecentLineKeys() {
-	recentLineKeys = recentLines.map(getHistoryKey);
-	recentLineSet.clear();
-
-	for (const line of recentLineKeys) {
-		recentLineSet.add(line);
-	}
-}
-
-function syncRecentHistory() {
-	const data = getSaveData();
-	data.history = recentLines.slice(-maxRecentHistory);
-	saveData(data);
-}
-
-function loadRecentHistory(history: string[]) {
-	recentLines = history.slice(-maxRecentHistory);
-	rebuildRecentLineKeys();
-}
-
 function clearRecentHistory() {
 	recentLines = [];
-	rebuildRecentLineKeys();
+	recentLineKeys = [];
+	recentLineSet.clear();
 }
 
 function isInHistory(chatLine: string) {
@@ -1040,11 +1047,9 @@ function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
 			recentLineSet.delete(oldKey);
 		}
 	}
-
-	syncRecentHistory();
+	
+	updateHistoryWindow();
 }
-
-rebuildRecentLineKeys();
 
 // Render the tracker UI based on the current save data
 function render(highlightItem?: string, data = getSaveData()) {
@@ -1362,7 +1367,6 @@ function clearCurrentTab() {
 
 	if (activeSkillTab === "all") {
 		data.items = {};
-		data.history = [];
 		clearRecentHistory();
 
 		saveData(data);
@@ -1386,7 +1390,6 @@ function clearCurrentTab() {
 
 function exportData() {
 	const data = getSaveData();
-	data.history = recentLines.slice(-maxRecentHistory);
 
 	const blob = new Blob([JSON.stringify(data, null, 2)], {
 		type: "application/json",
@@ -1413,7 +1416,6 @@ function importData(file: File) {
 				sortMode: imported.sortMode || "recent",
 				debugUnknownLines: imported.debugUnknownLines ?? false,
 				items: imported.items || {},
-				history: Array.isArray(imported.history) ? imported.history : [],
 			};
 
 			saveData(data);
@@ -1424,7 +1426,6 @@ function importData(file: File) {
 				debugUnknownInput.checked = debugUnknownLines;
 			}
 
-			loadRecentHistory(data.history);
 			render();
 			status.innerText = "Save imported.";
 		} catch {
@@ -1466,6 +1467,10 @@ function escapeAttr(value: string) {
 	return escapeHtml(value);
 }
 
+//============================
+// Hey you, listen to this...
+//============================
+
 appCog.addEventListener("click", function () {
 	appSettingsPanel.classList.toggle("open");
 });
@@ -1482,10 +1487,7 @@ if (fishingPortersInput) {
 	});
 }
 
-// Bind the history button to show recent chat history in the console for debugging purposes.
-if (historyButton) {
-	historyButton.addEventListener("click", showChatHistory);
-}
+historyButton.addEventListener("click", showChatHistory);
 
 exportButton.addEventListener("click", exportData);
 
