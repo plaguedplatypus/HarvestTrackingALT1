@@ -5252,10 +5252,9 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 125, 0), alt1__WEBPACK_IMPORTED_
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(220, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(200, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(180, 0, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(160, 0, 0), // 50 shades of red
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), // Bright orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(250, 175, 0), // orange
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55));
+// orange juice
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 170, 1), //dark
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(193, 97, 1));
 function addTextBridgeNudge(name, match) {
     reader.forwardnudges.push({
         name: name,

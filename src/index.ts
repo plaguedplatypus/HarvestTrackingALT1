@@ -74,11 +74,11 @@ reader.readargs.colors.push(
 	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
-	a1lib.mixColor(220, 0, 0), a1lib.mixColor(200, 0, 0), a1lib.mixColor(180, 0, 0), a1lib.mixColor(160, 0, 0), // 50 shades of red
 	
-	a1lib.mixColor(255, 153, 0), // Bright orange
-	a1lib.mixColor(250, 175, 0), // orange
-	a1lib.mixColor(245, 135, 55), // orange
+	// orange juice
+	a1lib.mixColor(255, 153, 0), 
+	a1lib.mixColor(245, 170, 1), //dark
+	a1lib.mixColor(193, 97, 1), //performing an action
 );
 
 function addTextBridgeNudge(name: string, match: RegExp) {
