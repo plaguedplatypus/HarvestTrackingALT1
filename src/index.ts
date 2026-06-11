@@ -69,7 +69,7 @@ reader.readargs.colors.push(
 	a1lib.mixColor(50, 190, 20), // Carpet dust green
 	a1lib.mixColor(59, 181, 30), // hate this color
 	a1lib.mixColor(230, 45, 45), // Red (You missed...)
-	a1lib.mixColor(186, 16, 7), a1lib.mixColor(190, 15, 6), // Spirit attraction
+	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
 	a1lib.mixColor(235, 130, 53), // News
 	a1lib.mixColor(255, 125, 0), a1lib.mixColor(225, 115, 0), // uncommon components
 
