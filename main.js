@@ -434,6 +434,10 @@ button,
     color: #ff3333;
 }
 
+.ancient-component {
+	color: #b98cff;
+}
+
 .seren-item {
     color: #66ffff;
 }
@@ -903,6 +907,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alt1/ocr */ "../node_modules/alt1/dist/ocr/index.js");
 /* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1_ocr__WEBPACK_IMPORTED_MODULE_0__);
 
+// List of ancient components.
+var ancientComponents = new Set([
+    "classic components",
+    "historic components",
+    "timeworn components",
+    "vintage components",
+]);
 // List of rare components.
 var rareComponents = new Set([
     "armadyl components",
@@ -938,10 +949,6 @@ var rareComponents = new Set([
     "undead components",
     "zamorak components",
     "zaros components",
-    "classic components",
-    "historic components",
-    "timeworn components",
-    "vintage components",
 ]);
 // List of uncommon components.
 var uncommonComponents = new Set([
@@ -1003,7 +1010,8 @@ function repairMaterialText(materialText) {
     finalMaterialText = finalMaterialText.replace(/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi, "$1");
     // Repair chopped component names, like "Prot- ctiv-" or "H- avy".
     finalMaterialText = finalMaterialText.replace(/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi, function (match, prefix, brokenName) {
-        var repaired = repairComponentName(brokenName, rareComponents) ||
+        var repaired = repairComponentName(brokenName, ancientComponents) ||
+            repairComponentName(brokenName, rareComponents) ||
             repairComponentName(brokenName, uncommonComponents);
         return repaired ? "".concat(prefix).concat(repaired) : match;
     });
@@ -1152,22 +1160,28 @@ function processInventionMaterials(cleanLine) {
             continue;
         if (item === "junk")
             continue;
+        var isAncientComponent = ancientComponents.has(item);
         var isRareComponent = rareComponents.has(item);
-        var isUncommonComponent = item.includes("components");
-        var isInventionMaterial = isUncommonComponent ||
-            item.includes("parts");
+        var isComponent = item.includes("components");
+        var isPart = item.includes("parts");
+        var isInventionMaterial = isComponent ||
+            isPart;
         if (!isInventionMaterial)
             continue;
-        var colorClass = isRareComponent
-            ? "rare-component"
-            : isUncommonComponent
-                ? "uncommon-component"
-                : undefined;
-        var source = isRareComponent
-            ? "rare-components"
-            : isUncommonComponent
-                ? "uncommon-components"
-                : "invention";
+        var colorClass = isAncientComponent
+            ? "ancient-component"
+            : isRareComponent
+                ? "rare-component"
+                : isComponent
+                    ? "uncommon-component"
+                    : undefined;
+        var source = isAncientComponent
+            ? "ancient-components"
+            : isRareComponent
+                ? "rare-components"
+                : isComponent
+                    ? "uncommon-components"
+                    : "invention";
         updates.push({
             item: item,
             amount: amount,
@@ -5795,21 +5809,25 @@ function updateInventionFilterButton() {
     inventionFilterButton.innerText =
         inventionFilter === "all"
             ? "Filter Components: All"
-            : inventionFilter === "rare"
-                ? "Filter Components: Rare"
-                : inventionFilter === "uncommon"
-                    ? "Filter Components: Uncommon"
-                    : "Filter Components: Common";
+            : inventionFilter === "ancient"
+                ? "Filter Components: Ancient"
+                : inventionFilter === "rare"
+                    ? "Filter Components: Rare"
+                    : inventionFilter === "uncommon"
+                        ? "Filter Components: Uncommon"
+                        : "Filter Components: Common";
 }
 inventionFilterButton.addEventListener("click", function () {
     inventionFilter =
         inventionFilter === "all"
-            ? "rare"
-            : inventionFilter === "rare"
-                ? "uncommon"
-                : inventionFilter === "uncommon"
-                    ? "common"
-                    : "all";
+            ? "ancient"
+            : inventionFilter === "ancient"
+                ? "rare"
+                : inventionFilter === "rare"
+                    ? "uncommon"
+                    : inventionFilter === "uncommon"
+                        ? "common"
+                        : "all";
     updateInventionFilterButton();
     render();
 });
@@ -5853,7 +5871,7 @@ function processHarvestLine(chatLine) {
             return "[IGNORED]";
         var item = "﴾♦﴿ " + normalizedItem;
         var colorClass = rareSerenItems.has(normalizedItem)
-            ? "seren-item-red"
+            ? "seren-item-rare"
             : "seren-item";
         incrementItem(item, amount, "seren", colorClass, "seren-spirit");
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
@@ -5920,13 +5938,11 @@ function processHarvestLine(chatLine) {
     return null;
 }
 function getSkillForItem(item) {
-    if (item.includes("bamboo") || item.includes("eternal magic tree branch"))
-        return "woodcutting";
     if (item.includes("(damaged)"))
         return "archaeology";
-    if (item.includes("ore"))
+    if (item.includes("ore") || item.includes("salt"))
         return "mining";
-    if (item.includes("logs"))
+    if (item.includes("logs") || item.includes("bamboo"))
         return "woodcutting";
     if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish"))
         return "fishing";
@@ -6059,9 +6075,13 @@ function render(highlightItem, data) {
         return;
     }
     if (activeSkillTab === "invention") {
+        var ancientItems = items.filter(function (item) { return data.items[item].source === "ancient-components"; });
         var rareItems = items.filter(function (item) { return data.items[item].source === "rare-components"; });
         var uncommonItems = items.filter(function (item) { return data.items[item].source === "uncommon-components"; });
         var commonItems = items.filter(function (item) { return data.items[item].source === "invention" || !data.items[item].source; });
+        if (inventionFilter === "all" || inventionFilter === "ancient") {
+            renderItemGroup("Ancient Components", ancientItems, data, highlightItem);
+        }
         if (inventionFilter === "all" || inventionFilter === "rare") {
             renderItemGroup("Rare Components", rareItems, data, highlightItem);
         }

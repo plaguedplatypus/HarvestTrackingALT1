@@ -40,7 +40,7 @@ type ItemUpdate = {
 	source?: string;
 };
 
-type InventionFilter = "all" | "rare" | "uncommon" | "common";
+type InventionFilter = "all" | "ancient" | "rare" | "uncommon" | "common";
 
 type SortMode = "recent" | "alpha" | "count";
 
@@ -59,6 +59,7 @@ const appName = "ResourceTracker";
 const appColor = a1lib.mixColor(67, 188, 188);
 
 const maxRecentHistory = 50;
+
 const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
 
@@ -397,22 +398,26 @@ function updateInventionFilterButton() {
 	inventionFilterButton.innerText =
 		inventionFilter === "all"
 			? "Filter Components: All"
-			: inventionFilter === "rare"
-				? "Filter Components: Rare"
-				: inventionFilter === "uncommon"
-					? "Filter Components: Uncommon"
-					: "Filter Components: Common";
+			: inventionFilter === "ancient"
+				? "Filter Components: Ancient"
+				: inventionFilter === "rare"
+					? "Filter Components: Rare"
+					: inventionFilter === "uncommon"
+						? "Filter Components: Uncommon"
+						: "Filter Components: Common";
 }
 
 inventionFilterButton.addEventListener("click", () => {
 	inventionFilter =
 		inventionFilter === "all"
-			? "rare"
-			: inventionFilter === "rare"
-				? "uncommon"
-				: inventionFilter === "uncommon"
-					? "common"
-					: "all";
+			? "ancient"
+			: inventionFilter === "ancient"
+				? "rare"
+				: inventionFilter === "rare"
+					? "uncommon"
+					: inventionFilter === "uncommon"
+						? "common"
+						: "all";
 
 	updateInventionFilterButton();
 	render();
@@ -475,7 +480,7 @@ function processHarvestLine(chatLine: string): string | null {
 			const item = "﴾♦﴿ " + normalizedItem;
 
 			const colorClass = rareSerenItems.has(normalizedItem)
-				? "seren-item-red"
+				? "seren-item-rare"
 				: "seren-item";
 
 			incrementItem(item, amount, "seren", colorClass, "seren-spirit");
@@ -569,10 +574,9 @@ function processHarvestLine(chatLine: string): string | null {
 }
 
 function getSkillForItem(item: string): InternalSkillType {
-	if (item.includes("bamboo") || item.includes("eternal magic tree branch")) return "woodcutting";
 	if (item.includes("(damaged)")) return "archaeology";
-	if (item.includes("ore")) return "mining";
-	if (item.includes("logs")) return "woodcutting";
+	if (item.includes("ore") || item.includes("salt")) return "mining";
+	if (item.includes("logs") || item.includes("bamboo")) return "woodcutting";
 	if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish")) return "fishing";
 
 	return "other";
@@ -729,6 +733,10 @@ function render(highlightItem?: string, data = getSaveData()) {
 	}
 
 	if (activeSkillTab === "invention") {
+		const ancientItems = items.filter(
+			(item) => data.items[item].source === "ancient-components"
+		);
+
 		const rareItems = items.filter(
 			(item) => data.items[item].source === "rare-components"
 		);
@@ -740,6 +748,10 @@ function render(highlightItem?: string, data = getSaveData()) {
 		const commonItems = items.filter(
 			(item) => data.items[item].source === "invention" || !data.items[item].source
 		);
+
+		if (inventionFilter === "all" || inventionFilter === "ancient") {
+			renderItemGroup("Ancient Components", ancientItems, data, highlightItem);
+		}
 
 		if (inventionFilter === "all" || inventionFilter === "rare") {
 			renderItemGroup("Rare Components", rareItems, data, highlightItem);

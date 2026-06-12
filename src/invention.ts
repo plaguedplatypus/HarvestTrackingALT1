@@ -15,6 +15,14 @@ type InventionMaterialResult = {
 	statusMessage: string;
 };
 
+// List of ancient components.
+const ancientComponents = new Set([
+	"classic components",
+	"historic components",
+	"timeworn components",
+	"vintage components",
+]);
+
 // List of rare components.
 const rareComponents = new Set([
 	"armadyl components",
@@ -50,10 +58,6 @@ const rareComponents = new Set([
 	"undead components",
 	"zamorak components",
 	"zaros components",
-	"classic components",
-	"historic components",
-	"timeworn components",
-	"vintage components",
 ]);
 
 // List of uncommon components.
@@ -133,6 +137,7 @@ function repairMaterialText(materialText: string): string {
 		/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi,
 		(match, prefix, brokenName) => {
 			const repaired =
+				repairComponentName(brokenName, ancientComponents) ||
 				repairComponentName(brokenName, rareComponents) ||
 				repairComponentName(brokenName, uncommonComponents);
 
@@ -374,25 +379,32 @@ export function processInventionMaterials(
 		if (!item || isNaN(amount)) continue;
 		if (item === "junk") continue;
 
+		const isAncientComponent = ancientComponents.has(item);
 		const isRareComponent = rareComponents.has(item);
-		const isUncommonComponent = item.includes("components");
+		const isComponent = item.includes("components");
+		const isPart = item.includes("parts");
+
 		const isInventionMaterial =
-			isUncommonComponent ||
-			item.includes("parts");
+			isComponent ||
+			isPart;
 
 		if (!isInventionMaterial) continue;
 
-		const colorClass = isRareComponent
-			? "rare-component"
-			: isUncommonComponent
-				? "uncommon-component"
-				: undefined;
+		const colorClass = isAncientComponent
+			? "ancient-component"
+			: isRareComponent
+				? "rare-component"
+				: isComponent
+					? "uncommon-component"
+					: undefined;
 
-		const source = isRareComponent
-			? "rare-components"
-			: isUncommonComponent
-				? "uncommon-components"
-				: "invention";
+		const source = isAncientComponent
+			? "ancient-components"
+			: isRareComponent
+				? "rare-components"
+				: isComponent
+					? "uncommon-components"
+					: "invention";
 
 		updates.push({
 			item,
