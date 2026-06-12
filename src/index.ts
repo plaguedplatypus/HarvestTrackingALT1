@@ -71,7 +71,7 @@ reader.readargs.colors.push(
 	a1lib.mixColor(230, 45, 45), // Red (You missed...)
 	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
 	a1lib.mixColor(245, 135, 55), // News
-	a1lib.mixColor(245, 124, 1), // uncommon components
+	a1lib.mixColor(245, 124, 1), a1lib.mixColor(255, 128, 0), a1lib.mixColor(235, 119, 3), // uncommon components
 
 	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
@@ -596,7 +596,7 @@ const rareComponents = new Set([
 	"fungal components",
 	"harnessed components",
 	"ilujankan components",
-	"hnightly components",
+	"knightly components",
 	"manufactured components",
 	"noxious components",
 	"oceanic components",
@@ -694,23 +694,6 @@ function repairComponentName(text: string, componentSet: Set<string>): string | 
 function processHarvestLine(chatLine: string): string | null {
 	const cleanLine = chatLine.replace(timestampRegex, "").trim();
 
-	// cleanup what is actually processed
-		const ignoredPrefixes = [
-			"News:", "❆News:", "❆N-", "❆",
-			"Grand Exchange:"
-		];
-
-		const ignoredSuffixes = [
-			"money pouch."
-		];
-
-		if (
-			ignoredPrefixes.some(prefix => cleanLine.startsWith(prefix)) ||
-			ignoredSuffixes.some(suffix => cleanLine.toLowerCase().endsWith(suffix))
-		) {
-			return null;
-		}
-	
 		// Check for Seren spirit's
 		const serenMatch = cleanLine.match(
 			/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i
@@ -734,18 +717,22 @@ function processHarvestLine(chatLine: string): string | null {
 			return `[COUNTED: ${item} +${amount}]`;
 		}
 
-	// Check for invention materials
-	const materialsMatch = cleanLine.match(
-		/Materials gained:\s*(.+)$/i
-	);
+		//================================
+		// Invention materials
+		//================================
 
-	// If the line contains "Materials gained:"
-	// we will attempt to parse it for invention materials. 
-	if (materialsMatch) {
-		const materialText = materialsMatch[1];
+		// Check for invention materials
+		const materialsMatch = cleanLine.match(
+			/Materials gained:\s*(.+)$/i
+		);
 
-	// We will attempt to parse whatever material information we have.
-	let finalMaterialText = materialText;
+		// If the line contains "Materials gained:"
+		// we will attempt to parse it for invention materials. 
+		if (materialsMatch) {
+			const materialText = materialsMatch[1];
+
+		// We will attempt to parse whatever material information we have.
+		let finalMaterialText = materialText;
 
 		// Clean badly chopped "components" endings
 		finalMaterialText = finalMaterialText.replace(
@@ -753,27 +740,27 @@ function processHarvestLine(chatLine: string): string | null {
 			"$1"
 		);
 
-			// Component name repair block
-			finalMaterialText = finalMaterialText.replace(
-				/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi,
-				(match, prefix, brokenName) => {
-					const repaired =
-						repairComponentName(brokenName, rareComponents) ||
-						repairComponentName(brokenName, uncommonComponents);
+		// Component name repair block
+		finalMaterialText = finalMaterialText.replace(
+			/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi,
+			(match, prefix, brokenName) => {
+				const repaired =
+					repairComponentName(brokenName, rareComponents) ||
+					repairComponentName(brokenName, uncommonComponents);
 
-					return repaired
-						? `${prefix}${repaired}`
-						: match;
-				}
-			);
+				return repaired
+					? `${prefix}${repaired}`
+					: match;
+			}
+		);
 
 		// Then remove orphan comma tails
-		if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
-			console.warn("CUT OFF ITEM:", finalMaterialText);
-			finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
+		if (/,\s*(components|parts)$/i.test(finalMaterialText)) {
+			finalMaterialText = finalMaterialText.replace(/,\s*(components|parts)$/i, ",");
 		}
-	// If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
-	// This way we can still track the complete materials listed before the cutoff.
+
+		// If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
+		// This way we can still track the complete materials listed before the cutoff.
 		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
 		let materialMatch: RegExpExecArray | null;
 		const countedMaterials: string[] = [];
@@ -813,72 +800,82 @@ function processHarvestLine(chatLine: string): string | null {
 				colorClass,
 				source,
 			});
-			
+				
 			countedMaterials.push(`${titleCase(item)} +${amount}`);
 
 			setStatus(`Invention: ${amount} x ${item}`);
-		}	
+			}	
 
-		if (countedMaterials.length > 0) {
-			incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
+			if (countedMaterials.length > 0) {
+					incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
 
-			const warning = finalMaterialText !== materialText ? " [PARTIAL READ]" : "";
-			return `[COUNTED: ${countedMaterials.join(", ")}]${warning}`;
-		}
-	}
+					const warning = finalMaterialText !== materialText ? " [PARTIAL READ]" : "";
+					return `[COUNTED: ${countedMaterials.join(", ")}]${warning}`;
+			}
 
-	// Check for item transports
-	const transportMatch = cleanLine.match(
-		/(?:You transport|sent it|transports your items) to your\s+(.+?):\s*(?:(\d+)\s*x\s*)?([\s\S]+?)\.?$/i
-	);
-
-	if (transportMatch) {
-		const destination = transportMatch[1].toLowerCase();
-
-		const amount = transportMatch[2]
-			? parseInt(transportMatch[2], 10)
-			: 1;
-
-		const item = normalizeItemName(transportMatch[3]);
-
-		if (!item || isNaN(amount)) return "[IGNORED]";
-
-		let skill: InternalSkillType = "other";
-
-		if (destination.includes("metal bank")) {
-			skill = "mining";
-		} else if (destination.includes("material storage")) {
-			skill = "archaeology";
-		} else if (destination.includes("bank")) {
-			skill = getSkillForItem(item);
 		}
 
-		if (skill === "fishing" && !fishingUsePorters) {
-			return null;
+
+		//================================
+		// GOTE / Porters / Perks
+		//================================
+
+		// Check for item/perk transports
+		const transportMatch = cleanLine.match(
+			/(?:You transport|sent it|transports your items) to your\s+(.+?):\s*(?:(\d+)\s*x\s*)?([\s\S]+?)\.?$/i
+		);
+
+		if (transportMatch) {
+			const destination = transportMatch[1].toLowerCase();
+
+			const amount = transportMatch[2]
+				? parseInt(transportMatch[2], 10)
+				: 1;
+
+			const item = normalizeItemName(transportMatch[3]);
+
+			if (!item || isNaN(amount)) return "[IGNORED]";
+
+			let skill: InternalSkillType = "other";
+
+			if (destination.includes("metal bank")) {
+				skill = "mining";
+			} else if (destination.includes("material storage")) {
+				skill = "archaeology";
+			} else if (destination.includes("bank")) {
+				skill = getSkillForItem(item);
+			}
+
+			if (skill === "fishing" && !fishingUsePorters) {
+				return null;
+			}
+
+			incrementItem(item, amount, skill);
+			setStatus(`Tracked: ${amount} x ${item}`);
+
+			return `[COUNTED: ${item} +${amount}]`;
 		}
 
-		incrementItem(item, amount, skill);
-		setStatus(`Tracked: ${amount} x ${item}`);
+		//================================
+		// Normal skill activities
+		//================================
 
-		return `[COUNTED: ${item} +${amount}]`;
-	}
+		// Check for mining, woodcutting, fishing, and archaeology
+		for (const entry of skillPatterns) {
+			const match = cleanLine.match(entry.pattern);
+			if (!match) continue;
 
-	// Check for mining, woodcutting, fishing, and archaeology
-	for (const entry of skillPatterns) {
-		const match = cleanLine.match(entry.pattern);
-		if (!match) continue;
+			if (entry.skill === "fishing" && fishingUsePorters) {
+				continue;
+			}
 
-		if (entry.skill === "fishing" && fishingUsePorters) {
-			continue;
+			const item = normalizeItemName(match[1]);
+			if (!item) return "[IGNORED]";
+
+			incrementItem(item, 1, entry.skill);
+			setStatus(`Tracked: ${item}`);
+			return `[COUNTED: ${item} +1]`;
 		}
-
-		const item = normalizeItemName(match[1]);
-		if (!item) return "[IGNORED]";
-
-		incrementItem(item, 1, entry.skill);
-		setStatus(`Tracked: ${item}`);
-		return `[COUNTED: ${item} +1]`;
-	}
 	
 	return null;
 }
@@ -998,12 +995,6 @@ function incrementItem(
 let recentLines: string[] = [];
 let recentLineKeys: string[] = [];
 const recentLineSet = new Set<string>();
-
-function clearRecentHistory() {
-	recentLines = [];
-	recentLineKeys = [];
-	recentLineSet.clear();
-}
 
 function isInHistory(chatLine: string) {
 	return recentLineSet.has(chatLine);
@@ -1345,7 +1336,6 @@ function clearCurrentTab() {
 
 	if (activeSkillTab === "all") {
 		data.items = {};
-		clearRecentHistory();
 
 		saveData(data);
 		render();

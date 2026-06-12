@@ -5250,7 +5250,7 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // hate this color
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(230, 45, 45), // Red (You missed...)
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(186, 16, 7), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(191, 15, 6), // Spirit attraction
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), // News
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), // uncommon components
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 124, 1), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 128, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(235, 119, 3), // uncommon components
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 0, 255), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
@@ -5643,7 +5643,7 @@ var rareComponents = new Set([
     "fungal components",
     "harnessed components",
     "ilujankan components",
-    "hnightly components",
+    "knightly components",
     "manufactured components",
     "noxious components",
     "oceanic components",
@@ -5727,18 +5727,6 @@ function repairComponentName(text, componentSet) {
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
-    // cleanup what is actually processed
-    var ignoredPrefixes = [
-        "News:", "❆News:", "❆N-", "❆",
-        "Grand Exchange:"
-    ];
-    var ignoredSuffixes = [
-        "money pouch."
-    ];
-    if (ignoredPrefixes.some(function (prefix) { return cleanLine.startsWith(prefix); }) ||
-        ignoredSuffixes.some(function (suffix) { return cleanLine.toLowerCase().endsWith(suffix); })) {
-        return null;
-    }
     // Check for Seren spirit's
     var serenMatch = cleanLine.match(/The Seren spirit gifts you:\s*(\d+)\s*x\s*(.+?)\./i);
     if (serenMatch) {
@@ -5754,6 +5742,9 @@ function processHarvestLine(chatLine) {
         setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
+    //================================
+    // Invention materials
+    //================================
     // Check for invention materials
     var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
     // If the line contains "Materials gained:"
@@ -5773,9 +5764,8 @@ function processHarvestLine(chatLine) {
                 : match;
         });
         // Then remove orphan comma tails
-        if (/,\s*(components|parts|junk)$/i.test(finalMaterialText)) {
-            console.warn("CUT OFF ITEM:", finalMaterialText);
-            finalMaterialText = finalMaterialText.replace(/,\s*(components|parts|junk)$/i, ",");
+        if (/,\s*(components|parts)$/i.test(finalMaterialText)) {
+            finalMaterialText = finalMaterialText.replace(/,\s*(components|parts)$/i, ",");
         }
         // If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
         // This way we can still track the complete materials listed before the cutoff.
@@ -5822,7 +5812,10 @@ function processHarvestLine(chatLine) {
             return "[COUNTED: ".concat(countedMaterials.join(", "), "]").concat(warning);
         }
     }
-    // Check for item transports
+    //================================
+    // GOTE / Porters / Perks
+    //================================
+    // Check for item/perk transports
     var transportMatch = cleanLine.match(/(?:You transport|sent it|transports your items) to your\s+(.+?):\s*(?:(\d+)\s*x\s*)?([\s\S]+?)\.?$/i);
     if (transportMatch) {
         var destination = transportMatch[1].toLowerCase();
@@ -5849,6 +5842,9 @@ function processHarvestLine(chatLine) {
         setStatus("Tracked: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
+    //================================
+    // Normal skill activities
+    //================================
     // Check for mining, woodcutting, fishing, and archaeology
     for (var _i = 0, skillPatterns_1 = skillPatterns; _i < skillPatterns_1.length; _i++) {
         var entry = skillPatterns_1[_i];
@@ -5970,11 +5966,6 @@ function incrementItem(item, amount, skill, colorClass, source) {
 var recentLines = [];
 var recentLineKeys = [];
 var recentLineSet = new Set();
-function clearRecentHistory() {
-    recentLines = [];
-    recentLineKeys = [];
-    recentLineSet.clear();
-}
 function isInHistory(chatLine) {
     return recentLineSet.has(chatLine);
 }
@@ -6216,7 +6207,6 @@ function clearCurrentTab() {
     var data = getSaveData();
     if (activeSkillTab === "all") {
         data.items = {};
-        clearRecentHistory();
         saveData(data);
         render();
         status.innerText = "All items cleared.";
