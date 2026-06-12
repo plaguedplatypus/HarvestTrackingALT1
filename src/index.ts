@@ -103,19 +103,20 @@ const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
 	// anti aliasing sucks
-	a1lib.mixColor(251, 251, 251), // off-white
-	a1lib.mixColor(235, 235, 235), // off-white
-	a1lib.mixColor(232, 47, 47), // pinkish red messages
-	a1lib.mixColor(190, 15, 6), // dark red messages
 	a1lib.mixColor(51, 197, 20), // faded Green messages
 	a1lib.mixColor(59, 181, 20), // Green messages
+
+	a1lib.mixColor(232, 47, 47), // pinkish red messages
+	a1lib.mixColor(190, 15, 6), // dark red messages
+
+	a1lib.mixColor(245, 135, 55), // News
+	a1lib.mixColor(252, 174, 0), // Orange actions
 	a1lib.mixColor(253, 127, 0), // uncommon components
 	a1lib.mixColor(67, 188, 188), // Cotton candy? or ancient?
-	a1lib.mixColor(255, 140, 56), // Orange News / item messages
-	a1lib.mixColor(252, 174, 0), // Orange actions
+
 	a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
-	a1lib.mixColor(67, 188, 188), // Cotton candy?
+	
 );
 
 setupInventionNudges(reader);

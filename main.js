@@ -5569,19 +5569,16 @@ var debugUnknownLines = (_a = savedData.debugUnknownLines) !== null && _a !== vo
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(251, 251, 251), // off-white
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(235, 235, 235), // off-white
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // pinkish red messages
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(190, 15, 6), // dark red messages
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 197, 20), // faded Green messages
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 20), // Green messages
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // pinkish red messages
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(190, 15, 6), // dark red messages
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), // News
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(252, 174, 0), // Orange actions
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 127, 0), // uncommon components
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy? or ancient?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 140, 56), // Orange News / item messages
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(252, 174, 0), // Orange actions
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as entered the room
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188));
+alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252));
 (0,_invention__WEBPACK_IMPORTED_MODULE_2__.setupInventionNudges)(reader);
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
