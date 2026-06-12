@@ -1,11 +1,62 @@
 import * as a1lib from "alt1";
 import ChatboxReader from "alt1/chatbox";
-import * as OCR from "alt1/ocr";
+import {
+	setupInventionNudges,
+	processInventionMaterials,
+} from "./invention";
 
 import "./index.html";
 import "./appconfig.json";
 import "./css/style.css";
-import "./icon.png";
+
+const appName = "ResourceTracker";
+const appColor = a1lib.mixColor(67, 188, 188);
+
+const maxRecentHistory = 50;
+const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
+const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
+
+const appCog = document.querySelector(".app-cog") as HTMLElement;
+const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
+const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
+const tracker = document.querySelector(".tracker") as HTMLElement;
+const historyButton = document.querySelector(".history-button") as HTMLElement;
+const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;
+const exportButton = document.querySelector(".export") as HTMLElement;
+const importInput = document.querySelector(".import") as HTMLInputElement;
+const clearButton = document.querySelector(".clear") as HTMLElement;
+
+const status = document.querySelector(".status") as HTMLElement;
+const sortButton = document.querySelector(".sort-button") as HTMLElement;
+
+const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
+const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
+
+const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
+const inventionFilterButton = document.querySelector(".invention-filter-cycle") as HTMLElement;
+
+const savedData = getSaveData();
+const reader = new ChatboxReader();
+
+reader.readargs.colors.push(
+	// anti aliasing sucks
+	a1lib.mixColor(49, 191, 20), // Carpet dust green
+	a1lib.mixColor(59, 181, 30), // hate this color
+	a1lib.mixColor(230, 45, 45), // Red (You missed...)
+	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
+	a1lib.mixColor(245, 135, 55), // News
+	a1lib.mixColor(245, 124, 1), a1lib.mixColor(255, 128, 0), a1lib.mixColor(235, 119, 3), // uncommon components
+
+	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
+	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
+	a1lib.mixColor(67, 188, 188), // Cotton candy?
+	
+	// orange juice
+	a1lib.mixColor(255, 153, 0), a1lib.mixColor(252, 174, 0), 
+	a1lib.mixColor(245, 135, 55), a1lib.mixColor(193, 97, 1),
+);
+
+setupInventionNudges(reader);
 
 type SkillType =
 	| "all"
@@ -56,244 +107,6 @@ type SaveData = {
 	debugUnknownLines?: boolean;
     items: Record<string, TrackedItem>;
 };
-
-const appName = "ResourceTracker";
-const appColor = a1lib.mixColor(67, 188, 188);
-const maxRecentHistory = 50;
-const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
-const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
-const reader = new ChatboxReader();
-
-reader.readargs.colors.push(
-	// anti aliasing sucks
-	a1lib.mixColor(49, 191, 20), // Carpet dust green
-	a1lib.mixColor(59, 181, 30), // hate this color
-	a1lib.mixColor(230, 45, 45), // Red (You missed...)
-	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
-	a1lib.mixColor(245, 135, 55), // News
-	a1lib.mixColor(245, 124, 1), a1lib.mixColor(255, 128, 0), a1lib.mixColor(235, 119, 3), // uncommon components
-
-	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
-	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
-	a1lib.mixColor(67, 188, 188), // Cotton candy?
-	
-	// orange juice
-	a1lib.mixColor(255, 153, 0), a1lib.mixColor(252, 174, 0), 
-	a1lib.mixColor(245, 135, 55), a1lib.mixColor(193, 97, 1),
-);
-
-function addTextBridgeNudge(name: string, match: RegExp) {
-	reader.forwardnudges.push({
-		name,
-		match,
-		fn: (ctx) => {
-			const startx = ctx.rightx;
-
-			for (const color of ctx.colors) {
-				for (const offset of [
-					0,
-					ctx.font.spacewidth,
-					ctx.font.spacewidth * 2,
-					ctx.font.spacewidth * 3,
-					1, 2, 3, 4, 5, 6,
-				]) {
-					const one = OCR.readChar(
-						ctx.imgdata,
-						ctx.font,
-						color,
-						startx + offset,
-						ctx.baseliney,
-						false,
-						true
-					);
-
-					if (one?.chr !== "1") continue;
-
-					const data = OCR.readLine(
-						ctx.imgdata,
-						ctx.font,
-						color,
-						one.x,
-						ctx.baseliney,
-						true,
-						false
-					);
-
-					if (/^1\s*x\s+/i.test(data.text)) {
-						data.fragments.forEach((frag) => ctx.addfrag(frag));
-						return true;
-					}
-
-					const x = OCR.readChar(
-						ctx.imgdata,
-						ctx.font,
-						color,
-						one.x + one.basechar.width + ctx.font.spacewidth,
-						ctx.baseliney,
-						false,
-						true
-					);
-
-					ctx.addfrag({
-						color,
-						index: -1,
-						text: x?.chr === "x" ? "1 x" : "1",
-						xstart: startx,
-						xend: one.x + one.basechar.width,
-					});
-
-					return true;
-				}
-			}
-		},
-	});
-}
-
-function addCommaNudge() {
-	reader.forwardnudges.push({
-		name: "material-comma",
-		match: /Materials gained:[\s\S]*(parts|components)$/i,
-		fn: (ctx) => {
-			for (const offset of [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]) {
-				for (const color of ctx.colors) {
-					const comma = OCR.readChar(
-						ctx.imgdata,
-						ctx.font,
-						color,
-						ctx.rightx + offset,
-						ctx.baseliney,
-						false,
-						true
-					);
-
-					if (comma?.chr !== ",") continue;
-
-					ctx.addfrag({
-						color,
-						index: -1,
-						text: ", ",
-						xstart: ctx.rightx,
-						xend: comma.x + comma.basechar.width + ctx.font.spacewidth,
-					});
-
-					return true;
-				}
-			}
-		},
-	});
-}
-
-function addMaterialContinuationNudge() {
-	reader.forwardnudges.push({
-		name: "material-color-continuation",
-		match: /Materials gained:[\s\S]*(?:,|\bparts|\bcomponents)\s*$/i,
-		fn: (ctx) => {
-			const addContinuation = (x: number, fragments: OCR.TextFragment[]) => {
-				if (!ctx.text.endsWith(" ")) {
-					ctx.addfrag({
-						color: [255, 255, 255],
-						index: -1,
-						text: " ",
-						xstart: ctx.rightx,
-						xend: x,
-					});
-				}
-
-				fragments.forEach((frag) => ctx.addfrag(frag));
-				return true;
-			};
-
-				const candidateStarts = [
-					ctx.rightx - ctx.font.spacewidth * 4,
-					ctx.rightx - ctx.font.spacewidth * 3,
-					ctx.rightx - ctx.font.spacewidth * 2,
-					ctx.rightx - ctx.font.spacewidth,
-					ctx.rightx,
-					ctx.rightx + ctx.font.spacewidth,
-					ctx.rightx + ctx.font.spacewidth * 2,
-					ctx.rightx + ctx.font.spacewidth * 3,
-					ctx.rightx + ctx.font.spacewidth * 4,
-				];
-
-			for (const x of candidateStarts) {
-				const data = OCR.readLine(
-					ctx.imgdata,
-					ctx.font,
-					ctx.colors,
-					x,
-					ctx.baseliney,
-					true,
-					false
-				);
-
-				if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
-					continue;
-				}
-
-				return addContinuation(x, data.fragments);
-			}
-
-			const scanStart = ctx.rightx - ctx.font.spacewidth * 4;
-			const scanEnd = ctx.rightx + ctx.font.spacewidth * 12;
-
-			for (let x = scanStart; x <= scanEnd; x++) {
-				for (const color of ctx.colors) {
-					const digit = OCR.readChar(
-						ctx.imgdata,
-						ctx.font,
-						color,
-						x,
-						ctx.baseliney,
-						false,
-						true
-					);
-
-					if (!digit || !/^\d$/.test(digit.chr)) {
-						continue;
-					}
-
-					const data = OCR.readLine(
-						ctx.imgdata,
-						ctx.font,
-						color,
-						digit.x,
-						ctx.baseliney,
-						true,
-						false
-					);
-
-					if (/^\d+\s*x\s+/i.test(data.text)) {
-						return addContinuation(digit.x, data.fragments);
-					}
-				}
-			}
-		},
-	});
-}
-
-addCommaNudge();
-addMaterialContinuationNudge();
-addTextBridgeNudge("component-bridge", /Materials gained|parts|components|Junk/i);
-
-const appCog = document.querySelector(".app-cog") as HTMLElement;
-const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
-const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
-const tracker = document.querySelector(".tracker") as HTMLElement;
-const status = document.querySelector(".status") as HTMLElement;
-
-const historyButton = document.querySelector(".history-button") as HTMLElement;
-const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;
-const exportButton = document.querySelector(".export") as HTMLElement;
-const importInput = document.querySelector(".import") as HTMLInputElement;
-
-const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
-const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
-
-const clearButton = document.querySelector(".clear") as HTMLElement;
-const sortButton = document.querySelector(".sort-button") as HTMLElement;
-const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
-const inventionFilterButton = document.querySelector(".invention-filter-cycle") as HTMLElement;
-const savedData = getSaveData();
 
 let debugUnknownLines = savedData.debugUnknownLines ?? false;
 
@@ -577,73 +390,6 @@ updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
 
- // List of rare components. This is used to apply special styling to these items in the invention tab.
-const rareComponents = new Set([
-    "armadyl components",
-	"ascended components",
-	"avernic components",
-	"bandos components",
-	"brassican components",
-	"clockwork components",
-	"corporeal components",
-	"culinary components",
-	"cywir components",
-	"dragonfire components",
-	"ecliptic components",
-	"explosive components",
-	"faceted components",
-	"fortunate components",
-	"fungal components",
-	"harnessed components",
-	"ilujankan components",
-	"knightly components",
-	"manufactured components",
-	"noxious components",
-	"oceanic components",
-	"pestiferous components",
-	"resilient components",
-	"rumbling components",
-	"saradomin components",
-	"seren components",
-	"shadow components",
-	"shifting components",
-	"silent components",
-	"third-age components",
-	"undead components",
-	"zamorak components",
-	"zaros components",
-	"classic components",
-	"historic components",
-	"timeworn components",
-	"vintage components"
-]);
-
-const uncommonComponents = new Set([
-	"dextrous components",
-	"direct components",
-	"enhancing components",
-	"ethereal components",
-	"evasive components",
-	"healthy components",
-	"heavy components",
-	"imbued components",
-	"light components",
-	"living components",
-	"offcut components",
-	"pious components",
-	"powerful components",
-	"precious components",
-	"precise components",
-	"protective components",
-	"refined components",
-	"sharp components",
-	"strong components",
-	"stunning components",
-	"subtle components",
-	"swift components",
-	"variable components"
-]);
-
 // List of rare Seren spirit items that should be highlighted in the tracker.
 const rareSerenItems = new Set([
     "hazelmere's signet ring",
@@ -664,31 +410,6 @@ const skillPatterns: Array<{
 	{ pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
 	{ pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
 ];
-
-function repairComponentName(text: string, componentSet: Set<string>): string | null {
-	const normalized = text
-		.toLowerCase()
-		.replace(/-/g, "e")
-		.replace(/\./g, "p")
-		.replace(/[^a-z]/g, "");
-
-	for (const component of Array.from(componentSet)) {
-		const componentNormalized = component
-			.toLowerCase()
-			.replace(/[^a-z]/g, "");
-
-		const componentBase = componentNormalized.replace(/components$/, "");
-
-		if (
-			normalized.length >= 4 &&
-			componentBase.startsWith(normalized)
-		) {
-			return component;
-		}
-	}
-
-	return null;
-}
 
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine: string): string | null {
@@ -721,100 +442,26 @@ function processHarvestLine(chatLine: string): string | null {
 		// Invention materials
 		//================================
 
-		// Check for invention materials
-		const materialsMatch = cleanLine.match(
-			/Materials gained:\s*(.+)$/i
-		);
+		const inventionResult =
+			processInventionMaterials(cleanLine);
 
-		// If the line contains "Materials gained:"
-		// we will attempt to parse it for invention materials. 
-		if (materialsMatch) {
-			const materialText = materialsMatch[1];
+		if (inventionResult) {
+			incrementItems(
+				inventionResult.updates,
+				inventionResult.updates[
+					inventionResult.updates.length - 1
+				].item
+			);
 
-		// We will attempt to parse whatever material information we have.
-		let finalMaterialText = materialText;
+			setStatus(inventionResult.statusMessage);
 
-		// Clean badly chopped "components" endings
-		finalMaterialText = finalMaterialText.replace(
-			/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi,
-			"$1"
-		);
+			const warning =
+				inventionResult.partialRead
+					? " [PARTIAL READ]"
+					: "";
 
-		// Component name repair block
-		finalMaterialText = finalMaterialText.replace(
-			/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi,
-			(match, prefix, brokenName) => {
-				const repaired =
-					repairComponentName(brokenName, rareComponents) ||
-					repairComponentName(brokenName, uncommonComponents);
-
-				return repaired
-					? `${prefix}${repaired}`
-					: match;
-			}
-		);
-
-		// Then remove orphan comma tails
-		if (/,\s*(components|parts)$/i.test(finalMaterialText)) {
-			finalMaterialText = finalMaterialText.replace(/,\s*(components|parts)$/i, ",");
+			return `[COUNTED: ${inventionResult.countedMaterials.join(", ")}]${warning}`;
 		}
-
-		// If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
-		// This way we can still track the complete materials listed before the cutoff.
-		const materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
-		let materialMatch: RegExpExecArray | null;
-		const countedMaterials: string[] = [];
-		const materialUpdates: ItemUpdate[] = [];
-
-		while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
-			const amount = parseInt(materialMatch[1], 10);
-			const item = normalizeItemName(materialMatch[2]);
-
-			if (!item || isNaN(amount)) continue;
-			if (item === "junk") continue; // No need to track junk, it causes problems
-
-			const isRareComponent = rareComponents.has(item);
-			const isUncommonComponent = item.includes("components");
-			const isInventionMaterial =
-				isUncommonComponent ||
-				item.includes("parts");
-
-			if (!isInventionMaterial) continue;
-
-			const colorClass = isRareComponent
-				? "rare-component"
-				: isUncommonComponent
-					? "uncommon-component"
-					: undefined;
-
-			const source = isRareComponent
-				? "rare-components"
-				: isUncommonComponent
-					? "uncommon-components"
-					: "invention";
-
-			materialUpdates.push({
-				item,
-				amount,
-				skill: "invention",
-				colorClass,
-				source,
-			});
-				
-			countedMaterials.push(`${titleCase(item)} +${amount}`);
-
-			setStatus(`Invention: ${amount} x ${item}`);
-			}	
-
-			if (countedMaterials.length > 0) {
-					incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
-
-					const warning = finalMaterialText !== materialText ? " [PARTIAL READ]" : "";
-					return `[COUNTED: ${countedMaterials.join(", ")}]${warning}`;
-			}
-
-		}
-
 
 		//================================
 		// GOTE / Porters / Perks

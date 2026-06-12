@@ -888,6 +888,309 @@ module.exports = styleTagTransform;
 
 /***/ },
 
+/***/ "./invention.ts"
+/*!**********************!*\
+  !*** ./invention.ts ***!
+  \**********************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   processInventionMaterials: () => (/* binding */ processInventionMaterials),
+/* harmony export */   setupInventionNudges: () => (/* binding */ setupInventionNudges)
+/* harmony export */ });
+/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alt1/ocr */ "../node_modules/alt1/dist/ocr/index.js");
+/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1_ocr__WEBPACK_IMPORTED_MODULE_0__);
+
+// List of rare components.
+var rareComponents = new Set([
+    "armadyl components",
+    "ascended components",
+    "avernic components",
+    "bandos components",
+    "brassican components",
+    "clockwork components",
+    "corporeal components",
+    "culinary components",
+    "cywir components",
+    "dragonfire components",
+    "ecliptic components",
+    "explosive components",
+    "faceted components",
+    "fortunate components",
+    "fungal components",
+    "harnessed components",
+    "ilujankan components",
+    "knightly components",
+    "manufactured components",
+    "noxious components",
+    "oceanic components",
+    "pestiferous components",
+    "resilient components",
+    "rumbling components",
+    "saradomin components",
+    "seren components",
+    "shadow components",
+    "shifting components",
+    "silent components",
+    "third-age components",
+    "undead components",
+    "zamorak components",
+    "zaros components",
+    "classic components",
+    "historic components",
+    "timeworn components",
+    "vintage components",
+]);
+// List of uncommon components.
+var uncommonComponents = new Set([
+    "dextrous components",
+    "direct components",
+    "enhancing components",
+    "ethereal components",
+    "evasive components",
+    "healthy components",
+    "heavy components",
+    "imbued components",
+    "light components",
+    "living components",
+    "offcut components",
+    "pious components",
+    "powerful components",
+    "precious components",
+    "precise components",
+    "protective components",
+    "refined components",
+    "sharp components",
+    "strong components",
+    "stunning components",
+    "subtle components",
+    "swift components",
+    "variable components",
+]);
+function normalizeItemName(item) {
+    return item
+        .toLowerCase()
+        .replace(/\.$/, "")
+        .trim();
+}
+function titleCase(text) {
+    return text.replace(/\b\w/g, function (char) { return char.toUpperCase(); });
+}
+function repairComponentName(text, componentSet) {
+    var normalized = text
+        .toLowerCase()
+        .replace(/-/g, "e")
+        .replace(/\./g, "p")
+        .replace(/[^a-z]/g, "");
+    for (var _i = 0, _a = Array.from(componentSet); _i < _a.length; _i++) {
+        var component = _a[_i];
+        var componentNormalized = component
+            .toLowerCase()
+            .replace(/[^a-z]/g, "");
+        var componentBase = componentNormalized.replace(/components$/, "");
+        if (normalized.length >= 4 &&
+            componentBase.startsWith(normalized)) {
+            return component;
+        }
+    }
+    return null;
+}
+function repairMaterialText(materialText) {
+    var finalMaterialText = materialText;
+    // Clean badly chopped "components" endings, like "Subtle co...po. --."
+    finalMaterialText = finalMaterialText.replace(/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi, "$1");
+    // Repair chopped component names, like "Prot- ctiv-" or "H- avy".
+    finalMaterialText = finalMaterialText.replace(/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi, function (match, prefix, brokenName) {
+        var repaired = repairComponentName(brokenName, rareComponents) ||
+            repairComponentName(brokenName, uncommonComponents);
+        return repaired ? "".concat(prefix).concat(repaired) : match;
+    });
+    // Remove orphan tails like ", components" or ", parts".
+    finalMaterialText = finalMaterialText.replace(/,\s*(components|parts)$/i, ",");
+    return finalMaterialText;
+}
+function addTextBridgeNudge(reader, name, match) {
+    reader.forwardnudges.push({
+        name: name,
+        match: match,
+        fn: function (ctx) {
+            var startx = ctx.rightx;
+            for (var _i = 0, _a = ctx.colors; _i < _a.length; _i++) {
+                var color = _a[_i];
+                for (var _b = 0, _c = [
+                    0,
+                    ctx.font.spacewidth,
+                    ctx.font.spacewidth * 2,
+                    ctx.font.spacewidth * 3,
+                    1, 2, 3, 4, 5, 6,
+                ]; _b < _c.length; _b++) {
+                    var offset = _c[_b];
+                    var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readChar(ctx.imgdata, ctx.font, color, startx + offset, ctx.baseliney, false, true);
+                    if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
+                        continue;
+                    var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
+                    if (/^1\s*x\s+/i.test(data.text)) {
+                        data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                        return true;
+                    }
+                    var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
+                    ctx.addfrag({
+                        color: color,
+                        index: -1,
+                        text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
+                        xstart: startx,
+                        xend: one.x + one.basechar.width,
+                    });
+                    return true;
+                }
+            }
+        },
+    });
+}
+function addCommaNudge(reader) {
+    reader.forwardnudges.push({
+        name: "material-comma",
+        match: /Materials gained:[\s\S]*(parts|components)$/i,
+        fn: function (ctx) {
+            for (var _i = 0, _a = [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]; _i < _a.length; _i++) {
+                var offset = _a[_i];
+                for (var _b = 0, _c = ctx.colors; _b < _c.length; _b++) {
+                    var color = _c[_b];
+                    var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readChar(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, false, true);
+                    if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
+                        continue;
+                    ctx.addfrag({
+                        color: color,
+                        index: -1,
+                        text: ", ",
+                        xstart: ctx.rightx,
+                        xend: comma.x + comma.basechar.width + ctx.font.spacewidth,
+                    });
+                    return true;
+                }
+            }
+        },
+    });
+}
+function addMaterialContinuationNudge(reader) {
+    reader.forwardnudges.push({
+        name: "material-color-continuation",
+        match: /Materials gained:[\s\S]*(?:,|\bparts|\bcomponents)\s*$/i,
+        fn: function (ctx) {
+            var addContinuation = function (x, fragments) {
+                if (!ctx.text.endsWith(" ")) {
+                    ctx.addfrag({
+                        color: [255, 255, 255],
+                        index: -1,
+                        text: " ",
+                        xstart: ctx.rightx,
+                        xend: x,
+                    });
+                }
+                fragments.forEach(function (frag) { return ctx.addfrag(frag); });
+                return true;
+            };
+            var candidateStarts = [
+                ctx.rightx - ctx.font.spacewidth * 4,
+                ctx.rightx - ctx.font.spacewidth * 3,
+                ctx.rightx - ctx.font.spacewidth * 2,
+                ctx.rightx - ctx.font.spacewidth,
+                ctx.rightx,
+                ctx.rightx + ctx.font.spacewidth,
+                ctx.rightx + ctx.font.spacewidth * 2,
+                ctx.rightx + ctx.font.spacewidth * 3,
+                ctx.rightx + ctx.font.spacewidth * 4,
+            ];
+            for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
+                var x = candidateStarts_1[_i];
+                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
+                if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
+                    continue;
+                }
+                return addContinuation(x, data.fragments);
+            }
+            var scanStart = ctx.rightx - ctx.font.spacewidth * 4;
+            var scanEnd = ctx.rightx + ctx.font.spacewidth * 12;
+            for (var x = scanStart; x <= scanEnd; x++) {
+                for (var _a = 0, _b = ctx.colors; _a < _b.length; _a++) {
+                    var color = _b[_a];
+                    var digit = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readChar(ctx.imgdata, ctx.font, color, x, ctx.baseliney, false, true);
+                    if (!digit || !/^\d$/.test(digit.chr)) {
+                        continue;
+                    }
+                    var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_0__.readLine(ctx.imgdata, ctx.font, color, digit.x, ctx.baseliney, true, false);
+                    if (/^\d+\s*x\s+/i.test(data.text)) {
+                        return addContinuation(digit.x, data.fragments);
+                    }
+                }
+            }
+        },
+    });
+}
+function setupInventionNudges(reader) {
+    addCommaNudge(reader);
+    addMaterialContinuationNudge(reader);
+    addTextBridgeNudge(reader, "component-bridge", /Materials gained:[\s\S]*(?:parts|components)/i);
+}
+function processInventionMaterials(cleanLine) {
+    var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
+    if (!materialsMatch)
+        return null;
+    var materialText = materialsMatch[1];
+    var finalMaterialText = repairMaterialText(materialText);
+    var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
+    var materialMatch;
+    var countedMaterials = [];
+    var updates = [];
+    var statusMessage = "";
+    while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
+        var amount = parseInt(materialMatch[1], 10);
+        var item = normalizeItemName(materialMatch[2]);
+        if (!item || isNaN(amount))
+            continue;
+        if (item === "junk")
+            continue;
+        var isRareComponent = rareComponents.has(item);
+        var isUncommonComponent = item.includes("components");
+        var isInventionMaterial = isUncommonComponent ||
+            item.includes("parts");
+        if (!isInventionMaterial)
+            continue;
+        var colorClass = isRareComponent
+            ? "rare-component"
+            : isUncommonComponent
+                ? "uncommon-component"
+                : undefined;
+        var source = isRareComponent
+            ? "rare-components"
+            : isUncommonComponent
+                ? "uncommon-components"
+                : "invention";
+        updates.push({
+            item: item,
+            amount: amount,
+            skill: "invention",
+            colorClass: colorClass,
+            source: source,
+        });
+        countedMaterials.push("".concat(titleCase(item), " +").concat(amount));
+        statusMessage = "Invention: ".concat(amount, " x ").concat(item);
+    }
+    if (updates.length === 0)
+        return null;
+    return {
+        updates: updates,
+        countedMaterials: countedMaterials,
+        partialRead: finalMaterialText !== materialText || /,\s*$/.test(materialText),
+        statusMessage: statusMessage,
+    };
+}
+
+
+/***/ },
+
 /***/ "./appconfig.json"
 /*!************************!*\
   !*** ./appconfig.json ***!
@@ -896,17 +1199,6 @@ module.exports = styleTagTransform;
 
 "use strict";
 module.exports = __webpack_require__.p + "appconfig.json";
-
-/***/ },
-
-/***/ "./icon.png"
-/*!******************!*\
-  !*** ./icon.png ***!
-  \******************/
-(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-module.exports = __webpack_require__.p + "icon.png";
 
 /***/ },
 
@@ -5208,12 +5500,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alt1/chatbox */ "../node_modules/alt1/dist/chatbox/index.js");
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! alt1/ocr */ "../node_modules/alt1/dist/ocr/index.js");
-/* harmony import */ var alt1_ocr__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(alt1_ocr__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _invention__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./invention */ "./invention.ts");
 /* harmony import */ var _index_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./index.html */ "./index.html");
 /* harmony import */ var _appconfig_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./appconfig.json */ "./appconfig.json");
 /* harmony import */ var _css_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./css/style.css */ "./css/style.css");
-/* harmony import */ var _icon_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./icon.png */ "./icon.png");
 var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -5230,18 +5520,27 @@ var _a, _b;
 
 
 
-
-var inventionFilter = "all";
-var activeSkillTab = "all";
-var sortMode = "recent";
-var fishingUsePorters = true;
-var historyWindow = null;
-var historyPre = null;
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
 var maxRecentHistory = 50;
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
+var appCog = document.querySelector(".app-cog");
+var appSettingsPanel = document.querySelector(".app-settings-panel");
+var chatSelector = document.querySelector(".chat");
+var tracker = document.querySelector(".tracker");
+var historyButton = document.querySelector(".history-button");
+var debugUnknownInput = document.querySelector(".debug-unknown-lines");
+var exportButton = document.querySelector(".export");
+var importInput = document.querySelector(".import");
+var clearButton = document.querySelector(".clear");
+var status = document.querySelector(".status");
+var sortButton = document.querySelector(".sort-button");
+var fishingMode = document.querySelector(".fishing-mode");
+var fishingPortersInput = document.querySelector(".fishing-porters");
+var inventionFilters = document.querySelector(".invention-filters");
+var inventionFilterButton = document.querySelector(".invention-filter-cycle");
+var savedData = getSaveData();
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
@@ -5256,143 +5555,13 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252), // A random blue as en
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
 // orange juice
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(252, 174, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(193, 97, 1));
-function addTextBridgeNudge(name, match) {
-    reader.forwardnudges.push({
-        name: name,
-        match: match,
-        fn: function (ctx) {
-            var startx = ctx.rightx;
-            for (var _i = 0, _a = ctx.colors; _i < _a.length; _i++) {
-                var color = _a[_i];
-                for (var _b = 0, _c = [
-                    0,
-                    ctx.font.spacewidth,
-                    ctx.font.spacewidth * 2,
-                    ctx.font.spacewidth * 3,
-                    1, 2, 3, 4, 5, 6,
-                ]; _b < _c.length; _b++) {
-                    var offset = _c[_b];
-                    var one = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, startx + offset, ctx.baseliney, false, true);
-                    if ((one === null || one === void 0 ? void 0 : one.chr) !== "1")
-                        continue;
-                    var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, one.x, ctx.baseliney, true, false);
-                    if (/^1\s*x\s+/i.test(data.text)) {
-                        data.fragments.forEach(function (frag) { return ctx.addfrag(frag); });
-                        return true;
-                    }
-                    var x = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, one.x + one.basechar.width + ctx.font.spacewidth, ctx.baseliney, false, true);
-                    ctx.addfrag({
-                        color: color,
-                        index: -1,
-                        text: (x === null || x === void 0 ? void 0 : x.chr) === "x" ? "1 x" : "1",
-                        xstart: startx,
-                        xend: one.x + one.basechar.width,
-                    });
-                    return true;
-                }
-            }
-        },
-    });
-}
-function addCommaNudge() {
-    reader.forwardnudges.push({
-        name: "material-comma",
-        match: /Materials gained:[\s\S]*(parts|components)$/i,
-        fn: function (ctx) {
-            for (var _i = 0, _a = [0, 1, 2, 3, 4, 5, ctx.font.spacewidth]; _i < _a.length; _i++) {
-                var offset = _a[_i];
-                for (var _b = 0, _c = ctx.colors; _b < _c.length; _b++) {
-                    var color = _c[_b];
-                    var comma = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, ctx.rightx + offset, ctx.baseliney, false, true);
-                    if ((comma === null || comma === void 0 ? void 0 : comma.chr) !== ",")
-                        continue;
-                    ctx.addfrag({
-                        color: color,
-                        index: -1,
-                        text: ", ",
-                        xstart: ctx.rightx,
-                        xend: comma.x + comma.basechar.width + ctx.font.spacewidth,
-                    });
-                    return true;
-                }
-            }
-        },
-    });
-}
-function addMaterialContinuationNudge() {
-    reader.forwardnudges.push({
-        name: "material-color-continuation",
-        match: /Materials gained:[\s\S]*(?:,|\bparts|\bcomponents)\s*$/i,
-        fn: function (ctx) {
-            var addContinuation = function (x, fragments) {
-                if (!ctx.text.endsWith(" ")) {
-                    ctx.addfrag({
-                        color: [255, 255, 255],
-                        index: -1,
-                        text: " ",
-                        xstart: ctx.rightx,
-                        xend: x,
-                    });
-                }
-                fragments.forEach(function (frag) { return ctx.addfrag(frag); });
-                return true;
-            };
-            var candidateStarts = [
-                ctx.rightx - ctx.font.spacewidth * 4,
-                ctx.rightx - ctx.font.spacewidth * 3,
-                ctx.rightx - ctx.font.spacewidth * 2,
-                ctx.rightx - ctx.font.spacewidth,
-                ctx.rightx,
-                ctx.rightx + ctx.font.spacewidth,
-                ctx.rightx + ctx.font.spacewidth * 2,
-                ctx.rightx + ctx.font.spacewidth * 3,
-                ctx.rightx + ctx.font.spacewidth * 4,
-            ];
-            for (var _i = 0, candidateStarts_1 = candidateStarts; _i < candidateStarts_1.length; _i++) {
-                var x = candidateStarts_1[_i];
-                var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, ctx.colors, x, ctx.baseliney, true, false);
-                if (!/^\s*\d+\s*x\s+/i.test(data.text)) {
-                    continue;
-                }
-                return addContinuation(x, data.fragments);
-            }
-            var scanStart = ctx.rightx - ctx.font.spacewidth * 4;
-            var scanEnd = ctx.rightx + ctx.font.spacewidth * 12;
-            for (var x = scanStart; x <= scanEnd; x++) {
-                for (var _a = 0, _b = ctx.colors; _a < _b.length; _a++) {
-                    var color = _b[_a];
-                    var digit = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readChar(ctx.imgdata, ctx.font, color, x, ctx.baseliney, false, true);
-                    if (!digit || !/^\d$/.test(digit.chr)) {
-                        continue;
-                    }
-                    var data = alt1_ocr__WEBPACK_IMPORTED_MODULE_2__.readLine(ctx.imgdata, ctx.font, color, digit.x, ctx.baseliney, true, false);
-                    if (/^\d+\s*x\s+/i.test(data.text)) {
-                        return addContinuation(digit.x, data.fragments);
-                    }
-                }
-            }
-        },
-    });
-}
-addCommaNudge();
-addMaterialContinuationNudge();
-addTextBridgeNudge("component-bridge", /Materials gained|parts|components|Junk/i);
-var appCog = document.querySelector(".app-cog");
-var appSettingsPanel = document.querySelector(".app-settings-panel");
-var chatSelector = document.querySelector(".chat");
-var tracker = document.querySelector(".tracker");
-var status = document.querySelector(".status");
-var historyButton = document.querySelector(".history-button");
-var debugUnknownInput = document.querySelector(".debug-unknown-lines");
-var exportButton = document.querySelector(".export");
-var importInput = document.querySelector(".import");
-var fishingMode = document.querySelector(".fishing-mode");
-var fishingPortersInput = document.querySelector(".fishing-porters");
-var clearButton = document.querySelector(".clear");
-var sortButton = document.querySelector(".sort-button");
-var inventionFilters = document.querySelector(".invention-filters");
-var inventionFilterButton = document.querySelector(".invention-filter-cycle");
-var savedData = getSaveData();
+(0,_invention__WEBPACK_IMPORTED_MODULE_2__.setupInventionNudges)(reader);
+var inventionFilter = "all";
+var activeSkillTab = "all";
+var sortMode = "recent";
+var fishingUsePorters = true;
+var historyWindow = null;
+var historyPre = null;
 var debugUnknownLines = (_a = savedData.debugUnknownLines) !== null && _a !== void 0 ? _a : false;
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
@@ -5624,71 +5793,6 @@ updateInventionFilterButton();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
-// List of rare components. This is used to apply special styling to these items in the invention tab.
-var rareComponents = new Set([
-    "armadyl components",
-    "ascended components",
-    "avernic components",
-    "bandos components",
-    "brassican components",
-    "clockwork components",
-    "corporeal components",
-    "culinary components",
-    "cywir components",
-    "dragonfire components",
-    "ecliptic components",
-    "explosive components",
-    "faceted components",
-    "fortunate components",
-    "fungal components",
-    "harnessed components",
-    "ilujankan components",
-    "knightly components",
-    "manufactured components",
-    "noxious components",
-    "oceanic components",
-    "pestiferous components",
-    "resilient components",
-    "rumbling components",
-    "saradomin components",
-    "seren components",
-    "shadow components",
-    "shifting components",
-    "silent components",
-    "third-age components",
-    "undead components",
-    "zamorak components",
-    "zaros components",
-    "classic components",
-    "historic components",
-    "timeworn components",
-    "vintage components"
-]);
-var uncommonComponents = new Set([
-    "dextrous components",
-    "direct components",
-    "enhancing components",
-    "ethereal components",
-    "evasive components",
-    "healthy components",
-    "heavy components",
-    "imbued components",
-    "light components",
-    "living components",
-    "offcut components",
-    "pious components",
-    "powerful components",
-    "precious components",
-    "precise components",
-    "protective components",
-    "refined components",
-    "sharp components",
-    "strong components",
-    "stunning components",
-    "subtle components",
-    "swift components",
-    "variable components"
-]);
 // List of rare Seren spirit items that should be highlighted in the tracker.
 var rareSerenItems = new Set([
     "hazelmere's signet ring",
@@ -5705,25 +5809,6 @@ var skillPatterns = [
     { pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
     { pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
 ];
-function repairComponentName(text, componentSet) {
-    var normalized = text
-        .toLowerCase()
-        .replace(/-/g, "e")
-        .replace(/\./g, "p")
-        .replace(/[^a-z]/g, "");
-    for (var _i = 0, _a = Array.from(componentSet); _i < _a.length; _i++) {
-        var component = _a[_i];
-        var componentNormalized = component
-            .toLowerCase()
-            .replace(/[^a-z]/g, "");
-        var componentBase = componentNormalized.replace(/components$/, "");
-        if (normalized.length >= 4 &&
-            componentBase.startsWith(normalized)) {
-            return component;
-        }
-    }
-    return null;
-}
 // Process a single chat line to check for harvesting events and update the tracker accordingly.
 function processHarvestLine(chatLine) {
     var cleanLine = chatLine.replace(timestampRegex, "").trim();
@@ -5745,72 +5830,14 @@ function processHarvestLine(chatLine) {
     //================================
     // Invention materials
     //================================
-    // Check for invention materials
-    var materialsMatch = cleanLine.match(/Materials gained:\s*(.+)$/i);
-    // If the line contains "Materials gained:"
-    // we will attempt to parse it for invention materials. 
-    if (materialsMatch) {
-        var materialText = materialsMatch[1];
-        // We will attempt to parse whatever material information we have.
-        var finalMaterialText = materialText;
-        // Clean badly chopped "components" endings
-        finalMaterialText = finalMaterialText.replace(/\b([A-Za-z-]+)\s+co[\.\-a-z\s]*$/gi, "$1");
-        // Component name repair block
-        finalMaterialText = finalMaterialText.replace(/(\d+\s*x\s+)([A-Za-z- ]+?)(?=,|\.|$)/gi, function (match, prefix, brokenName) {
-            var repaired = repairComponentName(brokenName, rareComponents) ||
-                repairComponentName(brokenName, uncommonComponents);
-            return repaired
-                ? "".concat(prefix).concat(repaired)
-                : match;
-        });
-        // Then remove orphan comma tails
-        if (/,\s*(components|parts)$/i.test(finalMaterialText)) {
-            finalMaterialText = finalMaterialText.replace(/,\s*(components|parts)$/i, ",");
-        }
-        // If the text is cut off, we can try to remove the last incomplete material entry to avoid parsing errors.
-        // This way we can still track the complete materials listed before the cutoff.
-        var materialRegex = /(\d+)\s*x\s*([^,\.]+?)(?:,|\.|$)/gi;
-        var materialMatch = void 0;
-        var countedMaterials = [];
-        var materialUpdates = [];
-        while ((materialMatch = materialRegex.exec(finalMaterialText)) !== null) {
-            var amount = parseInt(materialMatch[1], 10);
-            var item = normalizeItemName(materialMatch[2]);
-            if (!item || isNaN(amount))
-                continue;
-            if (item === "junk")
-                continue; // No need to track junk, it causes problems
-            var isRareComponent = rareComponents.has(item);
-            var isUncommonComponent = item.includes("components");
-            var isInventionMaterial = isUncommonComponent ||
-                item.includes("parts");
-            if (!isInventionMaterial)
-                continue;
-            var colorClass = isRareComponent
-                ? "rare-component"
-                : isUncommonComponent
-                    ? "uncommon-component"
-                    : undefined;
-            var source = isRareComponent
-                ? "rare-components"
-                : isUncommonComponent
-                    ? "uncommon-components"
-                    : "invention";
-            materialUpdates.push({
-                item: item,
-                amount: amount,
-                skill: "invention",
-                colorClass: colorClass,
-                source: source,
-            });
-            countedMaterials.push("".concat(titleCase(item), " +").concat(amount));
-            setStatus("Invention: ".concat(amount, " x ").concat(item));
-        }
-        if (countedMaterials.length > 0) {
-            incrementItems(materialUpdates, materialUpdates[materialUpdates.length - 1].item);
-            var warning = finalMaterialText !== materialText ? " [PARTIAL READ]" : "";
-            return "[COUNTED: ".concat(countedMaterials.join(", "), "]").concat(warning);
-        }
+    var inventionResult = (0,_invention__WEBPACK_IMPORTED_MODULE_2__.processInventionMaterials)(cleanLine);
+    if (inventionResult) {
+        incrementItems(inventionResult.updates, inventionResult.updates[inventionResult.updates.length - 1].item);
+        setStatus(inventionResult.statusMessage);
+        var warning = inventionResult.partialRead
+            ? " [PARTIAL READ]"
+            : "";
+        return "[COUNTED: ".concat(inventionResult.countedMaterials.join(", "), "]").concat(warning);
     }
     //================================
     // GOTE / Porters / Perks

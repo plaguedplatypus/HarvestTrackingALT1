@@ -1,4 +1,5 @@
 const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 /**
  * @type {import("webpack").Configuration}
@@ -12,9 +13,9 @@ module.exports = {
         "main": "./index.ts"
     },
     output: {
-        path: path.resolve(__dirname, "dist"),
-        // library means that the exports from the entry file can be accessed from outside, in this case from the global scope as window.TestApp
-        library: { type: "umd", name: "TestApp" }
+    path: path.resolve(__dirname, "dist"),
+    library: { type: "umd", name: "TestApp" },
+    clean: true
     },
     devtool: false,
     mode: "development",
@@ -40,5 +41,16 @@ module.exports = {
             { test: /\.data\.png$/, loader: "alt1/imagedata-loader", type: "javascript/auto" },
             { test: /\.fontmeta.json/, loader: "alt1/font-loader" }
         ]
-    }
+  },
+
+    plugins: [
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, "src/icons"),
+                    to: "icons",
+                },
+            ],
+        }),
+    ],
 }

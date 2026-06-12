@@ -1,9 +1,9 @@
 {
   "appName": "Resource Tracker",
-  "description": "Compact RuneScape gathering tracker for Alt1 Toolkit",
+  "description": "Compact RuneScape resource tracker.",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",
-  "iconUrl": "./icon.png",
+  "iconUrl": "./icons/icon.png",
   "defaultWidth": 230,
   "defaultHeight": 350,
   "minWidth": 175,
