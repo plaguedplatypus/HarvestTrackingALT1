@@ -455,12 +455,7 @@ function processHarvestLine(chatLine: string): string | null {
 
 			setStatus(inventionResult.statusMessage);
 
-			const warning =
-				inventionResult.partialRead
-					? " [PARTIAL READ]"
-					: "";
-
-			return `[COUNTED: ${inventionResult.countedMaterials.join(", ")}]${warning}`;
+			return `[COUNTED: ${inventionResult.countedMaterials.join(", ")}]`;
 		}
 
 		//================================

@@ -5834,10 +5834,7 @@ function processHarvestLine(chatLine) {
     if (inventionResult) {
         incrementItems(inventionResult.updates, inventionResult.updates[inventionResult.updates.length - 1].item);
         setStatus(inventionResult.statusMessage);
-        var warning = inventionResult.partialRead
-            ? " [PARTIAL READ]"
-            : "";
-        return "[COUNTED: ".concat(inventionResult.countedMaterials.join(", "), "]").concat(warning);
+        return "[COUNTED: ".concat(inventionResult.countedMaterials.join(", "), "]");
     }
     //================================
     // GOTE / Porters / Perks
