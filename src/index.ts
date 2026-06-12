@@ -103,20 +103,19 @@ const reader = new ChatboxReader();
 
 reader.readargs.colors.push(
 	// anti aliasing sucks
-	a1lib.mixColor(49, 191, 20), // Carpet dust green
-	a1lib.mixColor(59, 181, 30), // hate this color
-	a1lib.mixColor(230, 45, 45), // Red (You missed...)
-	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
-	a1lib.mixColor(245, 135, 55), // News
-	a1lib.mixColor(245, 124, 1), a1lib.mixColor(255, 128, 0), a1lib.mixColor(235, 119, 3), // uncommon components
-
-	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
+	a1lib.mixColor(251, 251, 251), // off-white
+	a1lib.mixColor(235, 235, 235), // off-white
+	a1lib.mixColor(232, 47, 47), // pinkish red messages
+	a1lib.mixColor(190, 15, 6), // dark red messages
+	a1lib.mixColor(51, 197, 20), // faded Green messages
+	a1lib.mixColor(59, 181, 20), // Green messages
+	a1lib.mixColor(253, 127, 0), // uncommon components
+	a1lib.mixColor(67, 188, 188), // Cotton candy? or ancient?
+	a1lib.mixColor(255, 140, 56), // Orange News / item messages
+	a1lib.mixColor(252, 174, 0), // Orange actions
+	a1lib.mixColor(161, 53, 235), // what's this? Purple
 	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
 	a1lib.mixColor(67, 188, 188), // Cotton candy?
-	
-	// orange juice
-	a1lib.mixColor(255, 153, 0), a1lib.mixColor(252, 174, 0), 
-	a1lib.mixColor(245, 135, 55), a1lib.mixColor(193, 97, 1),
 );
 
 setupInventionNudges(reader);
