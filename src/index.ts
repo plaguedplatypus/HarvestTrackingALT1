@@ -9,54 +9,7 @@ import "./index.html";
 import "./appconfig.json";
 import "./css/style.css";
 
-const appName = "ResourceTracker";
-const appColor = a1lib.mixColor(67, 188, 188);
-
-const maxRecentHistory = 50;
-const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
-const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
-
-const appCog = document.querySelector(".app-cog") as HTMLElement;
-const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
-const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
-const tracker = document.querySelector(".tracker") as HTMLElement;
-const historyButton = document.querySelector(".history-button") as HTMLElement;
-const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;
-const exportButton = document.querySelector(".export") as HTMLElement;
-const importInput = document.querySelector(".import") as HTMLInputElement;
-const clearButton = document.querySelector(".clear") as HTMLElement;
-
-const status = document.querySelector(".status") as HTMLElement;
-const sortButton = document.querySelector(".sort-button") as HTMLElement;
-
-const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
-const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
-
-const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
-const inventionFilterButton = document.querySelector(".invention-filter-cycle") as HTMLElement;
-
-const savedData = getSaveData();
-const reader = new ChatboxReader();
-
-reader.readargs.colors.push(
-	// anti aliasing sucks
-	a1lib.mixColor(49, 191, 20), // Carpet dust green
-	a1lib.mixColor(59, 181, 30), // hate this color
-	a1lib.mixColor(230, 45, 45), // Red (You missed...)
-	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
-	a1lib.mixColor(245, 135, 55), // News
-	a1lib.mixColor(245, 124, 1), a1lib.mixColor(255, 128, 0), a1lib.mixColor(235, 119, 3), // uncommon components
-
-	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
-	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
-	a1lib.mixColor(67, 188, 188), // Cotton candy?
-	
-	// orange juice
-	a1lib.mixColor(255, 153, 0), a1lib.mixColor(252, 174, 0), 
-	a1lib.mixColor(245, 135, 55), a1lib.mixColor(193, 97, 1),
-);
-
-setupInventionNudges(reader);
+//============================
 
 type SkillType =
 	| "all"
@@ -88,16 +41,8 @@ type ItemUpdate = {
 };
 
 type InventionFilter = "all" | "rare" | "uncommon" | "common";
-let inventionFilter: InventionFilter = "all";
-
-let activeSkillTab: SkillType = "all";
 
 type SortMode = "recent" | "alpha" | "count";
-let sortMode: SortMode = "recent";
-
-let fishingUsePorters = true;
-let historyWindow: Window | null = null;
-let historyPre: HTMLPreElement | null = null;
 
 type SaveData = {
     chat?: string;
@@ -108,7 +53,72 @@ type SaveData = {
     items: Record<string, TrackedItem>;
 };
 
+//============================
+
+const appName = "ResourceTracker";
+const appColor = a1lib.mixColor(67, 188, 188);
+
+const maxRecentHistory = 50;
+const timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
+const timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
+
+const appCog = document.querySelector(".app-cog") as HTMLElement;
+const appSettingsPanel = document.querySelector(".app-settings-panel") as HTMLElement;
+const chatSelector = document.querySelector(".chat") as HTMLSelectElement;
+const tracker = document.querySelector(".tracker") as HTMLElement;
+const historyButton = document.querySelector(".history-button") as HTMLElement;
+const debugUnknownInput = document.querySelector(".debug-unknown-lines") as HTMLInputElement;
+const exportButton = document.querySelector(".export") as HTMLElement;
+const importInput = document.querySelector(".import") as HTMLInputElement;
+const clearButton = document.querySelector(".clear") as HTMLElement;
+
+const status = document.querySelector(".status") as HTMLElement;
+const sortButton = document.querySelector(".sort-button") as HTMLElement;
+
+const fishingMode = document.querySelector(".fishing-mode") as HTMLElement;
+const fishingPortersInput = document.querySelector(".fishing-porters") as HTMLInputElement;
+
+const inventionFilters = document.querySelector(".invention-filters") as HTMLElement;
+const inventionFilterButton = document.querySelector(".invention-filter-cycle") as HTMLElement;
+
+//============================
+
+const savedData = getSaveData();
+
+//============================
+
+let inventionFilter: InventionFilter = "all";
+let activeSkillTab: SkillType = "all";
+let sortMode: SortMode = "recent";
+let fishingUsePorters = true;
+let historyWindow: Window | null = null;
+let historyPre: HTMLPreElement | null = null;
+let historyClearButton: HTMLButtonElement | null = null;
 let debugUnknownLines = savedData.debugUnknownLines ?? false;
+
+//============================
+
+const reader = new ChatboxReader();
+
+reader.readargs.colors.push(
+	// anti aliasing sucks
+	a1lib.mixColor(49, 191, 20), // Carpet dust green
+	a1lib.mixColor(59, 181, 30), // hate this color
+	a1lib.mixColor(230, 45, 45), // Red (You missed...)
+	a1lib.mixColor(186, 16, 7), a1lib.mixColor(191, 15, 6), // Spirit attraction
+	a1lib.mixColor(245, 135, 55), // News
+	a1lib.mixColor(245, 124, 1), a1lib.mixColor(255, 128, 0), a1lib.mixColor(235, 119, 3), // uncommon components
+
+	a1lib.mixColor(255, 0, 255), a1lib.mixColor(161, 53, 235), // what's this? Purple
+	a1lib.mixColor(51, 101, 252), // A random blue as entered the room
+	a1lib.mixColor(67, 188, 188), // Cotton candy?
+	
+	// orange juice
+	a1lib.mixColor(255, 153, 0), a1lib.mixColor(252, 174, 0), 
+	a1lib.mixColor(245, 135, 55), a1lib.mixColor(193, 97, 1),
+);
+
+setupInventionNudges(reader);
 
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
@@ -273,6 +283,15 @@ document.querySelectorAll(".skill-tab").forEach((btn) => {
 	btn.classList.remove("active");
 });
 
+//============================
+// History window
+//============================
+
+function clearHistoryWindowDisplay() {
+	recentLines = [];
+	updateHistoryWindow();
+}
+
 function updateHistoryWindow() {
 	if (!historyWindow || historyWindow.closed) return;
 
@@ -290,17 +309,37 @@ function updateHistoryWindow() {
 		doc.body.style.background = "#1e1e1e";
 		doc.body.style.color = "#ddd";
 		doc.body.style.fontFamily = "Consolas, monospace";
+		doc.body.style.display = "flex";
+		doc.body.style.flexDirection = "column";
+		doc.body.style.height = "100vh";
+
+		const toolbar = doc.createElement("div");
+		toolbar.style.display = "flex";
+		toolbar.style.justifyContent = "flex-end";
+		toolbar.style.alignItems = "center";
+		toolbar.style.padding = "3px";
+		toolbar.style.borderBottom = "1px solid #444";
+		toolbar.style.boxSizing = "border-box";
+
+		historyClearButton = doc.createElement("button");
+		historyClearButton.textContent = "Clear";
+		historyClearButton.style.fontSize = "10px";
+		historyClearButton.style.cursor = "pointer";
+
+		historyClearButton.addEventListener("click", clearHistoryWindowDisplay);
+
+		toolbar.appendChild(historyClearButton);
 
 		historyPre = doc.createElement("pre");
 		historyPre.style.margin = "0";
 		historyPre.style.padding = "3px";
 		historyPre.style.whiteSpace = "pre-wrap";
 		historyPre.style.overflowY = "auto";
-		historyPre.style.height = "100vh";
+		historyPre.style.flex = "1";
 		historyPre.style.boxSizing = "border-box";
 		historyPre.style.fontSize = "10px";
 
-		doc.body.replaceChildren(historyPre);
+		doc.body.replaceChildren(toolbar, historyPre);
 		doc.body.dataset.initialized = "true";
 	}
 
@@ -309,7 +348,7 @@ function updateHistoryWindow() {
 	historyPre.textContent = [...recentLines].reverse().join("\n");
 }
 
-// Debug function to show recent chat history
+// Show recent chat history
 function showChatHistory() {
 	if (!historyWindow || historyWindow.closed) {
 		historyWindow = window.open(
@@ -319,10 +358,15 @@ function showChatHistory() {
 		);
 
 		historyPre = null;
+		historyClearButton = null;
 	}
 
 	setTimeout(updateHistoryWindow, 50);
 }
+
+//============================
+// Toggles/Buttons inside tabs
+//============================
 
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {
@@ -389,6 +433,8 @@ updateInventionFilterButton();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
+
+//============================
 
 // List of rare Seren spirit items that should be highlighted in the tracker.
 const rareSerenItems = new Set([
@@ -652,6 +698,9 @@ function updateChatHistory(chatLine: string, debugStatus = "[IGNORED]") {
 
 	if (recentLines.length > maxRecentHistory) {
 		recentLines.shift();
+	}
+
+	if (recentLineKeys.length > maxRecentHistory) {
 		const oldKey = recentLineKeys.shift();
 
 		if (oldKey) {

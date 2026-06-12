@@ -12,7 +12,6 @@ type InventionMaterialUpdate = {
 type InventionMaterialResult = {
 	updates: InventionMaterialUpdate[];
 	countedMaterials: string[];
-	partialRead: boolean;
 	statusMessage: string;
 };
 
@@ -412,7 +411,6 @@ export function processInventionMaterials(
 	return {
 		updates,
 		countedMaterials,
-		partialRead: finalMaterialText !== materialText || /,\s*$/.test(materialText),
 		statusMessage,
 	};
 }

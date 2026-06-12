@@ -1183,7 +1183,6 @@ function processInventionMaterials(cleanLine) {
     return {
         updates: updates,
         countedMaterials: countedMaterials,
-        partialRead: finalMaterialText !== materialText || /,\s*$/.test(materialText),
         statusMessage: statusMessage,
     };
 }
@@ -5520,6 +5519,7 @@ var _a, _b;
 
 
 
+//============================
 var appName = "ResourceTracker";
 var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
 var maxRecentHistory = 50;
@@ -5540,7 +5540,18 @@ var fishingMode = document.querySelector(".fishing-mode");
 var fishingPortersInput = document.querySelector(".fishing-porters");
 var inventionFilters = document.querySelector(".invention-filters");
 var inventionFilterButton = document.querySelector(".invention-filter-cycle");
+//============================
 var savedData = getSaveData();
+//============================
+var inventionFilter = "all";
+var activeSkillTab = "all";
+var sortMode = "recent";
+var fishingUsePorters = true;
+var historyWindow = null;
+var historyPre = null;
+var historyClearButton = null;
+var debugUnknownLines = (_a = savedData.debugUnknownLines) !== null && _a !== void 0 ? _a : false;
+//============================
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
@@ -5556,13 +5567,6 @@ alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy?
 // orange juice
 alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(255, 153, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(252, 174, 0), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(193, 97, 1));
 (0,_invention__WEBPACK_IMPORTED_MODULE_2__.setupInventionNudges)(reader);
-var inventionFilter = "all";
-var activeSkillTab = "all";
-var sortMode = "recent";
-var fishingUsePorters = true;
-var historyWindow = null;
-var historyPre = null;
-var debugUnknownLines = (_a = savedData.debugUnknownLines) !== null && _a !== void 0 ? _a : false;
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
     if (!window.alt1) {
@@ -5698,6 +5702,13 @@ if (fishingPortersInput) {
 document.querySelectorAll(".skill-tab").forEach(function (btn) {
     btn.classList.remove("active");
 });
+//============================
+// History window
+//============================
+function clearHistoryWindowDisplay() {
+    recentLines = [];
+    updateHistoryWindow();
+}
 function updateHistoryWindow() {
     if (!historyWindow || historyWindow.closed)
         return;
@@ -5712,29 +5723,49 @@ function updateHistoryWindow() {
         doc.body.style.background = "#1e1e1e";
         doc.body.style.color = "#ddd";
         doc.body.style.fontFamily = "Consolas, monospace";
+        doc.body.style.display = "flex";
+        doc.body.style.flexDirection = "column";
+        doc.body.style.height = "100vh";
+        var toolbar_1 = doc.createElement("div");
+        toolbar_1.style.display = "flex";
+        toolbar_1.style.justifyContent = "flex-end";
+        toolbar_1.style.alignItems = "center";
+        toolbar_1.style.padding = "3px";
+        toolbar_1.style.borderBottom = "1px solid #444";
+        toolbar_1.style.boxSizing = "border-box";
+        historyClearButton = doc.createElement("button");
+        historyClearButton.textContent = "Clear";
+        historyClearButton.style.fontSize = "10px";
+        historyClearButton.style.cursor = "pointer";
+        historyClearButton.addEventListener("click", clearHistoryWindowDisplay);
+        toolbar_1.appendChild(historyClearButton);
         historyPre = doc.createElement("pre");
         historyPre.style.margin = "0";
         historyPre.style.padding = "3px";
         historyPre.style.whiteSpace = "pre-wrap";
         historyPre.style.overflowY = "auto";
-        historyPre.style.height = "100vh";
+        historyPre.style.flex = "1";
         historyPre.style.boxSizing = "border-box";
         historyPre.style.fontSize = "10px";
-        doc.body.replaceChildren(historyPre);
+        doc.body.replaceChildren(toolbar_1, historyPre);
         doc.body.dataset.initialized = "true";
     }
     if (!historyPre)
         return;
     historyPre.textContent = __spreadArray([], recentLines, true).reverse().join("\n");
 }
-// Debug function to show recent chat history
+// Show recent chat history
 function showChatHistory() {
     if (!historyWindow || historyWindow.closed) {
         historyWindow = window.open("", "historyWindow", "width=350,height=450");
         historyPre = null;
+        historyClearButton = null;
     }
     setTimeout(updateHistoryWindow, 50);
 }
+//============================
+// Toggles/Buttons inside tabs
+//============================
 // Show/hide fishing mode based on active tab
 function updateFishingModeVisibility() {
     if (!fishingMode)
@@ -5793,6 +5824,7 @@ updateInventionFilterButton();
 updateInventionFilterVisibility();
 updateSortButtonLabel();
 render();
+//============================
 // List of rare Seren spirit items that should be highlighted in the tracker.
 var rareSerenItems = new Set([
     "hazelmere's signet ring",
@@ -6002,6 +6034,8 @@ function updateChatHistory(chatLine, debugStatus) {
     recentLineSet.add(chatLine);
     if (recentLines.length > maxRecentHistory) {
         recentLines.shift();
+    }
+    if (recentLineKeys.length > maxRecentHistory) {
         var oldKey = recentLineKeys.shift();
         if (oldKey) {
             recentLineSet.delete(oldKey);
