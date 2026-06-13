@@ -233,7 +233,7 @@ function processChat(opts: Array<{ text: string }>) {
 			continue;
 		}
 
-		chatStr += text;
+		chatStr += text + " ";
 	}
 
 	if (chatStr.trim() === "") return [];
@@ -761,6 +761,14 @@ function render(highlightItem?: string, data = getSaveData()) {
 	}
 
 	if (activeSkillTab === "invention") {
+		if (inventionFilter === "all") {
+			for (const item of items) {
+				renderItemRow(item, data.items[item], highlightItem);
+			}
+
+			return;
+		}
+
 		const ancientItems = items.filter(
 			(item) => data.items[item].source === "ancient-components"
 		);
@@ -777,21 +785,22 @@ function render(highlightItem?: string, data = getSaveData()) {
 			(item) => data.items[item].source === "invention" || !data.items[item].source
 		);
 
-		if (inventionFilter === "all" || inventionFilter === "ancient") {
+		if (inventionFilter === "ancient") {
 			renderItemGroup("Ancient Components", ancientItems, data, highlightItem);
 		}
 
-		if (inventionFilter === "all" || inventionFilter === "rare") {
+		if (inventionFilter === "rare") {
 			renderItemGroup("Rare Components", rareItems, data, highlightItem);
 		}
 
-		if (inventionFilter === "all" || inventionFilter === "uncommon") {
+		if (inventionFilter === "uncommon") {
 			renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
 		}
 
-		if (inventionFilter === "all" || inventionFilter === "common") {
+		if (inventionFilter === "common") {
 			renderItemGroup("Common Components", commonItems, data, highlightItem);
 		}
+
 		return;
 	}
 

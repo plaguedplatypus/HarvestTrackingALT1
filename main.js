@@ -5674,7 +5674,7 @@ function processChat(opts) {
             chatStr += text + " ";
             continue;
         }
-        chatStr += text;
+        chatStr += text + " ";
     }
     if (chatStr.trim() === "")
         return [];
@@ -6091,26 +6091,33 @@ function render(highlightItem, data) {
         return;
     }
     if (activeSkillTab === "invention") {
+        if (inventionFilter === "all") {
+            for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+                var item = items_1[_i];
+                renderItemRow(item, data.items[item], highlightItem);
+            }
+            return;
+        }
         var ancientItems = items.filter(function (item) { return data.items[item].source === "ancient-components"; });
         var rareItems = items.filter(function (item) { return data.items[item].source === "rare-components"; });
         var uncommonItems = items.filter(function (item) { return data.items[item].source === "uncommon-components"; });
         var commonItems = items.filter(function (item) { return data.items[item].source === "invention" || !data.items[item].source; });
-        if (inventionFilter === "all" || inventionFilter === "ancient") {
+        if (inventionFilter === "ancient") {
             renderItemGroup("Ancient Components", ancientItems, data, highlightItem);
         }
-        if (inventionFilter === "all" || inventionFilter === "rare") {
+        if (inventionFilter === "rare") {
             renderItemGroup("Rare Components", rareItems, data, highlightItem);
         }
-        if (inventionFilter === "all" || inventionFilter === "uncommon") {
+        if (inventionFilter === "uncommon") {
             renderItemGroup("Uncommon Components", uncommonItems, data, highlightItem);
         }
-        if (inventionFilter === "all" || inventionFilter === "common") {
+        if (inventionFilter === "common") {
             renderItemGroup("Common Components", commonItems, data, highlightItem);
         }
         return;
     }
-    for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
-        var item = items_1[_i];
+    for (var _a = 0, items_2 = items; _a < items_2.length; _a++) {
+        var item = items_2[_a];
         renderItemRow(item, data.items[item], highlightItem);
     }
 }
@@ -6165,8 +6172,8 @@ function renderItemGroup(label, items, data, highlightItem) {
     header.className = "group-header";
     header.innerText = label;
     tracker.appendChild(header);
-    for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
-        var item = items_2[_i];
+    for (var _i = 0, items_3 = items; _i < items_3.length; _i++) {
+        var item = items_3[_i];
         renderItemRow(item, data.items[item], highlightItem);
     }
 }
