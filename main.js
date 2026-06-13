@@ -435,7 +435,7 @@ button,
 }
 
 .ancient-component {
-	color: #b98cff;
+	color: #43bcbc;
 }
 
 .seren-item {
