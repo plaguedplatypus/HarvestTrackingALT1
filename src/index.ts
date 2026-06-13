@@ -1,4 +1,4 @@
-import * as a1lib from "alt1";
+import * as a1lib from "alt1/base";
 import ChatboxReader from "alt1/chatbox";
 import {
 	setupInventionNudges,
@@ -105,6 +105,7 @@ reader.readargs.colors.push(
 	// anti aliasing sucks
 	a1lib.mixColor(51, 197, 20), // faded Green messages
 	a1lib.mixColor(59, 181, 20), // Green messages
+	a1lib.mixColor(59, 181, 30), // Other Green messages
 
 	a1lib.mixColor(232, 47, 47), // pinkish red messages
 	a1lib.mixColor(190, 15, 6), // dark red messages
@@ -484,7 +485,7 @@ function processHarvestLine(chatLine: string): string | null {
 				: "seren-item";
 
 			incrementItem(item, amount, "seren", colorClass, "seren-spirit");
-			setStatus(`Seren Spirit: ${amount} x ${item}`);
+			setStatus(`﴾♦﴿: ${amount} x ${item}`);
 
 			return `[COUNTED: ${item} +${amount}]`;
 		}
@@ -544,7 +545,7 @@ function processHarvestLine(chatLine: string): string | null {
 			}
 
 			incrementItem(item, amount, skill);
-			setStatus(`Tracked: ${amount} x ${item}`);
+			setStatus(`✚: ${amount} x ${item}`);
 
 			return `[COUNTED: ${item} +${amount}]`;
 		}
@@ -566,7 +567,7 @@ function processHarvestLine(chatLine: string): string | null {
 			if (!item) return "[IGNORED]";
 
 			incrementItem(item, 1, entry.skill);
-			setStatus(`Tracked: ${item}`);
+			setStatus(`✚: ${item}`);
 			return `[COUNTED: ${item} +1]`;
 		}
 	

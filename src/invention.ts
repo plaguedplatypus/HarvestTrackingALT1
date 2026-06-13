@@ -415,7 +415,7 @@ export function processInventionMaterials(
 		});
 
 		countedMaterials.push(`${titleCase(item)} +${amount}`);
-		statusMessage = `Invention: ${amount} x ${item}`;
+		statusMessage = `💡: ${amount} x ${item}`;
 	}
 
 	if (updates.length === 0) return null;

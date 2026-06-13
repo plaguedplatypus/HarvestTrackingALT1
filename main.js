@@ -1190,7 +1190,7 @@ function processInventionMaterials(cleanLine) {
             source: source,
         });
         countedMaterials.push("".concat(titleCase(item), " +").concat(amount));
-        statusMessage = "Invention: ".concat(amount, " x ").concat(item);
+        statusMessage = "\uD83D\uDCA1: ".concat(amount, " x ").concat(item);
     }
     if (updates.length === 0)
         return null;
@@ -5509,8 +5509,8 @@ var __webpack_exports__ = {};
   !*** ./index.ts ***!
   \******************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alt1 */ "../node_modules/alt1/dist/base/index.js");
-/* harmony import */ var alt1__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var alt1_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alt1/base */ "../node_modules/alt1/dist/base/index.js");
+/* harmony import */ var alt1_base__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alt1_base__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! alt1/chatbox */ "../node_modules/alt1/dist/chatbox/index.js");
 /* harmony import */ var alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(alt1_chatbox__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _invention__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./invention */ "./invention.ts");
@@ -5535,7 +5535,7 @@ var _a, _b;
 
 //============================
 var appName = "ResourceTracker";
-var appColor = alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
+var appColor = alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188);
 var maxRecentHistory = 50;
 var timestampRegex = /\[\d{2}:\d{2}:\d{2}\]/g;
 var timestampLineRegex = /\[\d{2}:\d{2}:\d{2}\]/;
@@ -5569,16 +5569,17 @@ var debugUnknownLines = (_a = savedData.debugUnknownLines) !== null && _a !== vo
 var reader = new (alt1_chatbox__WEBPACK_IMPORTED_MODULE_1___default())();
 reader.readargs.colors.push(
 // anti aliasing sucks
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 197, 20), // faded Green messages
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 20), // Green messages
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // pinkish red messages
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(190, 15, 6), // dark red messages
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), // News
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(252, 174, 0), // Orange actions
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 127, 0), // uncommon components
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy? or ancient?
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
-alt1__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252));
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 197, 20), // faded Green messages
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 20), // Green messages
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(59, 181, 30), // Other Green messages
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(232, 47, 47), // pinkish red messages
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(190, 15, 6), // dark red messages
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(245, 135, 55), // News
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(252, 174, 0), // Orange actions
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(253, 127, 0), // uncommon components
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(67, 188, 188), // Cotton candy? or ancient?
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(161, 53, 235), // what's this? Purple
+alt1_base__WEBPACK_IMPORTED_MODULE_0__.mixColor(51, 101, 252));
 (0,_invention__WEBPACK_IMPORTED_MODULE_2__.setupInventionNudges)(reader);
 // Wait for alt1 to initialize and find the chatbox
 window.setTimeout(function () {
@@ -5873,7 +5874,7 @@ function processHarvestLine(chatLine) {
             ? "seren-item-rare"
             : "seren-item";
         incrementItem(item, amount, "seren", colorClass, "seren-spirit");
-        setStatus("Seren Spirit: ".concat(amount, " x ").concat(item));
+        setStatus("\uFD3E\u2666\uFD3F: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
     //================================
@@ -5912,7 +5913,7 @@ function processHarvestLine(chatLine) {
             return null;
         }
         incrementItem(item, amount, skill);
-        setStatus("Tracked: ".concat(amount, " x ").concat(item));
+        setStatus("\u271A: ".concat(amount, " x ").concat(item));
         return "[COUNTED: ".concat(item, " +").concat(amount, "]");
     }
     //================================
@@ -5931,7 +5932,7 @@ function processHarvestLine(chatLine) {
         if (!item)
             return "[IGNORED]";
         incrementItem(item, 1, entry.skill);
-        setStatus("Tracked: ".concat(item));
+        setStatus("\u271A: ".concat(item));
         return "[COUNTED: ".concat(item, " +1]");
     }
     return null;
