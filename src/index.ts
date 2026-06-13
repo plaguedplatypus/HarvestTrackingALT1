@@ -453,12 +453,7 @@ const skillPatterns: Array<{
 	pattern: RegExp;
 	skill: SkillType;
 }> = [
-	{ pattern: /You manage to mine some\s+(.+?)\./i, skill: "mining" },
-	{ pattern: /You mine (?:(?:some|an?)\s+)?(.+?)\./i, skill: "mining" },
 	{ pattern: /You get some\s+(.+?)[!.]/i, skill: "woodcutting" },
-	{ pattern: /You cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-	{ pattern: /You successfully cut (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
-	{ pattern: /You chop (?:(?:some|an?)\s+)?(.+?)\./i, skill: "woodcutting" },
 	{ pattern: /You catch (?:a|an|some)\s+(.+?)\./i, skill: "fishing" },
 	{ pattern: /You find (?:a|an|some)\s+(.+?)\./i, skill: "archaeology" },
 ];
@@ -545,7 +540,7 @@ function processHarvestLine(chatLine: string): string | null {
 			}
 
 			incrementItem(item, amount, skill);
-			setStatus(`✚: ${amount} x ${item}`);
+			setStatus(`Added: ${amount} x ${item}`);
 
 			return `[COUNTED: ${item} +${amount}]`;
 		}
@@ -567,18 +562,50 @@ function processHarvestLine(chatLine: string): string | null {
 			if (!item) return "[IGNORED]";
 
 			incrementItem(item, 1, entry.skill);
-			setStatus(`✚: ${item}`);
+			setStatus(`Added: ${item}`);
 			return `[COUNTED: ${item} +1]`;
 		}
 	
 	return null;
 }
 
+//===================================================================
+// Sort the items not caught by skillPatterns/transportMatch
+//===================================================================
+
+const miningItems = [
+	"limestone","essence",
+	"clay","sandstone","granite", 
+	"calcified", // croesus front
+];
+
+const woodcuttingItems = [
+	"logs", 
+	"bamboo", // uncharted isles
+	"timber", // croesus front
+];
+	
+const fishingItems = [
+	"raw ", 
+	"leaping ", // barbarian fishing
+	"algae",   // croesus front
+];
+
 function getSkillForItem(item: string): InternalSkillType {
+
 	if (item.includes("(damaged)")) return "archaeology";
-	if (item.includes("ore") || item.includes("salt")) return "mining";
-	if (item.includes("logs") || item.includes("bamboo")) return "woodcutting";
-	if (item.includes("raw ") || item.includes("lobster") || item.includes("tuna") || item.includes("shark") || item.includes("sailfish")) return "fishing";
+
+	if (miningItems.some((keyword) => item.includes(keyword))) {
+		return "mining";
+	}
+
+	if (woodcuttingItems.some((keyword) => item.includes(keyword))) {
+		return "woodcutting";
+	}
+
+	if (fishingItems.some((keyword) => item.includes(keyword))) {
+		return "fishing";
+	}
 
 	return "other";
 }
