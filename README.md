@@ -18,7 +18,7 @@ Tracked resources are categorized into skill tabs when the chat message or item 
 - Seren Spirits
 
 ### Invention Tracking
-Tracks Invention material messages from disassembly, including:
+Tracks Invention material messages from disassembly and Divine Blessings, including:
 
 - Common parts
 - Uncommon components
@@ -53,7 +53,7 @@ The Fishing tab includes a toggle to switch between porter-based tracking and di
 ## Requirements
 - RuneScape chatbox visible on screen
 - Chat timestamps must be enabled
-- Sign of the Porter / Grace of the Elves is recommended for the most accurate Mining and some Woodcutting tracking
+- Sign of the Porter / Grace of the Elves is recommended for the most accurate Mining and Woodcutting tracking
 
 ## Installation
 
@@ -75,7 +75,7 @@ Source: https://github.com/plaguedplatypus/PlaguesResourceTracking
 
 - The app can only track resources that produce readable chatbox messages.
 - Some resources go directly to inventory without a chat message and cannot be tracked automatically.
-- Mining is most reliable when using Porters or Grace of the Elves.
+- Mining is only trackable when using Porters or Grace of the Elves.
 - Some Woodcutting resources may be approximate when gathered directly to inventory without porter messages.
 - Farming, herbs, Herblore, and general loot tracking are not currently supported.
 - If something is missed, enable the debug/history option to view tracked and ignored chat lines.

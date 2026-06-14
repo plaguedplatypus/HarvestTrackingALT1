@@ -5754,7 +5754,7 @@ function updateHistoryWindow() {
         toolbar_1.style.borderBottom = "1px solid #444";
         toolbar_1.style.boxSizing = "border-box";
         historyClearButton = doc.createElement("button");
-        historyClearButton.textContent = "Clear";
+        historyClearButton.textContent = "Clear Display";
         historyClearButton.style.fontSize = "10px";
         historyClearButton.style.cursor = "pointer";
         historyClearButton.addEventListener("click", clearHistoryWindowDisplay);
@@ -6188,20 +6188,25 @@ function renderItemRow(item, itemData, highlightItem) {
     var row = document.createElement("div");
     row.className = "item-row";
     var goalHtml = "";
+    var goalTooltip = "";
     if (itemData.goal) {
         var goalReached = itemData.count >= itemData.goal;
         var overage = itemData.count - itemData.goal;
         var overageText = overage > 0
             ? " (+".concat(overage.toLocaleString(), ")")
             : "";
+        var remaining = Math.max(itemData.goal - itemData.count, 0);
+        goalTooltip = goalReached
+            ? "Goal reached. ".concat(overage > 0 ? "".concat(overage.toLocaleString(), " over goal.") : "Exactly at goal.")
+            : "".concat(remaining.toLocaleString(), " remaining to goal.");
         if (goalReached) {
-            goalHtml = "\n\t\t\t\t<div class=\"goal-complete\">\u2605 Goal Reached!".concat(overageText, "</div>\n\t");
+            goalHtml = "\n\t\t\t<div class=\"goal-complete\" title=\"".concat(escapeAttr(goalTooltip), "\">\u2605 Goal Reached!").concat(overageText, "</div>\n\t\t");
         }
         else {
             var progress = Math.min((itemData.count / itemData.goal) * 100, 100);
             var current = itemData.count.toLocaleString();
             var goal = itemData.goal.toLocaleString();
-            goalHtml = "\n    \t\t<div class=\"goal-row\">\n        \t\t<span class=\"goal-text\">\n           \t\t\t ".concat(current, " / ").concat(goal, " (").concat(progress.toFixed(1), "%)\n        \t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
+            goalHtml = "\n    \t\t<div class=\"goal-row\" title=\"".concat(escapeAttr(goalTooltip), "\">\n        \t\t<span class=\"goal-text\">\n           \t\t\t ").concat(current, " / ").concat(goal, " (").concat(progress.toFixed(1), "%)\n        \t\t</span>\n\n\t\t\t\t<div class=\"progress-bar\">\n\t\t\t\t\t<div class=\"progress-fill\" style=\"width:").concat(progress, "%\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t");
         }
     }
     row.innerHTML = "\n\t\t<div class=\"item-main-row\">\n\t\t\t<div class=\"item-text\">\n\t\t\t\t<strong class=\"".concat(itemData.colorClass || "", "\">\n\t\t\t\t\t").concat(escapeHtml(titleCase(item)), "\n\t\t\t\t</strong>\n\t\t\t</div>\n\n\t\t\t<div class=\"item-count\">\n    \t\t\t").concat(itemData.count.toLocaleString(), "\n\t\t\t</div>\n\n\t\t\t<button class=\"cog-btn\" data-item=\"").concat(escapeAttr(item), "\">\u2699</button>\n\t\t</div>\n\n\t\t").concat(goalHtml, "\n\n\t\t<div class=\"settings-panel ").concat(itemData.settingsOpen ? "open" : "", "\">\n\t\t\t<input type=\"number\"\n\t\t\t\t   id=\"goal-").concat(escapeAttr(item), "\"\n\t\t\t\t   placeholder=\"Goal\"\n\t\t\t\t   value=\"").concat(itemData.goal || "", "\">\n\n\t\t\t<button class=\"clear-goal\" data-item=\"").concat(escapeAttr(item), "\" title=\"Clear Goal\">\u2716</button>\n\t\t\t<button class=\"save-goal\" data-item=\"").concat(escapeAttr(item), "\" title=\"Save Goal\">\uD83D\uDCBE</button>\n\t\t\t<span class=\"button-separator\">\u2022</span>\n\t\t\t<button class=\"reset-item\" data-item=\"").concat(escapeAttr(item), "\" title=\"Reset Count\">\u21BA</button>\n\t\t\t<button class=\"delete-item\" data-item=\"").concat(escapeAttr(item), "\" title=\"Delete Item\">\uD83D\uDDD1</button>\n\t\t</div>\n\t");

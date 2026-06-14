@@ -329,7 +329,7 @@ function updateHistoryWindow() {
 		toolbar.style.boxSizing = "border-box";
 
 		historyClearButton = doc.createElement("button");
-		historyClearButton.textContent = "Clear";
+		historyClearButton.textContent = "Clear Display";
 		historyClearButton.style.fontSize = "10px";
 		historyClearButton.style.cursor = "pointer";
 
@@ -893,6 +893,7 @@ function renderItemRow(
 	row.className = "item-row";
 
 	let goalHtml = "";
+	let goalTooltip = "";
 
 	if (itemData.goal) {
 		const goalReached = itemData.count >= itemData.goal;
@@ -901,11 +902,17 @@ function renderItemRow(
 			overage > 0
 				? ` (+${overage.toLocaleString()})`
 				: "";
+				
+		const remaining = Math.max(itemData.goal - itemData.count, 0);
+
+		goalTooltip = goalReached
+				? `Goal reached. ${overage > 0 ? `${overage.toLocaleString()} over goal.` : "Exactly at goal."}`
+				: `${remaining.toLocaleString()} remaining to goal.`;
 
 		if (goalReached) {
 			goalHtml = `
-				<div class="goal-complete">★ Goal Reached!${overageText}</div>
-	`;
+			<div class="goal-complete" title="${escapeAttr(goalTooltip)}">★ Goal Reached!${overageText}</div>
+		`;
 
 		} else {
 		const progress = Math.min((itemData.count / itemData.goal) * 100, 100);
@@ -913,7 +920,7 @@ function renderItemRow(
 		const goal = itemData.goal.toLocaleString();
 
 		goalHtml = `
-    		<div class="goal-row">
+    		<div class="goal-row" title="${escapeAttr(goalTooltip)}">
         		<span class="goal-text">
            			 ${current} / ${goal} (${progress.toFixed(1)}%)
         		</span>
