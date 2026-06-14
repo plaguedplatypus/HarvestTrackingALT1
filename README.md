@@ -1,75 +1,85 @@
 # Plague's Resource Tracker
 
-An Alt1 Toolkit app that started as a simple mining tracker has gradually grown into a full-featured gathering companion for multiple skills. Designed to automatically track gathered resources, special rewards, and progress toward long-term goals. Utilizes chat box timestamps for duplicate protection and accurate tracking. Certain skills may require the use of Porters/GOTE to track.
+An Alt1 Toolkit app for RuneScape 3 that tracks Invention, Archaeology, Fishing and more.
+
+The app started as a simple Mining tracker and has grown into a compact gathering companion for multiple skills. Designed to automatically track gathered resources, special rewards, and progress toward long-term goals without needing spreadsheets, notepads, calculators, or manual counting. Utilizes chat box timestamps for duplicate protection and accurate tracking.
 
 ## Features
 
-### Goal Tracking
-
-- Set goals for any tracked item
-- Progress bars
-- Percentage completion
-- Persistent save data
-
-### Gathering Resource Tracking
-
-Tracked resources are automatically categorized into tabs:
+### Resource Tracking
+Tracked resources are categorized into skill tabs when the chat message or item type can be identified:
 
 - All
 - Mining
 - Woodcutting
 - Fishing
 - Archaeology
+- Invention
 - Seren Spirits
-- Other
 
-### Seren Spirit / Divine Blessing Tracking
+### Invention Tracking
+Tracks Invention material messages from disassembly, including:
 
-Dedicated tracking for:
+- Common parts
+- Uncommon components
+- Rare components
+- Ancient components
 
-- Seren Spirit rewards
-- Divine Blessing rewards
+### Goal Tracking
 
-Rewards are displayed separately and color-coded for easy identification.
+- Set goals for any tracked item
+- Progress bars
+- Percentage completion
+- Goal reached indicator
+- Persistent save data
 
 ### Quality of Life
 
-- Recent items automatically sort to the top
+- Sort items by Recent, A-Z, or Count
 - Per-item goal management
 - Per-item reset and delete
-- Clear current tab
+- Clear tracking by selected skill tab
 - Import / Export save data
-- Remembers selected tab
 - Scrollable item list
 - Timestamped status updates
 - Compact Alt1-friendly UI
+- Debug/history window for checking tracked and ignored chat lines (Found an item not tracked that you think should be? Let me know)
 
-### Fishing Modes
+### Fishing Mode
+Fishing can produce duplicate chat messages when using Porters or Grace of the Elves.
 
-Due to how fishing with Porters or GOTE sends duplicate messages to the chat box a toggle allows switching between methods to prevent duplicate tracking.
+The Fishing tab includes a toggle to switch between porter-based tracking and direct fishing-message tracking to help prevent duplicate counts.
 
-Supports both:
-
-- Tracking banked fish through Porter/GotE transport messages
-- Tracking fish directly from catch messages
+## Requirements
+- RuneScape chatbox visible on screen
+- Chat timestamps must be enabled
+- Sign of the Porter / Grace of the Elves is recommended for the most accurate Mining and some Woodcutting tracking
 
 ## Installation
 
-1. Open the app URL in Alt1. 
-    alt1://addapp/https://plaguedplatypus.github.io/PlaguesResourceTracking/appconfig.json
+Source: https://github.com/plaguedplatypus/PlaguesResourceTracking
+
+1. Open the app URL in Alt1:
+
+   alt1://addapp/https://plaguedplatypus.github.io/PlaguesResourceTracking/appconfig.json
+
 2. Allow:
    - View Screen
    - Get Game State
    - Show Overlay
+
 3. Select the desired chatbox if prompted.
 4. Start gathering.
 
-## Known Issues
+## Limitations
 
-- Resources may occasionally appear in the **Other** tab until categorized.
-- Some gathering methods may not yet have dedicated support.
-- Additional Seren Spirit and Blessing of the Gods rewards may need to be added over time.
+- The app can only track resources that produce readable chatbox messages.
+- Some resources go directly to inventory without a chat message and cannot be tracked automatically.
+- Mining is most reliable when using Porters or Grace of the Elves.
+- Some Woodcutting resources may be approximate when gathered directly to inventory without porter messages.
+- Farming, herbs, Herblore, and general loot tracking are not currently supported.
+- If something is missed, enable the debug/history option to view tracked and ignored chat lines.
 
 ## Credit
 
-Based on the Alt1 app structure of SerenTracker by ZeroGwafa, reworked as a general item tracker.
+Based on the Alt1 app structure of SerenTracker by ZeroGwafa, reworked into a general RuneScape resource tracker.

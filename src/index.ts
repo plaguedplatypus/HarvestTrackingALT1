@@ -160,6 +160,8 @@ if (window.alt1) {
 
 // Populate the chat selector dropdown with available chatboxes
 function populateChatSelector() {
+	if (!reader.pos) return;
+
 	chatSelector.innerHTML = `<option value="">Select Chat</option>`;
 
 	reader.pos.boxes.forEach((_box, i) => {
@@ -168,6 +170,7 @@ function populateChatSelector() {
 
 	chatSelector.addEventListener("change", function () {
 		if (this.value === "") return;
+		if (!reader.pos) return;
 
 		reader.pos.mainbox = reader.pos.boxes[Number(this.value)];
 		showSelectedChat(reader.pos);
@@ -182,6 +185,8 @@ function populateChatSelector() {
 
 // Select the saved chatbox or default to the first one
 function selectSavedChat() {
+	if (!reader.pos) return;
+
 	const data = getSaveData();
 	const savedChat = data.chat || "0";
 
